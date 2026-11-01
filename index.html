@@ -48,9 +48,8 @@
   .header{ position:sticky; top:0; z-index:50; background:rgba(252,251,248,0.9); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); }
   .header-inner{ display:flex; align-items:center; justify-content:space-between; height:72px; gap: 16px; }
   
-  /* Logos */
-  .logo-full { height: 40px; width: auto; object-fit: contain; }
-  .logo-icon { display: none; height: 36px; width: auto; object-fit: contain; }
+  /* Logo restaurado */
+  .logo img { height: 40px; width: auto; object-fit: contain; }
   
   .nav{ display:flex; gap:36px; font-size:14px; font-weight:500; color:var(--muted); }
   .nav button{ color:var(--muted); transition:color .2s; } .nav button:hover{ color:var(--text); }
@@ -66,7 +65,7 @@
   .cart-btn{ display:flex; align-items:center; gap:10px; background:var(--text); color:#fff; padding:12px 22px; border-radius:var(--radius-sm); font-weight:600; font-size:14px; position: relative; }
   .cart-count{ background:var(--accent); color:#111; min-width:22px; height:22px; border-radius:11px; display:grid; place-items:center; font-size:11px; font-weight:700; padding:0 7px; }
   
-  /* Íconos móviles ocultos por defecto */
+  /* Íconos móviles */
   .mobile-icon { display: none; width: 24px; height: 24px; }
 
   /* HERO CARRUSEL */
@@ -186,15 +185,25 @@
   .review-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; cursor: pointer; transition: all 0.2s; }
   .review-dot.active { background: var(--text); transform: scale(1.3); }
   
-  .footer{ background:var(--surface); border-top:1px solid var(--border); padding:64px 0 32px; } 
-  .fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 40px; margin-bottom: 48px; align-items: start; }
-  .fgrid > div:first-child { grid-column: span 2; max-width: 300px; }
-  .footer-logo img { max-width: 150px; height: auto; object-fit: contain; margin-bottom: 16px; }
-  .footer h4{ font-size:13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom:16px; color: var(--text); } 
-  .footer a{ display:block; color:var(--muted); font-size:14px; margin-bottom:10px; transition: color 0.2s; } 
-  .footer a:hover { color: var(--text); }
-  .footer p { color:var(--muted); font-size:14px; line-height: 1.5; }
-  .fbot{ border-top:1px solid var(--border); padding-top:32px; display: flex; justify-content: space-between; font-size:13px; color:var(--muted); }
+  /* FOOTER (NUEVO DISEÑO CENTRADO 2x2) */
+  .footer{ background:var(--surface); border-top:1px solid var(--border); padding:64px 0 32px; text-align: center; } 
+  .footer-logo-wrap { max-width: 300px; margin: 0 auto 48px auto; }
+  .footer-logo-wrap img { max-width: 150px; height: auto; object-fit: contain; margin: 0 auto 16px auto; }
+  .footer-logo-wrap p { color:var(--muted); font-size:14px; line-height: 1.5; }
+  
+  .footer-links-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; /* 2 columnas */
+    gap: 40px; 
+    max-width: 500px; 
+    margin: 0 auto 48px auto; 
+    text-align: center;
+  }
+  .footer-links-grid h4{ font-size:13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom:16px; color: var(--text); } 
+  .footer-links-grid a{ display:block; color:var(--muted); font-size:14px; margin-bottom:10px; transition: color 0.2s; } 
+  .footer-links-grid a:hover { color: var(--text); }
+  
+  .fbot{ border-top:1px solid var(--border); padding-top:32px; display: flex; justify-content: center; font-size:13px; color:var(--muted); flex-direction: column; gap: 8px;}
 
   /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -210,8 +219,6 @@
     .search-input { display: none; } 
     .hero-slide { padding: 0 40px; height: 500px; }
     .hero h1 { font-size: 46px; }
-    .fgrid { grid-template-columns: 1fr 1fr; gap: 32px; }
-    .fgrid > div:first-child { grid-column: span 2; max-width: 100%; margin-bottom: 16px;}
     .detail{ grid-template-columns:1fr; } 
     .plans{ grid-template-columns:1fr; } 
     .detail-info { padding: 24px; }
@@ -220,14 +227,11 @@
     .product-grid{ grid-template-columns:1fr 1fr; gap:20px 12px; } 
     .product-name{ font-size: 14px; } 
     .checkout{ padding:32px 20px; } 
-    .section-head{ flex-direction: column; align-items: flex-start; gap: 24px; } /* MÁS ESPACIO ENTRE EXPLORAR Y FILTROS */
+    .section-head{ flex-direction: column; align-items: flex-start; gap: 24px; } 
     .hero-slide { padding: 0 24px; height: 450px; text-align: center; }
     .hero-content { margin: 0 auto; }
     .hero h1{ font-size:36px; } 
     .btn-primary { width: 100%; }
-    .fbot { flex-direction: column; gap: 12px; text-align: center; } 
-    .fgrid { grid-template-columns: 1fr; }
-    .fgrid > div:first-child { grid-column: span 1; }
     .product-carousel { height: 300px; }
     .promo-modal img { height: 180px; }
     .review-card { padding: 32px 24px; }
@@ -235,10 +239,7 @@
     .review-arrow.left { margin-right: -18px; }
     .review-arrow.right { margin-left: -18px; }
 
-    /* --- CAMBIOS SOLO PARA MÓVIL --- */
-    .logo-full { display: none; }
-    .logo-icon { display: block; }
-    
+    /* Header Móvil */
     .header-inner { height: 64px; padding: 0 16px; }
     .header-actions { gap: 16px; }
 
@@ -266,6 +267,12 @@
       font-size: 10px;
       border: 2px solid var(--surface);
     }
+
+    /* Footer Móvil: Se mantiene la cuadrícula 2x2 */
+    .footer-links-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
   }
 </style>
 </head>
@@ -276,10 +283,8 @@
 <header class="header">
   <div class="container header-inner">
     <a href="/" class="logo">
-      <!-- Logo completo para escritorio -->
-      <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's" class="logo-full">
-      <!-- Icono 'S' para móvil (Asegúrate de tener este icono subido a tu Supabase con este nombre) -->
-      <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png" alt="S" class="logo-icon">
+      <!-- Logo original restaurado -->
+      <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's">
     </a>
     <nav class="nav" id="dynamicNav"></nav>
     
@@ -372,13 +377,17 @@
   </div>
 </section>
 
+<!-- FOOTER REDISEÑADO -->
 <footer class="footer">
   <div class="container">
-    <div class="fgrid">
-      <div>
-        <a href="/" class="footer-logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></a>
-        <p>Ropa oversize y otros productos de calidad. Pago en bolívares y USDT.</p>
-      </div>
+    <!-- Logo y Texto Centrados -->
+    <div class="footer-logo-wrap">
+      <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's">
+      <p>Ropa oversize y otros productos de calidad. Pago en bolívares y USDT.</p>
+    </div>
+
+    <!-- Enlaces en Cuadrícula 2x2 -->
+    <div class="footer-links-grid">
       <div>
         <h4>Tienda</h4>
         <div id="footerNavLinks"></div>
@@ -403,6 +412,7 @@
         <a href="/info.html">Preguntas Frecuentes</a>
       </div>
     </div>
+
     <div class="fbot">
       <div>© 2025 Tiendas Sam's. Todos los derechos reservados.</div>
       <div>Hecho con ♥ en Venezuela.</div>
@@ -573,7 +583,6 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   if (session) {
     btnAcc.style.display = 'flex';
   } else {
-    // En móvil, el botón de cuenta sigue visible aunque no esté logueado para que pueda entrar
     btnAcc.style.display = window.innerWidth <= 600 ? 'flex' : 'none';
   }
 });
