@@ -228,16 +228,20 @@
   .error-sub { color: #b91c1c; font-size: 14px; margin-bottom: 16px; }
   .btn-retry { background: #991b1b; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
 
-  /* MODAL DE PRIVACIDAD (COOKIES) */
+  /  /* MODAL DE PRIVACIDAD (COOKIES) */
   .privacy-banner {
-    position: fixed; bottom: 24px; left: 24px; right: 24px; z-index: 10000;
+    position: fixed; bottom: 24px; left: 24px; right: 24px; z-index: 999999;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
     padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     display: none; flex-direction: column; gap: 16px;
     max-width: 600px; margin: 0 auto;
-    animation: slideUp 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .privacy-banner.show {
+    display: flex;
+    animation: slideUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
   @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  
   .privacy-banner p { font-size: 14px; color: var(--text); line-height: 1.5; margin: 0; }
   .privacy-banner a { color: var(--text); font-weight: 600; text-decoration: underline; }
   .privacy-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
@@ -245,7 +249,6 @@
   .btn-reject:hover { background: var(--bg); }
   .btn-accept { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; border: none; background: var(--text); color: #fff; cursor: pointer; transition: all 0.2s; }
   .btn-accept:hover { background: #333; transform: translateY(-2px); }
-
   /* RESPONSIVE */
   @media(max-width:900px) {
     .nav{ display:none; } 
