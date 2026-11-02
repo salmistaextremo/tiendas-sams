@@ -817,7 +817,12 @@ function openProduct(id){
         <div class="dlabel">Selecciona Talla</div>
         <div class="sizes" id="sizesBox">${(p.sizes||[]).map(s=>`<button class="s-opt ${s===selectedSize?'selected':''}" onclick="pickSize('${s}')">${s}</button>`).join('')}</div>
         <div class="dlabel">Cantidad</div>
-        <div class="qty" style="display:inline-flex;margin-bottom:24px; padding:6px 12px;"><button onclick="changeModalQty(-1)">−</button><span id="modalQty">1</span><button onclick="changeModalQty(1)">+</button></div>
+        <div class="qty" style="display:inline-flex;margin-bottom:8px; padding:6px 12px;"><button onclick="changeModalQty(-1)">−</button><span id="modalQty">1</span><button onclick="changeModalQty(1)">+</button></div>
+        
+        <div style="font-size:12px; color:var(--muted); margin-bottom:24px; font-weight:500;">
+          Quedan <span id="modalStockText" style="color:${p.stock - 1 <= 5 ? 'var(--danger)' : 'var(--text)'};">${p.stock - 1}</span> disponibles
+        </div>
+
         <div class="dlabel">Instrucciones Especiales (Opcional)</div>
         <textarea id="modalNote" class="notes-input" placeholder="Ej: Color negro, estampado personalizado, etc..." ${isOutOfStock ? 'disabled' : ''}></textarea>
         <button class="btn-primary" onclick="addFromModal()" ${isOutOfStock ? 'disabled style="background:#ccc; cursor:not-allowed; width:100%;"' : 'style="width:100%;"'}>${isOutOfStock ? 'Producto Agotado' : 'Añadir al Carrito'}</button>
@@ -839,7 +844,27 @@ function updateCarouselPosition() {
   document.querySelectorAll('#carouselDots .carousel-dot').forEach((dot, i) => dot.classList.toggle('active', i === currentProductImageIndex));
 }
 function pickSize(s){ selectedSize = s; document.querySelectorAll('#sizesBox .s-opt').forEach(el=>el.classList.toggle('selected', el.textContent === s)); }
-function changeModalQty(d){ currentQty = Math.max(1, currentQty + d); document.getElementById('modalQty').textContent = currentQty; }
+
+function changeModalQty(d){
+  if(!currentProduct) return;
+  let newQty = currentQty + d;
+  
+  if (newQty > currentProduct.stock) {
+    newQty = currentProduct.stock;
+    showToast("No puedes seleccionar más de " + currentProduct.stock + " unidades.", 'error');
+  }
+  
+  currentQty = Math.max(1, newQty);
+  document.getElementById('modalQty').textContent = currentQty;
+  
+  const remaining = currentProduct.stock - currentQty;
+  const stockEl = document.getElementById('modalStockText');
+  if (stockEl) {
+    stockEl.textContent = remaining;
+    stockEl.style.color = remaining <= 5 ? 'var(--danger)' : 'var(--text)';
+  }
+}
+
 function addFromModal(){ if(!currentProduct || currentProduct.stock <= 0) return; addToCart(currentProduct, selectedSize, currentQty, document.getElementById('modalNote').value.trim()); closeProduct(); openCart(); }
 function closeProduct(e){ if(e && e.target.id !== 'productModal') return; document.getElementById('productModal').classList.remove('open'); }
 
@@ -1155,7 +1180,6 @@ async function submitOrder(){
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
 
-  // Descontar Gift Cards antes de calcular abonos
   let giftTotal = 0;
   document.querySelectorAll('.gc-checkbox:checked').forEach(cb => {
     giftTotal += parseFloat(cb.getAttribute('data-amount'));
