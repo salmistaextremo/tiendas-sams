@@ -190,23 +190,22 @@
   .footer-col a { display: block; color: #ffffff; opacity: 0.8; font-size: 14px; margin-bottom: 10px; transition: opacity 0.2s; text-align: center; }
   .footer-col a:hover { opacity: 1; text-decoration: underline; }
   
-  /* Forzar el logo a ser blanco */
   .footer-logo-wrap img { max-width: 150px; height: auto; object-fit: contain; filter: brightness(0) invert(1); margin: 0 auto; }
   
-  /* Íconos sociales centrados, sin fondo y de color amarillo */
   .social-icons { display: flex; justify-content: center; gap: 20px; }
-  .social-icon { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    background-color: transparent; 
-    color: var(--accent); 
-    transition: transform 0.2s, color 0.2s; 
-  }
+  .social-icon { display: flex; align-items: center; justify-content: center; background-color: transparent; color: var(--accent); transition: transform 0.2s, color 0.2s; }
   .social-icon:hover { transform: scale(1.15); color: #ffffff; }
   .social-icon svg { width: 28px; height: 28px; fill: currentColor; }
   
   .fbot { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center; font-size: 13px; color: #ffffff; opacity: 0.7; }
+
+  /* GIFT CARDS EN CHECKOUT (ESTILO AMAZON) */
+  .gc-item { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fcd34d; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;}
+  .gc-item.selected { border-color: var(--text); background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .gc-icon { width: 40px; height: 40px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--text); }
+  .gc-info { flex: 1; }
+  .gc-amount { font-weight: 700; font-size: 15px; color: var(--text); }
+  .gc-code { font-family: monospace; font-size: 11px; color: #b45309; letter-spacing: 1px; }
 
   /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -226,7 +225,6 @@
     .plans{ grid-template-columns:1fr; } 
     .detail-info { padding: 24px; }
     
-    /* Footer responsive */
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
     .footer-logo-col { grid-column: span 2; margin-bottom: 16px; }
   }
@@ -246,7 +244,6 @@
     .review-arrow.left { margin-right: -18px; }
     .review-arrow.right { margin-left: -18px; }
 
-    /* Header Móvil */
     .header-inner { height: 64px; padding: 0 16px; }
     .header-actions { gap: 16px; }
 
@@ -254,25 +251,13 @@
     .btn-account .desktop-text { display: none; }
     .btn-account .mobile-icon { display: block; }
 
-    .cart-btn { 
-      background: transparent; 
-      color: var(--text); 
-      padding: 8px; 
-      border-radius: 50%;
-    }
+    .cart-btn { background: transparent; color: var(--text); padding: 8px; border-radius: 50%; }
     .cart-btn .desktop-text { display: none; }
     .cart-btn .mobile-icon { display: block; }
     
     .cart-count {
-      position: absolute;
-      top: 0;
-      right: -2px;
-      background: var(--text);
-      color: #fff;
-      min-width: 18px;
-      height: 18px;
-      font-size: 10px;
-      border: 2px solid var(--surface);
+      position: absolute; top: 0; right: -2px; background: var(--text); color: #fff;
+      min-width: 18px; height: 18px; font-size: 10px; border: 2px solid var(--surface);
     }
   }
 </style>
@@ -356,7 +341,6 @@
   </div>
 </section>
 
-<!-- SECCIÓN DE RESEÑAS (CARRUSEL) -->
 <section class="reviews-section">
   <div class="container">
     <div style="text-align:center; margin-bottom:40px;">
@@ -377,35 +361,26 @@
   </div>
 </section>
 
-<!-- FOOTER NEGRO CON TEXTOS Y LOGO BLANCO, ICONOS AMARILLOS SIN FONDO -->
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      
-      <!-- Columna 1: Logo -->
       <div class="footer-col footer-logo-col">
         <div class="footer-logo-wrap">
           <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's">
         </div>
       </div>
-
-      <!-- Columna 2: Tienda -->
       <div class="footer-col">
         <h4>Tienda</h4>
         <a href="#catalog" onclick="setFilter('oversize')">Oversize</a>
         <a href="#catalog" onclick="setFilter('accesorios')">Accesorios</a>
         <a href="#catalog" onclick="setFilter('otros')">Otros</a>
       </div>
-
-      <!-- Columna 3: Pagos -->
       <div class="footer-col">
         <h4>Pagos</h4>
         <a href="/info.html">Contado</a>
         <a href="/info.html">Crédito</a>
         <a href="/info.html">Abono</a>
       </div>
-
-      <!-- Columna 4: Información -->
       <div class="footer-col">
         <h4>Información</h4>
         <a href="/info.html">Envíos y entregas</a>
@@ -413,24 +388,18 @@
         <a href="/info.html">Cambios y Devoluciones</a>
         <a href="/info.html">Preguntas frecuentes</a>
       </div>
-
-      <!-- Columna 5: Contacto -->
       <div class="footer-col">
         <h4>Contacto</h4>
         <div class="social-icons">
-          <!-- Icono de Instagram -->
           <a href="#" target="_blank" class="social-icon">
             <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
           </a>
-          <!-- Icono de WhatsApp -->
           <a href="#" target="_blank" class="social-icon">
             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
       </div>
-
     </div>
-
     <div class="fbot">
       © 2025 Tiendas Sam's. Todos los derechos reservados.
     </div>
@@ -543,6 +512,7 @@ let DYNAMIC_CATEGORIES = [];
 let currentSiteConfig = {};
 let currentDiscount = 0;
 let appliedCouponCode = null;
+let userGiftCards = []; // Variable para guardar las tarjetas del cliente
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -951,6 +921,7 @@ async function handleStoreAuth(e) {
   finally { btn.disabled = false; btn.textContent = isLoginMode ? "Entrar y Continuar" : "Registrarse y Continuar"; }
 }
 
+// --- CARGA DE GIFT CARDS Y CHECKOUT ---
 async function openCheckout(){
   if(cart.length === 0) return;
   const { data: { session } } = await supabaseClient.auth.getSession();
@@ -958,6 +929,11 @@ async function openCheckout(){
   closeCart(); paymentPlan = "contado"; paymentMethod = "bs_transfer"; currentDiscount = 0; appliedCouponCode = null;
   
   const { data: profile } = await supabaseClient.from('profiles').select('full_name, phone, address').eq('id', session.user.id).single();
+  
+  // Cargar Gift Cards disponibles
+  const { data: giftCards } = await supabaseClient.from('gift_cards').select('*').eq('user_id', session.user.id).eq('is_used', false);
+  userGiftCards = giftCards || [];
+
   renderCheckout(profile || {});
   document.getElementById('checkoutModal').classList.add('open');
 }
@@ -1010,6 +986,26 @@ function renderCheckout(profile){
       <p style="font-size:13px; color:var(--text);">Saldo pendiente: <strong id="remainingBalance" style="color:var(--danger);">${fmtBs(totalBs)}</strong></p>
     </div>
 
+    <!-- SECCIÓN DE GIFT CARDS -->
+    ${userGiftCards.length > 0 ? `
+      <div id="giftCardSection" style="display:${paymentPlan === 'contado' ? 'block' : 'none'}; margin-top:16px;">
+        <div class="dlabel" style="color:var(--success);">🎁 Tienes Tarjetas de Regalo disponibles</div>
+        <div style="margin-bottom:24px;">
+          ${userGiftCards.map(gc => `
+            <label class="gc-item" id="gc-label-${gc.id}">
+              <input type="checkbox" class="gc-checkbox" value="${gc.id}" data-amount="${gc.amount}" onchange="toggleGiftCard('${gc.id}', this)" style="width:18px; height:18px; accent-color:var(--text);">
+              <div class="gc-icon">S</div>
+              <div class="gc-info">
+                <div class="gc-amount">Tarjeta de $${gc.amount.toFixed(2)}</div>
+                <div class="gc-code">${String(gc.id).slice(0,8).toUpperCase()}</div>
+              </div>
+            </label>
+          `).join('')}
+          <p style="font-size:12px; color:var(--muted); margin-top:8px;">* Solo válidas para compras de contado.</p>
+        </div>
+      </div>
+    ` : ''}
+
     <div class="dlabel">Método de pago</div>
     <div class="methods">
       <div class="method ${paymentMethod==='bs_transfer'?'selected':''}" onclick="selMethod('bs_transfer', this)"><span class="dot"></span><span class="mn">Transferencia Banesco</span></div>
@@ -1053,6 +1049,13 @@ function renderCheckout(profile){
   setTimeout(updateCheckoutTotal, 50);
 }
 
+function toggleGiftCard(id, cb) {
+  const label = document.getElementById(`gc-label-${id}`);
+  if (cb.checked) label.classList.add('selected');
+  else label.classList.remove('selected');
+  updateCheckoutTotal();
+}
+
 async function applyCoupon() {
   const code = document.getElementById('couponInput').value.trim().toUpperCase();
   if(!code) return;
@@ -1072,6 +1075,19 @@ function selPlan(p, el){
   document.querySelectorAll('.plan').forEach(e => e.classList.remove('selected')); el.classList.add('selected');
   document.getElementById('creditFields').style.display = p === 'credito' ? 'block' : 'none';
   document.getElementById('layawayFields').style.display = p === 'apartado' ? 'block' : 'none';
+  
+  // Ocultar y desmarcar Gift Cards si no es contado
+  const gcSection = document.getElementById('giftCardSection');
+  if (gcSection) {
+    gcSection.style.display = p === 'contado' ? 'block' : 'none';
+    if (p !== 'contado') {
+      document.querySelectorAll('.gc-checkbox').forEach(cb => {
+        cb.checked = false;
+        document.getElementById(`gc-label-${cb.value}`).classList.remove('selected');
+      });
+    }
+  }
+  
   updateCheckoutTotal();
 }
 function selMethod(m, el){ 
@@ -1088,6 +1104,14 @@ function updateCheckoutTotal() {
     totalBs = totalBs - (totalBs * (currentDiscount / 100));
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
+
+  // Descontar Gift Cards seleccionadas
+  let giftTotal = 0;
+  document.querySelectorAll('.gc-checkbox:checked').forEach(cb => {
+    giftTotal += parseFloat(cb.getAttribute('data-amount'));
+  });
+  totalUsdt = Math.max(0, totalUsdt - giftTotal);
+  totalBs = totalUsdt * bcvRate;
 
   let amountToPay = totalUsdt;
   if (paymentPlan === 'credito') {
@@ -1106,6 +1130,7 @@ function updateCheckoutTotal() {
   if(document.getElementById('amountToPay')) {
     let html = fmtUSD(amountToPay);
     if (currentDiscount > 0) html += ` <span style="font-size:12px; color:var(--success);">(-${currentDiscount}%)</span>`;
+    if (giftTotal > 0) html += ` <span style="font-size:12px; color:var(--success);">(-$${giftTotal})</span>`;
     document.getElementById('amountToPay').innerHTML = html;
     
     if(document.getElementById('amountToPayBs')) {
@@ -1134,8 +1159,9 @@ async function submitOrder(){
     totalBs = totalBs - (totalBs * (currentDiscount / 100));
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
-  const ratio = totalBs / totalUsdt;
-
+  
+  const selectedGCs = Array.from(document.querySelectorAll('.gc-checkbox:checked')).map(cb => ({ id: cb.value }));
+  
   let planDetails = {}; let installmentsRecords = [];
   if (paymentPlan === 'contado') {
     planDetails = { tipo: 'contado' };
@@ -1187,13 +1213,21 @@ async function submitOrder(){
       p_payment_plan_details: planDetails,
       p_installments: installmentsRecords.map(r => ({ amount_bs: r.amount_bs, reference: r.reference })),
       p_discount_percent: currentDiscount,
-      p_coupon_code: appliedCouponCode || null
+      p_coupon_code: appliedCouponCode || null,
+      p_gift_card_ids: selectedGCs // <--- Se envían los IDs de las tarjetas usadas
     });
 
     if (error) throw error;
     
     const shortId = String(data.order_id).slice(0,8).toUpperCase();
     
+    // Notificación de nueva Gift Card si aplica
+    const earnedGiftCardHtml = (paymentPlan === 'contado' && data.total_usdt >= 250) 
+      ? `<div style="background:#fffbeb; border:1px solid #fcd34d; color:#b45309; padding:16px; border-radius:12px; font-weight:700; margin-bottom:20px; text-align:center;">
+           🎁 ¡Felicidades! Has ganado una Gift Card de $25 para tu próxima compra.
+         </div>` 
+      : '';
+
     const telefonoAdmin = "584243351245"; 
     let planText = paymentPlan.toUpperCase();
     if (paymentPlan === 'credito') planText = 'CRÉDITO (3 Cuotas)';
@@ -1214,6 +1248,7 @@ async function submitOrder(){
     document.getElementById('checkoutModalInner').innerHTML = `
       <button class="modal-x" onclick="closeCheckout()">✕</button>
       <div class="msg">
+        ${earnedGiftCardHtml}
         <div style="font-size:48px; margin-bottom:16px;">🎉</div>
         <h3>¡Pedido Registrado!</h3>
         <p class="sub">Número de pedido: <strong>#${shortId}</strong></p>
@@ -1233,6 +1268,7 @@ async function submitOrder(){
     `;
     cart = []; renderCart();
     currentDiscount = 0; appliedCouponCode = null;
+    userGiftCards = []; 
   } catch (err) {
     errBox.textContent = "Error: " + err.message; btn.disabled = false; btn.textContent = "Confirmar Pedido";
   }
