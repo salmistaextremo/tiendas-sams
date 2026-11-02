@@ -58,13 +58,28 @@
   .search-input { padding: 10px 16px; border-radius: 100px; border: 1px solid var(--border); background: var(--bg); font-family: inherit; font-size: 14px; outline: none; width: 250px; transition: all 0.2s; }
   .search-input:focus { border-color: var(--text); width: 300px; }
   
-  .btn-account { font-size:14px; font-weight:600; color:var(--muted); margin-right:12px; display:none; white-space: nowrap; align-items: center; gap: 8px; }
-  .btn-account:hover { color: var(--text); }
+  /* BOTÓN MI CUENTA ACTUALIZADO */
+  .btn-account { 
+    font-size:14px; 
+    font-weight:600; 
+    color:var(--text); 
+    padding: 10px 20px; 
+    border-radius: var(--radius-sm); 
+    background: var(--bg); 
+    border: 1px solid var(--border); 
+    display: flex; 
+    white-space: nowrap; 
+    align-items: center; 
+    gap: 8px; 
+    transition: all 0.2s; 
+  }
+  .btn-account:hover { background: var(--surface); border-color: var(--text); }
   
-  .cart-btn{ display:flex; align-items:center; gap:10px; background:var(--text); color:#fff; padding:12px 22px; border-radius:var(--radius-sm); font-weight:600; font-size:14px; position: relative; }
+  .cart-btn{ display:flex; align-items:center; gap:10px; background:var(--text); color:#fff; padding:12px 22px; border-radius:var(--radius-sm); font-weight:600; font-size:14px; position: relative; transition: all 0.2s; }
+  .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
   .cart-count{ background:var(--accent); color:#111; min-width:22px; height:22px; border-radius:11px; display:grid; place-items:center; font-size:11px; font-weight:700; padding:0 7px; }
   
-  .mobile-icon { display: none; width: 24px; height: 24px; }
+  .mobile-icon { display: none; width: 20px; height: 20px; }
 
   /* HERO CARRUSEL */
   .hero { padding: 40px 0 60px; }
@@ -245,19 +260,41 @@
     .review-arrow.right { margin-left: -18px; }
 
     .header-inner { height: 64px; padding: 0 16px; }
-    .header-actions { gap: 16px; }
+    .header-actions { gap: 12px; }
 
-    .btn-account { display: flex !important; margin-right: 0; padding: 8px; }
+    /* Ajustes del botón "Mi Cuenta" en móvil */
+    .btn-account { 
+      padding: 8px; 
+      border-radius: 50%; 
+      border: none; 
+      background: transparent; 
+    }
     .btn-account .desktop-text { display: none; }
-    .btn-account .mobile-icon { display: block; }
+    .btn-account .mobile-icon { display: block; width: 24px; height: 24px; }
 
-    .cart-btn { background: transparent; color: var(--text); padding: 8px; border-radius: 50%; }
+    .cart-btn { 
+      background: transparent; 
+      color: var(--text); 
+      padding: 8px; 
+      border-radius: 50%; 
+      border: none;
+    }
     .cart-btn .desktop-text { display: none; }
-    .cart-btn .mobile-icon { display: block; }
+    .cart-btn .mobile-icon { display: block; width: 24px; height: 24px; }
     
     .cart-count {
-      position: absolute; top: 0; right: -2px; background: var(--text); color: #fff;
-      min-width: 18px; height: 18px; font-size: 10px; border: 2px solid var(--surface);
+      position: absolute; 
+      top: 0; 
+      right: -2px; 
+      background: var(--text); 
+      color: #fff;
+      min-width: 18px; 
+      height: 18px; 
+      font-size: 10px; 
+      border: 2px solid var(--surface);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
     }
   }
 </style>
@@ -276,11 +313,13 @@
     <div class="header-actions">
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar prenda..." oninput="searchProducts(this.value)">
       
-      <a href="/portal.html" id="btnAccount" class="btn-account">
+      <!-- BOTÓN MI CUENTA -->
+      <a href="/portal.html" id="btnAccount" class="btn-account" style="display: flex;">
         <span class="desktop-text">Mi Cuenta</span>
         <svg class="mobile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </a>
       
+      <!-- CARRITO -->
       <button class="cart-btn" onclick="openCart()">
         <span class="desktop-text">🛒</span>
         <svg class="mobile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
@@ -512,7 +551,7 @@ let DYNAMIC_CATEGORIES = [];
 let currentSiteConfig = {};
 let currentDiscount = 0;
 let appliedCouponCode = null;
-let userGiftCards = []; // Variable para guardar las tarjetas del cliente
+let userGiftCards = []; 
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -564,13 +603,10 @@ installBtn.addEventListener('click', async () => {
 window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; });
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err)); }); }
 
+// Lógica modificada para que "Mi Cuenta" siempre esté visible
 supabaseClient.auth.onAuthStateChange((event, session) => { 
   const btnAcc = document.getElementById('btnAccount');
-  if (session) {
-    btnAcc.style.display = 'flex';
-  } else {
-    btnAcc.style.display = window.innerWidth <= 600 ? 'flex' : 'none';
-  }
+  if(btnAcc) btnAcc.style.display = 'flex';
 });
 
 async function loadCategories() {
@@ -921,7 +957,6 @@ async function handleStoreAuth(e) {
   finally { btn.disabled = false; btn.textContent = isLoginMode ? "Entrar y Continuar" : "Registrarse y Continuar"; }
 }
 
-// --- CARGA DE GIFT CARDS Y CHECKOUT ---
 async function openCheckout(){
   if(cart.length === 0) return;
   const { data: { session } } = await supabaseClient.auth.getSession();
@@ -930,7 +965,6 @@ async function openCheckout(){
   
   const { data: profile } = await supabaseClient.from('profiles').select('full_name, phone, address').eq('id', session.user.id).single();
   
-  // Cargar Gift Cards disponibles
   const { data: giftCards } = await supabaseClient.from('gift_cards').select('*').eq('user_id', session.user.id).eq('is_used', false);
   userGiftCards = giftCards || [];
 
@@ -986,7 +1020,6 @@ function renderCheckout(profile){
       <p style="font-size:13px; color:var(--text);">Saldo pendiente: <strong id="remainingBalance" style="color:var(--danger);">${fmtBs(totalBs)}</strong></p>
     </div>
 
-    <!-- SECCIÓN DE GIFT CARDS -->
     ${userGiftCards.length > 0 ? `
       <div id="giftCardSection" style="display:${paymentPlan === 'contado' ? 'block' : 'none'}; margin-top:16px;">
         <div class="dlabel" style="color:var(--success);">🎁 Tienes Tarjetas de Regalo disponibles</div>
@@ -1076,7 +1109,6 @@ function selPlan(p, el){
   document.getElementById('creditFields').style.display = p === 'credito' ? 'block' : 'none';
   document.getElementById('layawayFields').style.display = p === 'apartado' ? 'block' : 'none';
   
-  // Ocultar y desmarcar Gift Cards si no es contado
   const gcSection = document.getElementById('giftCardSection');
   if (gcSection) {
     gcSection.style.display = p === 'contado' ? 'block' : 'none';
@@ -1105,7 +1137,6 @@ function updateCheckoutTotal() {
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
 
-  // Descontar Gift Cards seleccionadas
   let giftTotal = 0;
   document.querySelectorAll('.gc-checkbox:checked').forEach(cb => {
     giftTotal += parseFloat(cb.getAttribute('data-amount'));
@@ -1214,14 +1245,13 @@ async function submitOrder(){
       p_installments: installmentsRecords.map(r => ({ amount_bs: r.amount_bs, reference: r.reference })),
       p_discount_percent: currentDiscount,
       p_coupon_code: appliedCouponCode || null,
-      p_gift_card_ids: selectedGCs // <--- Se envían los IDs de las tarjetas usadas
+      p_gift_card_ids: selectedGCs
     });
 
     if (error) throw error;
     
     const shortId = String(data.order_id).slice(0,8).toUpperCase();
     
-    // Notificación de nueva Gift Card si aplica
     const earnedGiftCardHtml = (paymentPlan === 'contado' && data.total_usdt >= 250) 
       ? `<div style="background:#fffbeb; border:1px solid #fcd34d; color:#b45309; padding:16px; border-radius:12px; font-weight:700; margin-bottom:20px; text-align:center;">
            🎁 ¡Felicidades! Has ganado una Gift Card de $25 para tu próxima compra.
@@ -1279,11 +1309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadCategories(); loadProducts(); loadReviews(); renderCart(); suscribirseProductos(); startHeroAutoplay(); loadSiteConfig();
   supabaseClient.auth.getSession().then(({data: {session}}) => { 
     const btnAcc = document.getElementById('btnAccount');
-    if(session) {
-      btnAcc.style.display = 'flex'; 
-    } else {
-      btnAcc.style.display = window.innerWidth <= 600 ? 'flex' : 'none'; 
-    }
+    if(btnAcc) btnAcc.style.display = 'flex'; 
   });
 });
 </script>
