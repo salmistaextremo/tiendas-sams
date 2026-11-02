@@ -640,12 +640,24 @@ async function loadReviews() {
   const wrap = document.getElementById('reviewsWrap');
   const noMsg = document.getElementById('noReviewsMsg');
   
-  const { data } = await supabaseClient.from('reviews').select('*').eq('is_approved', true).order('created_at', { ascending: false }).limit(10);
+  // Estado de carga inicial
+  container.innerHTML = `<div class="review-card" style="display:flex; align-items:center; justify-content:center;"><div class="spinner"></div></div>`;
+  wrap.style.display = 'flex';
   
+  const { data, error } = await supabaseClient.from('reviews').select('*').eq('is_approved', true).order('created_at', { ascending: false }).limit(10);
+  
+  if(error) {
+    wrap.style.display = 'none';
+    noMsg.style.display = 'block';
+    noMsg.innerHTML = `<span style="color:var(--danger);">⚠️ Error al cargar reseñas. <a href="#" onclick="loadReviews()" style="text-decoration:underline; font-weight:600;">Reintentar</a></span>`;
+    return;
+  }
+
   if(!data || data.length === 0) {
     wrap.style.display = 'none';
     dotsContainer.style.display = 'none';
     noMsg.style.display = 'block';
+    noMsg.textContent = 'Aún no hay reseñas. ¡Sé el primero en dejar una!';
     return;
   }
   
