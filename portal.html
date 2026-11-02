@@ -516,7 +516,7 @@ async function renderGiftCards() {
   const { data: cards, error } = await supabaseClient.from('gift_cards').select('*').eq('user_id', currentUserId).eq('is_used', false).order('created_at', { ascending: false });
   
   if (error) { 
-    list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar tarjetas</h3><p class="error-sub">${error.message}</p></div>`; 
+    list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar tarjetas</h3><p class="error-sub">${error.message}</p><button class="btn-retry" onclick="renderGiftCards()">Reintentar</button></div>`; 
     return; 
   }
   
@@ -599,7 +599,6 @@ function renderFilteredOrders() {
       }); 
     }
     
-    // o.total_usdt en la BD ya viene neto (después de restar cupones y gift cards)
     const remainingUsdt = Math.max(0, Number(o.total_usdt) - abonadoUsdt - pendienteUsdt);
     const remainingBs = remainingUsdt * bcvRate;
     const isPaid = remainingUsdt <= 0.1;
@@ -676,7 +675,7 @@ async function renderProfile() {
   list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando perfil...</p></div>`;
   
   const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUserId).single();
-  if (error) { list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar perfil</h3><p class="error-sub">${error.message}</p></div>`; return; }
+  if (error) { list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar perfil</h3><p class="error-sub">${error.message}</p><button class="btn-retry" onclick="renderProfile()">Reintentar</button></div>`; return; }
 
   list.innerHTML = `
     <div class="order-card" style="max-width: 500px; margin: 0 auto;">
