@@ -1,6 +1,7 @@
 {
   "name": "Tiendas Sam's",
   "short_name": "Sam's",
+  "prefer_related_applications": false,
   "description": "Ropa oversize y más, con pago en Bs y USDT.",
   "start_url": "/",
   "display": "standalone",
