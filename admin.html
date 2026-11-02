@@ -691,7 +691,7 @@ async function loadOrders(){
         <td data-label="Total">${fmtUSD(o.total_usdt)}</td>
         <td data-label="Saldo" style="color:${isPaid ? 'var(--success)' : 'var(--danger)'}; font-weight:600;">${isPaid ? 'Pagado' : fmtUSD(saldoUsd)}</td>
         <td data-label="Estado"><select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">${statusOptions}</select></td>
-        <td data-label="Acciones"><button class="btn-sm btn-view" onclick="viewOrderDetails('${o.id}')">Ver Detalles</button></td>
+        <td data-label="Acciones"><button class="btn-sm btn-view" onclick="('${o.id}')">Ver Detalles</button></td>
       </tr>
     `;
   }).join('');
@@ -728,7 +728,19 @@ function viewOrderDetails(orderId) {
   const o = allOrdersData.find(x => x.id === orderId);
   if(!o) return;
   
-  let abonadoBs = 0; if(o.installments) o.installments.forEach(i => { if(i.status !== 'pendiente') abonadoBs += Number(i.amount_bs || 0); });
+  let abonadoBs = 0; 
+  let gcTotalUsdt = 0;
+
+  if(o.installments) { 
+    o.installments.forEach(i => { 
+      if (i.method === 'gift_card') {
+        gcTotalUsdt += Number(i.amount_usdt || 0);
+      } else if (i.status !== 'pendiente') {
+        abonadoBs += Number(i.amount_bs || 0); 
+      }
+    }); 
+  }
+
   const saldoBs = Math.max(0, Number(o.total_bs) - abonadoBs);
   const ratio = Number(o.total_bs) / Number(o.total_usdt);
   const saldoUsd = saldoBs / ratio;
@@ -757,12 +769,13 @@ function viewOrderDetails(orderId) {
     }
   }
 
-  let couponHtml = "";
-  if (o.coupon_code) {
-    couponHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px; border: 1px dashed var(--success);">
-                    <h4 style="font-size:14px; margin-bottom:8px; color:var(--success);">🎟️ Cupón Aplicado</h4>
-                    <p style="font-size:14px; font-weight:700; text-transform:uppercase;">${escapeHTML(o.coupon_code)}</p>
-                  </div>`;
+  // NUEVO: Mostrar Gift Card aplicada
+  let gcHtml = "";
+  if (gcTotalUsdt > 0) {
+    gcHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px; border: 1px dashed var(--success);">
+                <h4 style="font-size:14px; margin-bottom:8px; color:var(--success);">🎁 Gift Card Aplicada</h4>
+                <p style="font-size:14px; font-weight:700;">- ${fmtUSD(gcTotalUsdt)}</p>
+              </div>`;
   }
 
   const receiptHtml = o.receipt_url ? `<div style="margin-top:16px;"><label style="font-size:12px; color:var(--muted); font-weight:600;">Comprobante:</label><br><button class="btn-primary" style="margin-top:8px; padding:10px 20px; width:auto;" onclick="viewReceipt('${o.receipt_url}')">Ver Comprobante</button></div>` : `<div style="margin-top:16px; color:var(--muted); font-size:13px;">Sin comprobante inicial.</div>`;
@@ -775,7 +788,7 @@ function viewOrderDetails(orderId) {
     </div>
     <div style="margin-bottom:20px;"><h4 style="font-size:14px; margin-bottom:8px;">Productos Comprados</h4>${itemsHtml}</div>
     ${planDetailsHtml}
-    ${couponHtml}
+    ${gcHtml}
     <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total del Pedido:</span><strong>${fmtUSD(o.total_usdt)}</strong></div>
       <div style="display:flex; justify-content:space-between;"><span>Saldo Restante:</span><strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">${isPaid ? 'Pagado' : fmtUSD(saldoUsd)}</strong></div>
