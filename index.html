@@ -197,12 +197,13 @@
   .fbot { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center; font-size: 13px; color: #ffffff; opacity: 0.7; }
 
   /* GIFT CARDS EN CHECKOUT */
-  .gc-item { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fcd34d; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;}
-  .gc-item.selected { border-color: var(--text); background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-  .gc-icon { width: 40px; height: 40px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: var(--text); }
+  .gc-item { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%); border: 1px solid #333; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 8px; color: #ffd700;}
+  .gc-item.selected { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+  .gc-item.disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+  .gc-icon { width: 40px; height: 40px; background: #ffd700; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: #111; }
   .gc-info { flex: 1; }
-  .gc-amount { font-weight: 700; font-size: 15px; color: var(--text); }
-  .gc-code { font-family: monospace; font-size: 11px; color: #b45309; letter-spacing: 1px; }
+  .gc-amount { font-weight: 700; font-size: 15px; color: #ffd700; }
+  .gc-code { font-family: monospace; font-size: 11px; color: #aaa; letter-spacing: 1px; }
 
   /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -1035,19 +1036,21 @@ function renderCheckout(profile){
 
     ${userGiftCards.length > 0 ? `
       <div id="giftCardSection" style="display:${paymentPlan === 'contado' ? 'block' : 'none'}; margin-top:16px;">
-        <div class="dlabel" style="color:var(--success);">🎁 Tienes Tarjetas de Regalo disponibles</div>
+        <div class="dlabel" style="color:#ffd700;">🎁 Tienes Tarjetas de Regalo disponibles</div>
         <div style="margin-bottom:24px;">
-          ${userGiftCards.map(gc => `
-            <label class="gc-item" id="gc-label-${gc.id}">
-              <input type="checkbox" class="gc-checkbox" value="${gc.id}" data-amount="${gc.amount}" onchange="toggleGiftCard('${gc.id}', this)" style="width:18px; height:18px; accent-color:var(--text);">
+          ${userGiftCards.map(gc => {
+            const isDisabled = gc.amount > totalUsdt;
+            return `
+            <label class="gc-item ${isDisabled ? 'disabled' : ''}" id="gc-label-${gc.id}">
+              <input type="checkbox" class="gc-checkbox" value="${gc.id}" data-amount="${gc.amount}" onchange="toggleGiftCard('${gc.id}', this)" ${isDisabled ? 'disabled' : ''} style="width:18px; height:18px; accent-color:#ffd700;">
               <div class="gc-icon">S</div>
               <div class="gc-info">
                 <div class="gc-amount">Tarjeta de $${gc.amount.toFixed(2)}</div>
                 <div class="gc-code">${String(gc.id).slice(0,8).toUpperCase()}</div>
               </div>
             </label>
-          `).join('')}
-          <p style="font-size:12px; color:var(--muted); margin-top:8px;">* Solo válidas para compras de contado.</p>
+          `}).join('')}
+          <p style="font-size:12px; color:var(--muted); margin-top:8px;">* Solo válidas para compras de contado. El total del carrito debe cubrir el monto de la tarjeta.</p>
         </div>
       </div>
     ` : ''}
@@ -1196,8 +1199,9 @@ async function submitOrder(){
   btn.disabled = true; 
   btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
 
+  let originalTotalUsdt = cart.reduce((s,i)=> s + i.price_usdt * i.qty, 0);
   let totalBs   = cart.reduce((s,i)=> s + i.price_bs   * i.qty, 0);
-  let totalUsdt = cart.reduce((s,i)=> s + i.price_usdt * i.qty, 0);
+  let totalUsdt = originalTotalUsdt;
   
   if (currentDiscount > 0) {
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
@@ -1271,9 +1275,10 @@ async function submitOrder(){
     
     const shortId = String(data.order_id).slice(0,8).toUpperCase();
     
-    const earnedGiftCardHtml = (paymentPlan === 'contado' && totalUsdt >= 250) 
+    const netPaidUsd = originalTotalUsdt - giftTotal;
+    const earnedGiftCardHtml = (paymentPlan === 'contado' && netPaidUsd >= 250) 
       ? `<div style="background:#fffbeb; border:1px solid #fcd34d; color:#b45309; padding:16px; border-radius:12px; font-weight:700; margin-bottom:20px; text-align:center;">
-           🎁 ¡Felicidades! Has ganado una Gift Card de $25 para tu próxima compra.
+           🎁 ¡Felicidades! Has ganado una Gift Card de $25. Estará disponible en tu cuenta una vez que confirmemos tu pago.
          </div>` 
       : '';
 
