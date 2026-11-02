@@ -98,18 +98,24 @@
   .gc-badge { position: absolute; top: 10px; right: 15px; background: var(--danger); color: #fff; font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; border: 2px solid var(--surface); animation: pop 0.3s ease-out; }
   @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-  /* DISEÑO GIFT CARDS */
+  /* DISEÑO GIFT CARDS (ESTILO AMAZON: NEGRO Y DORADO) */
   .gift-card-container { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 500px; margin: 0 auto; }
   .gift-card-visual {
-    background: linear-gradient(135deg, #ffea61 0%, #facc15 100%);
-    border-radius: 20px; padding: 24px; color: #111; position: relative; overflow: hidden;
-    box-shadow: 0 10px 25px rgba(250, 204, 21, 0.3); display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;
+    background: linear-gradient(135deg, #111111 0%, #222222 100%);
+    border-radius: 20px; padding: 24px; color: #ffd700; position: relative; overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;
+    border: 1px solid #333;
   }
-  .gift-card-visual::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.3); border-radius: 50%; }
-  .gift-card-logo { height: 35px; object-fit: contain; filter: brightness(0); }
-  .gift-card-amount { font-size: 48px; font-weight: 800; line-height: 1; margin: 16px 0 8px 0; letter-spacing: -2px; }
-  .gift-card-text { font-size: 14px; font-weight: 600; opacity: 0.8; }
-  .gift-card-code { font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.5); padding: 6px 12px; border-radius: 100px; display: inline-block; margin-top: 16px; letter-spacing: 1px; }
+  .gift-card-visual::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  }
+  .gift-card-visual::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,215,0,0.05); border-radius: 50%; }
+  .gift-card-logo { height: 35px; object-fit: contain; filter: brightness(0) invert(1); }
+  .gift-card-amount { font-size: 48px; font-weight: 800; line-height: 1; margin: 16px 0 8px 0; letter-spacing: -2px; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+  .gift-card-text { font-size: 14px; font-weight: 600; color: #aaa; }
+  .gift-card-code { font-family: monospace; font-size: 12px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 6px 12px; border-radius: 100px; display: inline-block; margin-top: 16px; letter-spacing: 1px; }
 
   .modal-wrap{ position:fixed; inset:0; z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); overflow-y:auto; }
   .modal-wrap.open{ display:flex; }
@@ -593,9 +599,8 @@ function renderFilteredOrders() {
       }); 
     }
     
-    const originalTotalUsdt = (o.order_items || []).reduce((sum, item) => sum + Number(item.subtotal_usdt), 0) || Number(o.total_usdt);
-    const netTotalUsdt = Math.max(0, originalTotalUsdt - gcTotalUsdt);
-    const remainingUsdt = Math.max(0, netTotalUsdt - abonadoUsdt - pendienteUsdt);
+    // o.total_usdt en la BD ya viene neto (después de restar cupones y gift cards)
+    const remainingUsdt = Math.max(0, Number(o.total_usdt) - abonadoUsdt - pendienteUsdt);
     const remainingBs = remainingUsdt * bcvRate;
     const isPaid = remainingUsdt <= 0.1;
     const statusClass = `status-${o.status}`, statusText = statusLabels[o.status] || o.status;
