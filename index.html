@@ -1133,10 +1133,10 @@ function updateCheckoutTotal() {
   let totalUsdt = cart.reduce((s,i)=>s + i.price_usdt*i.qty, 0);
   
   if (currentDiscount > 0) {
-    totalBs = totalBs - (totalBs * (currentDiscount / 100));
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
 
+  // Descontar Gift Cards seleccionadas
   let giftTotal = 0;
   document.querySelectorAll('.gc-checkbox:checked').forEach(cb => {
     giftTotal += parseFloat(cb.getAttribute('data-amount'));
@@ -1187,10 +1187,27 @@ async function submitOrder(){
   let totalUsdt = cart.reduce((s,i)=> s + i.price_usdt * i.qty, 0);
   
   if (currentDiscount > 0) {
-    totalBs = totalBs - (totalBs * (currentDiscount / 100));
     totalUsdt = totalUsdt - (totalUsdt * (currentDiscount / 100));
   }
+
+ let giftTotal = 0;
+  document.querySelectorAll('.gc-checkbox:checked').forEach(cb => {
+    giftTotal += parseFloat(cb.getAttribute('data-amount'));
+  });
+  totalUsdt = Math.max(0, totalUsdt - giftTotal);
+  totalBs = totalUsdt * bcvRate;
+  // -------------------------------------------------------------
+
+  const selectedGCs = Array.from(document.querySelectorAll('.gc-checkbox:checked')).map(cb => ({ id: cb.value }));
   
+  let planDetails = {}; let installmentsRecords = [];
+  if (paymentPlan === 'contado') {
+    planDetails = { tipo: 'contado' };
+    // Ahora totalBs ya tiene el descuento aplicado
+    installmentsRecords.push({ amount_bs: totalBs, reference: "Pago de contado" });
+  } else if (paymentPlan === 'credito') {
+    // ... resto del código ...
+ 
   const selectedGCs = Array.from(document.querySelectorAll('.gc-checkbox:checked')).map(cb => ({ id: cb.value }));
   
   let planDetails = {}; let installmentsRecords = [];
