@@ -524,22 +524,32 @@ async function fetchBCVRate() {
 
 // --- LÓGICA DE PRIVACIDAD (COOKIES) ---
 function checkPrivacyConsent() {
-  const consent = localStorage.getItem('sams_privacy_consent_v1');
-  if (!consent) {
-    document.getElementById('privacyBanner').style.display = 'flex';
+  try {
+    const consent = localStorage.getItem('sams_privacy_consent_v1');
+    if (!consent) {
+      // El pequeño delay (300ms) evita que extensiones de navegador lo bloqueen de inmediato
+      setTimeout(() => {
+        const banner = document.getElementById('privacyBanner');
+        if (banner) banner.classList.add('show');
+      }, 300);
+    }
+  } catch (e) {
+    // Si el navegador bloquea localStorage (ej. modo incógnito estricto), mostramos el banner igual
+    setTimeout(() => {
+      const banner = document.getElementById('privacyBanner');
+      if (banner) banner.classList.add('show');
+    }, 300);
   }
 }
 
 function acceptPrivacy() {
-  localStorage.setItem('sams_privacy_consent_v1', 'accepted');
-  document.getElementById('privacyBanner').style.display = 'none';
-  showToast("Gracias por aceptar nuestras políticas.");
+  try { localStorage.setItem('sams_privacy_consent_v1', 'accepted'); } catch (e) {}
+  document.getElementById('privacyBanner').classList.remove('show');
 }
 
 function rejectPrivacy() {
-  localStorage.setItem('sams_privacy_consent_v1', 'rejected');
-  document.getElementById('privacyBanner').style.display = 'none';
-  showToast("Has rechazado las cookies. Algunas funciones podrían no guardarse.", 'error');
+  try { localStorage.setItem('sams_privacy_consent_v1', 'rejected'); } catch (e) {}
+  document.getElementById('privacyBanner').classList.remove('show');
 }
 // ---------------------------------------
 
