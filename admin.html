@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tiendas Sam's — Admin</title>
+<title>Mis Pedidos — Tiendas Sam's</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
@@ -12,90 +12,116 @@
 <meta name="theme-color" content="#111111">
 <link rel="apple-touch-icon" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
-
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ --bg:#f8f6f0; --surface:#ffffff; --text:#1a1a1a; --muted:#7a7a7a; --border:#e8e4db; --accent:#ffea61; --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
-  html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
-  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } 
-  .container{ max-width:1200px; margin:0 auto; padding:0 24px; }
-
-  /* LOGIN */
-  .login-wrapper{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-  .login-card{ background:var(--surface); border-radius:var(--radius-lg); padding:48px; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,0.04); }
-  .login-logo { text-align: center; margin-bottom: 32px; display: flex; justify-content: center; }
-  .login-logo img { height: 60px; width: auto; object-fit: contain; }
-  .field{ margin-bottom:20px; } .field label{ display:block; font-size:13px; font-weight:600; margin-bottom:8px; } 
-  .field input{ width:100%; padding:16px; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--border); font-family:inherit; }
-  .btn-primary{ width:100%; padding:16px; border-radius:var(--radius-md); background:var(--text); color:#fff; font-weight:600; display:flex; justify-content:center; cursor:pointer; }
-
-  /* PANEL */
-  #adminPanel{ display:none; }
-  .admin-header{ background:var(--surface); border-bottom:1px solid var(--border); padding:0 32px; height:80px; display:flex; align-items:center; justify-content:space-between; }
-  .admin-header .logo img { height: 40px; width: auto; object-fit: contain; }
-  .admin-header-right{ display:flex; align-items:center; gap:20px; }
-  .logout-btn{ padding:10px 20px; border-radius:var(--radius-sm); background:var(--bg); font-size:14px; font-weight:600; border:1px solid var(--border); cursor:pointer; }
-
-  .admin-main{ padding:40px 32px; max-width:1240px; margin:0 auto; }
-  .admin-title{ font-size:32px; margin-bottom:8px; } .admin-sub{ font-size:15px; color:var(--muted); margin-bottom:32px; }
+  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#767676; --border:#e8e5df; --accent:#ffea61; --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
+  html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 80px; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } a{ color:inherit; text-decoration:none; }
+  .container{ max-width:900px; margin:0 auto; padding:0 24px; width: 100%; }
   
-  /* TARJETAS DE ESTADÍSTICAS (KPIs) */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
-  .kpi-card { background: var(--surface); border-radius: var(--radius-md); padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border); position: relative; overflow: hidden; }
-  .kpi-card::before { content: ''; position: absolute; top:0; left:0; width: 4px; height: 100%; background: var(--accent); }
-  .kpi-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
-  .kpi-value { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-  .kpi-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .header{ border-bottom:1px solid var(--border); padding: 20px 0; background: var(--surface); } 
+  .header-inner{ display:flex; align-items:center; justify-content:space-between; }
+  .logo img { height: 40px; width: auto; object-fit: contain; }
+  .btn-back { font-size: 14px; font-weight: 600; color: var(--muted); } .btn-back:hover { color: var(--text); }
+  
+  /* PANTALLA DE AUTH CON FONDO */
+  .auth-screen { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1500&auto=format&fit=crop'); background-size: cover; background-position: center; position: relative; }
+  .auth-screen::before { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.85; z-index: 1; }
+  .auth-card { position: relative; z-index: 2; background: var(--surface); padding: 48px; border-radius: var(--radius-lg); width: 100%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+  .auth-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; text-align: center; } 
+  .auth-card p { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 32px; }
+  .field { margin-bottom: 16px; } .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .field input, .field textarea { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--bg); border: 1px solid var(--border); font-family: inherit; font-size: 15px; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--text); background: #fff; }
+  .btn-primary { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--text); color: #fff; font-weight: 600; display: flex; justify-content: center; margin-top: 8px; }
+  .auth-switch { text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted); } .auth-switch button { color: var(--text); font-weight: 600; text-decoration: underline; }
+  .err { color: var(--danger); font-size: 13px; margin-top: 12px; text-align: center; }
 
-  .tabs{ display:flex; gap:8px; margin-bottom:32px; background:var(--surface); padding:8px; border-radius:var(--radius-md); display:inline-flex; overflow-x:auto; max-width:100%; }
-  .tab{ padding:12px 24px; font-size:15px; font-weight:600; color:var(--muted); border-radius:var(--radius-sm); cursor:pointer; white-space:nowrap; } 
-  .tab.active{ background:var(--accent); color:#111; }
-  
-  .panel{ display:none; } .panel.active{ display:block; }
+  .password-container { position: relative; display: flex; align-items: center; }
+  .password-container input { padding-right: 48px; }
+  .toggle-password { position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 5px; }
+  .toggle-password:hover { color: var(--text); }
 
-  /* TABLAS */
-  .data-table-wrap{ background:var(--surface); border-radius:var(--radius-lg); box-shadow:0 10px 30px rgba(0,0,0,0.04); overflow-x:auto; }
-  .data-table{ width:100%; border-collapse:collapse; min-width: 900px; }
-  .data-table th, .data-table td{ padding:16px 20px; text-align:left; font-size:14px; border-bottom:1px solid var(--border); vertical-align: middle; }
-  .data-table th{ background:rgba(248,246,240,0.5); font-weight:600; font-size:12px; text-transform:uppercase; color:var(--muted); }
+  .dashboard { flex: 1; padding: 32px 0 40px; display: none; }
+  .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+  .dash-header h1 { font-size: 28px; font-weight: 700; } .dash-header p { font-size: 15px; color: var(--muted); }
+  .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; }
   
-  .tag{ display:inline-block; padding:6px 12px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; }
-  .tag-activo{ background:#dcfce7; color:#166534; } .tag-inactivo{ background:#fee2e2; color:#991b1b; }
+  .order-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; margin-bottom: 16px; }
+  .order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+  .order-id { font-size: 18px; font-weight: 700; } .order-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .order-status { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700; text-transform: uppercase; }
   
-  .status-select{ padding:10px 16px; border-radius:var(--radius-sm); background:var(--bg); border:1px solid var(--border); font-size:13px; font-weight:600; outline:none; cursor:pointer; max-width: 100%; }
-  
-  .btn-sm{ padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600; }
-  .btn-view{ background:var(--bg); border:1px solid var(--border); margin-right:8px; cursor:pointer; } .btn-view:hover{ border-color:var(--text); }
-  .btn-delete{ background:#fee2e2; color:#991b1b; margin-left: 8px; cursor: pointer;}
-  .btn-new{ background:var(--accent); color:#111; padding:10px 20px; border-radius:var(--radius-sm); font-weight:700; font-size:14px; cursor:pointer; }
+  .status-pendiente { background: #fef3c7; color: #92400e; } 
+  .status-verificado { background: #dcfce7; color: #166534; } 
+  .status-enviado { background: #dbeafe; color: #1e40af; } 
+  .status-cancelado { background: #fee2e2; color: #991b1b; }
+  .status-cuota1_confirmada, .status-cuota2_confirmada, .status-cuota3_confirmada { background: #e0e7ff; color: #3730a3; }
+  .status-registro_pago { background: #fef3c7; color: #92400e; }
 
-  /* MODALES */
-  .modal-wrap{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); overflow-y:auto; }
+  .order-items { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
+  .item-row { display: flex; gap: 16px; align-items: flex-start; font-size: 14px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .item-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .item-img { width: 60px; height: 75px; object-fit: cover; border-radius: 8px; background: var(--bg); flex-shrink: 0; border: 1px solid var(--border); }
+  .item-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .item-title { font-weight: 600; font-size: 15px; color: var(--text); }
+  .item-variant { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .item-desc { font-size: 12px; color: #444; background: var(--bg); padding: 6px 10px; border-radius: 6px; margin-top: 4px; line-height: 1.4; border-left: 3px solid var(--border); }
+  .item-note { font-size: 11px; color: #b45309; background: #fffbeb; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; border: 1px solid #fcd34d; }
+  .item-price { font-weight: 700; font-size: 14px; white-space: nowrap; }
+  
+  .order-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .detail-item { display: flex; flex-direction: column; gap: 2px; }
+  .detail-label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+  .detail-value { font-size: 16px; font-weight: 600; } .detail-sub { font-size: 12px; color: var(--muted); }
+  .text-danger { color: var(--danger); } .text-success { color: var(--success); } .text-warning { color: var(--warning); }
+  
+  .upload-receipt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; border: none; }
+  .upload-receipt-btn:hover { background: #333; }
+  .view-receipt-btn { background: var(--success); }
+  .view-receipt-btn:hover { background: #16a34a; }
+  
+  .plan-details-box { background: var(--bg); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; font-size: 14px; }
+  .loyalty-banner { background: #ecfdf5; border: 1px solid #10b981; padding: 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;}
+  .loyalty-banner p { color: #065f46; font-weight: 500; font-size: 14px; margin: 0; }
+  .btn-loyalty { background: #10b981; color: #fff; padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor:pointer; }
+  .btn-loyalty:disabled { background: #d1fae5; color: #065f46; cursor: not-allowed; }
+
+  /* NAVEGACIÓN INFERIOR */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; height: 72px; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+  .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted); font-size: 11px; font-weight: 500; transition: all 0.2s; flex: 1; height: 100%; position: relative; }
+  .nav-item svg { width: 22px; height: 22px; stroke-width: 1.5; transition: all 0.2s; }
+  .nav-item.active { color: var(--text); font-weight: 700; }
+  .nav-item.active svg { stroke-width: 2.5; transform: translateY(-2px); }
+
+  /* BADGE DE NOTIFICACIÓN GIFT CARD */
+  .gc-badge { position: absolute; top: 10px; right: 15px; background: var(--danger); color: #fff; font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; border: 2px solid var(--surface); animation: pop 0.3s ease-out; }
+  @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+  /* DISEÑO GIFT CARDS (ESTILO AMAZON: NEGRO Y DORADO) */
+  .gift-card-container { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 500px; margin: 0 auto; }
+  .gift-card-visual {
+    background: linear-gradient(135deg, #111111 0%, #222222 100%);
+    border-radius: 20px; padding: 24px; color: #ffd700; position: relative; overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;
+    border: 1px solid #333;
+  }
+  .gift-card-visual::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  }
+  .gift-card-visual::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,215,0,0.05); border-radius: 50%; }
+  .gift-card-logo { height: 35px; object-fit: contain; filter: brightness(0) invert(1); }
+  .gift-card-amount { font-size: 48px; font-weight: 800; line-height: 1; margin: 16px 0 8px 0; letter-spacing: -2px; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+  .gift-card-text { font-size: 14px; font-weight: 600; color: #aaa; }
+  .gift-card-code { font-family: monospace; font-size: 12px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 6px 12px; border-radius: 100px; display: inline-block; margin-top: 16px; letter-spacing: 1px; }
+
+  .modal-wrap{ position:fixed; inset:0; z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); overflow-y:auto; }
   .modal-wrap.open{ display:flex; }
-  .modal{ background:var(--surface); border-radius:var(--radius-lg); max-width:640px; width:100%; max-height:92vh; overflow-y:auto; position:relative; padding:40px; }
-  .modal-x{ position:absolute; top:20px; right:20px; width:40px; height:40px; border-radius:50%; background:var(--bg); display:grid; place-items:center; cursor:pointer; }
-  .modal h3{ font-size:24px; margin-bottom:24px; font-weight:700; }
+  .modal{ background:var(--surface); border-radius:var(--radius-lg); max-width:500px; width:100%; max-height:92vh; overflow-y:auto; position:relative; padding:32px; }
+  .modal-x{ position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--bg); display:grid; place-items:center; cursor:pointer; }
   
-  .form-group{ margin-bottom:16px; } 
-  .form-group label{ display:block; font-size:13px; font-weight:600; margin-bottom:8px; }
-  .form-group input, .form-group select, .form-group textarea{ width:100%; padding:14px; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--border); font-family:inherit; }
-  
-  .item-detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
-  .item-detail-info { display: flex; gap: 12px; align-items: flex-start; }
-  .item-detail-img { width: 50px; height: 65px; object-fit: cover; border-radius: 6px; background: var(--bg); flex-shrink: 0; }
-  .item-detail-text { flex: 1; }
-  .item-detail-desc { font-size: 12px; color: var(--muted); margin-top: 2px; display: block; }
-  .item-detail-note { font-size: 12px; color: var(--text); font-style: italic; margin-top: 4px; display: block; background: var(--bg); padding: 2px 6px; border-radius: 4px; }
-  .receipt-img-preview { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); cursor: pointer; }
-
-  /* VISTA PREVIA Y UPLOADS */
-  .file-upload-box { border: 1px dashed var(--border); padding: 12px; border-radius: var(--radius-md); background: var(--bg); margin-bottom: 8px; }
-  .file-upload-box input[type="file"] { width: 100%; font-size: 13px; color: var(--muted); cursor: pointer; }
-  .gallery-preview { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; padding-bottom: 8px; }
-  .gallery-preview img { width: 60px; height: 75px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
-  .hero-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-  .hero-preview img { width: 100px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
-
   /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
   .toast { background: #333; color: #fff; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; }
@@ -104,347 +130,175 @@
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-  @media(max-width:800px){ 
-    .admin-header{ padding:0 20px; height: 64px; } .admin-header .logo img { height: 32px; }
-    .logout-btn { padding: 8px 14px; font-size: 13px; }
-    .admin-main{ padding:24px 16px; } .modal{ padding:32px 24px; } 
-    .kpi-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .kpi-card { padding: 16px; } .kpi-value { font-size: 22px; }
-    .tabs { display: flex; width: 100%; border-radius: var(--radius-md); }
-    .data-table-wrap { background: transparent; box-shadow: none; overflow-x: visible; }
-    .data-table { min-width: 100%; display: block; } .data-table thead { display: none; } .data-table tbody { display: block; }
-    .data-table tr { display: block; background: var(--surface); border-radius: var(--radius-md); margin-bottom: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); }
-    .data-table td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border); text-align: right; font-size: 14px; }
-    .data-table td:last-child { border-bottom: none; padding-bottom: 0; margin-top: 10px; justify-content: flex-end; }
-    .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--muted); text-align: left; margin-right: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .data-table td[data-label="Acciones"]::before { display: none; }
-    .data-table td .btn-view, .data-table td .btn-sm { width: auto; margin: 0; }
-    .panel .btn-new { width: 100%; text-align: center; padding: 14px; margin-bottom: 12px; }
-    .panel-header-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  /* ESTADOS DE INTERFAZ (CARGA, VACÍO, ERROR) */
+  .empty-state { text-align: center; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border); grid-column: 1 / -1; }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+  .empty-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; max-width: 300px; }
+  
+  .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-state { text-align: center; padding: 40px 20px; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-lg); grid-column: 1/-1; }
+  .error-icon { font-size: 40px; margin-bottom: 12px; }
+  .error-title { color: #991b1b; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .error-sub { color: #b91c1c; font-size: 14px; margin-bottom: 16px; }
+  .btn-retry { background: #991b1b; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
+  
+  @media(max-width: 600px) { 
+    .dash-header { flex-direction: column; align-items: flex-start; gap: 12px; } 
+    .order-details { grid-template-columns: 1fr; gap: 12px; } 
+    .btn-logout { width: 100%; text-align: center; } 
+    .item-row { flex-direction: row; gap: 12px; } 
+    .item-price { align-self: flex-start; }
+    .bottom-nav { height: 68px; }
+    .nav-item { font-size: 9px; }
+    .gc-badge { top: 6px; right: 10px; }
   }
-  @media(max-width:500px) { .kpi-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<div class="login-wrapper" id="loginView">
-  <div class="login-card">
-    <div class="login-logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></div>
-    <h2 style="text-align:center; font-size:16px; color:var(--muted); margin-bottom:32px;">Panel de Administración</h2>
-    <div class="field"><label>Correo</label><input id="loginEmail" type="email"></div>
-    <div class="field"><label>Contraseña</label><input id="loginPassword" type="password"></div>
-    <button class="btn-primary" id="loginBtn" onclick="handleLogin()">Iniciar sesión</button>
-    <div class="err" id="loginError" style="color:var(--danger); text-align:center; margin-top:12px; font-size:14px;"></div>
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></a>
+    <a href="/" class="btn-back">← Volver a la tienda</a>
   </div>
-</div>
+</header>
 
-<div id="adminPanel">
-  <header class="admin-header">
-    <div class="logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></div>
-    <div class="admin-header-right"><button class="logout-btn" onclick="handleLogout()">Cerrar sesión</button></div>
-  </header>
-
-  <main class="admin-main">
-    <h1 class="admin-title">Dashboard</h1>
-    <p class="admin-sub">Resumen general de Tiendas Sam's</p>
-
-    <div class="kpi-grid" id="dashboardKPIs">
-      <div class="kpi-card" style="--accent:#22c55e;"><div class="kpi-title">Ventas del Mes</div><div class="kpi-value" id="kpiSalesBs">$ 0,00</div><div class="kpi-sub" id="kpiSalesUsdt">≈ Bs 0,00</div></div>
-      <div class="kpi-card" style="--accent:#3b82f6;"><div class="kpi-title">Pedidos por Enviar</div><div class="kpi-value" id="kpiPendingOrders">0</div><div class="kpi-sub">Requieren atención</div></div>
-      <div class="kpi-card" style="--accent:#f59e0b;"><div class="kpi-title">Pagos por Verificar</div><div class="kpi-value" id="kpiPendingPayments">0</div><div class="kpi-sub">En la pestaña Abonos</div></div>
-      <div class="kpi-card" style="--accent:#ef4444;"><div class="kpi-title">Bajo Inventario</div><div class="kpi-value" id="kpiLowStock">0</div><div class="kpi-sub" id="kpiLowStockNames">-</div></div>
-    </div>
-
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('pedidos', event)">📦 Pedidos</div>
-      <div class="tab" onclick="switchTab('abonos', event)">💳 Abonos</div>
-      <div class="tab" onclick="switchTab('productos', event)">🛍️ Productos</div>
-      <div class="tab" onclick="switchTab('categorias', event)">📑 Categorías</div>
-      <div class="tab" onclick="switchTab('usuarios', event)">👥 Usuarios</div>
-      <div class="tab" onclick="switchTab('solicitudes', event)">⭐ Solicitudes</div>
-      <div class="tab" onclick="switchTab('cupones', event)">🎟️ Cupones</div>
-      <div class="tab" onclick="switchTab('resenas', event)">🌟 Reseñas</div>
-      <div class="tab" onclick="switchTab('config', event)">🎨 Diseño Web</div>
-    </div>
-
-    <div class="panel active" id="panel-pedidos">
-      <div style="display:flex; justify-content:flex-end; margin-bottom: 16px;">
-        <button class="btn-new" onclick="openExportModal()" style="background:var(--success); color:#fff;">📊 Descargar Reporte</button>
-      </div>
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Pedido</th><th>Cliente</th><th>Total</th><th>Saldo</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="ordersTableBody"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-abonos">
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Pedido</th><th>Monto Bs</th><th>Monto USDT</th><th>Método</th><th>Referencia</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="installmentsTableBody"><tr><td colspan="8" style="text-align:center;">Cargando...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-productos">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Inventario</h3><button class="btn-new" onclick="openProductForm()">+ Nuevo</button>
-      </div>
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Producto</th><th>Categoría</th><th>Precios</th><th>Stock</th><th>Acciones</th></tr></thead>
-          <tbody id="productsTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-categorias">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Categorías de Productos</h3>
-      </div>
-      <div class="data-table-wrap" style="margin-bottom: 24px;">
-        <table class="data-table">
-          <thead><tr><th>Nombre</th><th>Enlace (Slug)</th><th>Acciones</th></tr></thead>
-          <tbody id="categoriesTableBody"><tr><td colspan="3" style="text-align:center;">Cargando...</td></tr></tbody>
-        </table>
-      </div>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <h2 id="authTitle">Iniciar Sesión</h2><p id="authSub">Accede para ver tus pedidos.</p>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName"></div>
+      <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone"></div>
+      <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress"></div>
       
-      <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-        <h3 style="margin-bottom: 16px;">Añadir Nueva Categoría</h3>
-        <form id="categoryForm" onsubmit="saveCategory(event)" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
-            <label>Nombre de la Categoría (Ej. Gorras)</label>
-            <input type="text" id="cName" required placeholder="Ej. Gorras">
-          </div>
-          <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
-            <label>Enlace / Slug (Ej. gorras)</label>
-            <input type="text" id="cSlug" required placeholder="Ej. gorras">
-          </div>
-          <button type="submit" class="btn-primary" style="width:auto; padding:14px 24px; margin:0;">Añadir</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-usuarios">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Usuarios</h3><button class="btn-new" onclick="openUserForm()">+ Nuevo</button>
-      </div>
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="usersTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-solicitudes">
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Usuario</th><th>Fecha de Solicitud</th><th>Acciones</th></tr></thead>
-          <tbody id="requestsTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PANEL CUPONES -->
-    <div class="panel" id="panel-cupones">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Códigos de Descuento</h3>
-      </div>
-      <div class="data-table-wrap" style="margin-bottom: 24px;">
-        <table class="data-table">
-          <thead><tr><th>Código</th><th>Descuento</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="couponsTableBody"><tr><td colspan="4" style="text-align:center;">Cargando...</td></tr></tbody>
-        </table>
-      </div>
-      
-      <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-        <h3 style="margin-bottom: 16px;">Crear Nuevo Cupón</h3>
-        <form id="couponForm" onsubmit="saveCoupon(event); return false;" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
-            <label>Código (Ej. SAM10)</label>
-            <input type="text" id="couponCode" required placeholder="SAM10" style="text-transform:uppercase;">
-          </div>
-          <div class="form-group" style="flex:1; margin:0; min-width: 150px;">
-            <label>Descuento (%)</label>
-            <input type="number" id="couponDiscount" required min="1" max="100" placeholder="10">
-          </div>
-          <button type="button" onclick="saveCoupon(event)" class="btn-primary" style="width:auto; padding:14px 24px; margin:0;">Crear</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- PANEL RESEÑAS -->
-    <div class="panel" id="panel-resenas">
-      <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Cliente</th><th>Calificación</th><th>Comentario</th><th>Fecha</th><th>Acciones</th></tr></thead>
-          <tbody id="reviewsTableBody"><tr><td colspan="5" style="text-align:center;">Cargando...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PANEL CONFIGURACIÓN -->
-    <div class="panel" id="panel-config">
-      <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        
-        <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-          <h3 style="margin-bottom: 16px;">Carrusel de Inicio (3 fotos)</h3>
-          <form id="heroForm" onsubmit="saveHeroImages(event); return false;">
-            <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
-              <h4 style="margin-bottom:12px; font-size:14px;">Slide 1</h4>
-              <div class="form-group"><label>Foto 1</label><div class="file-upload-box"><input type="file" id="heroImg1" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge1" placeholder="Ej: NUEVA COLECCIÓN 2025"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle1" rows="2" placeholder="Ej: Oversize<br>Sin Límites."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc1" rows="2" placeholder="Ej: Descubre nuestra nueva colección..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText1" placeholder="Ej: Ver Colección"></div>
-            </div>
-
-            <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
-              <h4 style="margin-bottom:12px; font-size:14px;">Slide 2</h4>
-              <div class="form-group"><label>Foto 2</label><div class="file-upload-box"><input type="file" id="heroImg2" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge2" placeholder="Ej: TENDENCIA URBANA"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle2" rows="2" placeholder="Ej: Camisetas<br>que Destacan."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc2" rows="2" placeholder="Ej: Estampados únicos y cortes perfectos..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText2" placeholder="Ej: Ver Camisetas"></div>
-            </div>
-
-            <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
-              <h4 style="margin-bottom:12px; font-size:14px;">Slide 3</h4>
-              <div class="form-group"><label>Foto 3</label><div class="file-upload-box"><input type="file" id="heroImg3" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge3" placeholder="Ej: COMODIDAD PREMIUM"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle3" rows="2" placeholder="Ej: Pantalones<br>Wide Leg."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc3" rows="2" placeholder="Ej: La comodidad se encuentra con el estilo..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText3" placeholder="Ej: Ver Pantalones"></div>
-            </div>
-            
-            <button type="button" onclick="saveHeroImages(event)" class="btn-primary" style="margin-top: 16px;" id="btnSaveHero">Guardar Cambios del Carrusel</button>
-          </form>
+      <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" required></div>
+      <div class="field">
+        <label>Contraseña</label>
+        <div class="password-container">
+          <input type="password" id="authPassword" required>
+          <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)">
+            <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <svg class="eye-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+          </button>
         </div>
-
-        <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-          <h3 style="margin-bottom: 16px;">Ventana Emergente (Promoción)</h3>
-          <form id="promoForm" onsubmit="savePromoConfig(event); return false;">
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="promoActive" style="width:auto; accent-color:var(--accent);">
-              <label style="margin:0; cursor:pointer;" for="promoActive">Activar ventana emergente</label>
-            </div>
-            <div class="form-group">
-              <label>Imagen del Popup</label>
-              <div class="file-upload-box"><input type="file" id="promoImage" accept="image/*"></div>
-              <img id="promoPreview" style="display:none; height: 100px; border-radius: 8px; margin-top: 8px; object-fit: cover;">
-            </div>
-            <div class="form-group"><label>Título de la Promoción</label><input type="text" id="promoTitle" placeholder="Ej: ¡Nuevo Drop Disponible!"></div>
-            <div class="form-group"><label>Texto o Descripción</label><textarea id="promoText" rows="2" placeholder="Ej: Descuento del 20% en toda la colección..."></textarea></div>
-            <div class="form-group"><label>Enlace del Botón (Opcional)</label><input type="text" id="promoLink" placeholder="Ej: #catalog"></div>
-            <button type="button" onclick="savePromoConfig(event)" class="btn-primary" style="margin-top: 16px;" id="btnSavePromo">Guardar Promoción</button>
-          </form>
-        </div>
-
-        <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-          <h3 style="margin-bottom: 16px;">Datos para Pagos (Checkout)</h3>
-          <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Estos datos se mostrarán al cliente cuando vaya a pagar.</p>
-          <form id="paymentForm" onsubmit="savePaymentConfig(event); return false;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-              <div class="form-group"><label>Banco</label><input type="text" id="payBank" placeholder="Ej: 0134 Banesco"></div>
-              <div class="form-group"><label>Cédula / RIF</label><input type="text" id="payCedula" placeholder="Ej: 26464322"></div>
-              <div class="form-group"><label>Teléfono (Pago Móvil)</label><input type="text" id="payPhone" placeholder="Ej: 04243351245"></div>
-              <div class="form-group"><label>Titular</label><input type="text" id="payTitular" placeholder="Ej: Tiendas Sam's"></div>
-            </div>
-            <h4 style="margin:16px 0 8px; font-size:14px;">Datos Binance (USDT)</h4>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-              <div class="form-group"><label>Correo Binance</label><input type="text" id="payBinanceEmail" placeholder="Ej: samiibelisario@gmail.com"></div>
-              <div class="form-group"><label>UID Binance</label><input type="text" id="payBinanceUid" placeholder="Ej: 219555454"></div>
-            </div>
-            <button type="submit" class="btn-primary" style="margin-top: 16px;" id="btnSavePayment">Guardar Datos de Pago</button>
-          </form>
-        </div>
-
       </div>
-    </div>
 
-  </main>
-</div>
+      <div style="text-align:right; margin-bottom:12px;">
+        <button type="button" onclick="recoverPassword()" style="font-size:12px; color:var(--muted); text-decoration:underline;">¿Olvidaste tu contraseña?</button>
+      </div>
 
-<!-- MODALES -->
-<div class="modal-wrap" id="orderDetailModal" onclick="if(event.target.id==='orderDetailModal') this.classList.remove('open')">
-  <div class="modal"><button class="modal-x" onclick="document.getElementById('orderDetailModal').classList.remove('open')">✕</button><h3>Detalles del Pedido</h3><div id="orderDetailContent"></div></div>
-</div>
-
-<div class="modal-wrap" id="productModal" onclick="if(event.target.id==='productModal') this.classList.remove('open')">
-  <div class="modal">
-    <button class="modal-x" onclick="document.getElementById('productModal').classList.remove('open')">✕</button>
-    <h3 id="modalProductTitle">Añadir Producto</h3>
-    <form id="productForm" onsubmit="saveProduct(event)">
-      <input type="hidden" id="pId">
-      <div class="form-group"><label>Nombre *</label><input type="text" id="pName" required></div>
-      <div class="form-group"><label>Categoría *</label><select id="pCategory" required></select></div>
-      <div class="form-group"><label>Tallas (coma separada) *</label><input type="text" id="pSizes" required placeholder="S, M, L"></div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <div class="form-group"><label>Precio en $ (USD) *</label><input type="number" step="0.01" id="pPriceUsdt" required oninput="calcBsPrice()"></div>
-        <div class="form-group"><label>Precio en Bs (Calculado) *</label><input type="number" step="0.01" id="pPriceBs" required readonly style="background:#eee;"></div>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <div class="form-group"><label>Stock *</label><input type="number" id="pStock" required></div>
-        <div class="form-group"><label>Etiqueta</label><input type="text" id="pBadge"></div>
-      </div>
-      <div class="form-group">
-        <label>Imagen Principal (Portada)</label>
-        <div class="file-upload-box"><input type="file" id="pImage" accept="image/*" onchange="previewImage(event)"></div>
-        <img id="imgPreview" style="display:none; width:100%; height:150px; object-fit:cover; margin-top:10px; border-radius:8px;">
-      </div>
-      <div class="form-group">
-        <label>Galería Adicional (Fotos Extra)</label>
-        <div class="file-upload-box"><input type="file" id="pGallery" accept="image/*" multiple></div>
-        <p style="font-size:12px; color:var(--muted); margin-top:4px;">Selecciona varias fotos a la vez.</p>
-        <div id="galleryPreview" class="gallery-preview"></div>
-      </div>
-      <div class="form-group"><label>Descripción</label><textarea id="pDescription" rows="3"></textarea></div>
-      <div class="form-group"><label style="display:flex; gap:8px;"><input type="checkbox" id="pActive" checked> Producto Activo</label></div>
-      <button type="submit" class="btn-primary" id="btnSaveProduct">Guardar</button>
+      <button type="submit" class="btn-primary" id="btnAuthSubmit">Entrar</button><div id="authError" class="err"></div>
     </form>
+    <div class="auth-switch"><span id="switchText">¿No tienes cuenta?</span> <button onclick="toggleAuthMode()" id="switchBtn">Regístrate aquí</button></div>
   </div>
 </div>
 
-<div class="modal-wrap" id="userModal" onclick="if(event.target.id==='userModal') this.classList.remove('open')">
-  <div class="modal"><button class="modal-x" onclick="document.getElementById('userModal').classList.remove('open')">✕</button><h3>Nuevo Usuario</h3>
-    <form id="userForm" onsubmit="saveUser(event)">
-      <div class="form-group"><label>Nombre *</label><input type="text" id="uName" required></div>
-      <div class="form-group"><label>Email *</label><input type="email" id="uEmail" required></div>
-      <div class="form-group"><label>Contraseña *</label><input type="password" id="uPassword" required minlength="6"></div>
-      <div class="form-group"><label>Rol *</label><select id="uRole" required><option value="vendedor">Vendedor</option><option value="admin">Admin</option><option value="cliente">Cliente</option></select></div>
-      <button type="submit" class="btn-primary" id="btnSaveUser">Crear</button>
-    </form>
-  </div>
-</div>
-
-<div class="modal-wrap" id="exportModal" onclick="if(event.target.id==='exportModal') this.classList.remove('open')">
-  <div class="modal">
-    <button class="modal-x" onclick="document.getElementById('exportModal').classList.remove('open')">✕</button>
-    <h3>Descargar Reporte Excel</h3>
-    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Selecciona el tipo de datos y el rango de fechas que deseas exportar.</p>
+<div class="dashboard" id="dashboardScreen">
+  <div class="container">
+    <div class="dash-header">
+      <div><h1 id="dashTitle">Mis Pedidos</h1><p>Hola, <span id="userNameDisplay" style="font-weight:600; color:var(--text);"></span>.</p></div>
+      <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
+    </div>
     
-    <div class="form-group">
-      <label>Tipo de Reporte</label>
-      <select id="exportType">
-        <option value="orders">📦 Pedidos (Ventas)</option>
-        <option value="installments">💳 Abonos / Pagos</option>
+    <div id="reviewBanner" style="background:#fffbeb; border:1px solid #fcd34d; padding:16px; border-radius:16px; margin-bottom:24px; display:none; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <p style="color:#b45309; font-weight:500; font-size:14px; margin:0;">¿Te gustó tu compra? ¡Déjanos una reseña!</p>
+      <button onclick="openReviewModal()" style="background:#f59e0b; color:#fff; padding:8px 16px; border-radius:100px; font-weight:600; font-size:13px; cursor:pointer;">Escribir Reseña</button>
+    </div>
+
+    <div id="loyaltyBanner" class="loyalty-banner" style="display: none;">
+      <p>🎉 ¡Felicidades! Por tu volumen de compras, calificas para ser <strong>Vendedor Mayorista</strong>.</p>
+      <button class="btn-loyalty" id="btnRequestUpgrade" onclick="requestUpgrade()">Solicitar Ascenso</button>
+    </div>
+
+    <div class="orders-list" id="ordersList"></div>
+  </div>
+</div>
+
+<div class="bottom-nav" id="bottomNav" style="display: none;">
+  <button class="nav-item" onclick="switchPortalTab('pendientes', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+    Pendientes
+  </button>
+  <button class="nav-item active" onclick="switchPortalTab('todos', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+    Mis Pedidos
+  </button>
+  <button class="nav-item" onclick="switchPortalTab('finalizados', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    Finalizados
+  </button>
+  <button class="nav-item" onclick="switchPortalTab('giftcards', this)">
+    <div style="position:relative; display:inline-block;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      <span id="gcBadge" class="gc-badge" style="display: none;">0</span>
+    </div>
+    Tarjetas
+  </button>
+  <button class="nav-item" onclick="switchPortalTab('perfil', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    Perfil
+  </button>
+</div>
+
+<div class="modal-wrap" id="paymentModal" onclick="if(event.target.id==='paymentModal') closePaymentModal()">
+  <div class="modal">
+    <button class="modal-x" onclick="closePaymentModal()">✕</button>
+    <h3 style="font-size:24px; margin-bottom:8px;">Realizar Pago</h3>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Ingresa el monto y sube tu comprobante.</p>
+    
+    <div class="field">
+      <label>Monto a pagar (Bs) *</label>
+      <input type="number" id="payAmount" step="0.01">
+    </div>
+    
+    <div class="field">
+      <label>Método de Pago *</label>
+      <select id="payMethod" onchange="updatePayDetails()" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border); font-family:inherit;">
+        <option value="bs_pago_movil">Pago Móvil</option>
+        <option value="bs_transfer">Transferencia Banesco</option>
+        <option value="usdt_binance">USDT (Binance)</option>
       </select>
     </div>
     
-    <div style="display:flex; gap:16px;">
-      <div class="form-group" style="flex:1;">
-        <label>Fecha Inicio (Opcional)</label>
-        <input type="date" id="exportStartDate">
-      </div>
-      <div class="form-group" style="flex:1;">
-        <label>Fecha Fin (Opcional)</label>
-        <input type="date" id="exportEndDate">
-      </div>
+    <div id="payDetails" style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; font-size:14px; line-height:1.6;"></div>
+    
+    <div class="field">
+      <label>Comprobante de Pago *</label>
+      <input type="file" id="payReceipt" accept="image/*" style="width:100%; padding:12px; background:#fff; border:1px dashed var(--border); border-radius:8px;">
     </div>
     
-    <button class="btn-primary" onclick="generateExcelReport()" id="btnExport">Descargar Excel (.csv)</button>
+    <button class="btn-primary" onclick="submitPayment()">Enviar Pago</button>
+    <div id="payError" class="err"></div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="reviewModal" onclick="if(event.target.id==='reviewModal') closeReviewModal()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeReviewModal()">✕</button>
+    <h3 style="font-size:24px; margin-bottom:8px;">Deja tu Reseña</h3>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar.</p>
+    
+    <div class="field">
+      <label>Calificación (1 a 5 estrellas) *</label>
+      <select id="reviewRating" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border); font-family:inherit;">
+        <option value="5">⭐⭐⭐⭐⭐ (Excelente)</option>
+        <option value="4">⭐⭐⭐⭐ (Muy bueno)</option>
+        <option value="3">⭐⭐⭐ (Bueno)</option>
+        <option value="2">⭐⭐ (Regular)</option>
+        <option value="1">⭐ (Malo)</option>
+      </select>
+    </div>
+    
+    <div class="field">
+      <label>Comentario (Opcional)</label>
+      <textarea id="reviewComment" rows="3" placeholder="¿Qué tal la calidad de la ropa?" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border);"></textarea>
+    </div>
+    
+    <button class="btn-primary" onclick="submitReview()">Enviar Reseña</button>
+    <div id="reviewError" class="err"></div>
   </div>
 </div>
 
@@ -455,13 +309,10 @@
 const SUPABASE_URL = "https://zxhufobqfxmbjpneyiam.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4aHVmb2JxZnhtYmpwbmV5aWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNjk2OTEsImV4cCI6MjEwODc0NTY5MX0.EUS-QUdhuhtSk9rgLB11wz-GYF9m01JqhXfT6yT9_Vs";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const fmtUSD = n => "$ " + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtBs = n => "Bs " + Number(n).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
 
-let currentUserId = null, currentUserRole = null;
-let allOrdersData = [], allProducts = [], allUsers = [], allInstallments = [], allCategories = [];
-let currentSiteConfig = {};
-let isRealTimeSubscribed = false;
 let bcvRate = 40.00;
-
 async function fetchBCVRate() {
   try {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
@@ -469,11 +320,15 @@ async function fetchBCVRate() {
       const data = await res.json();
       if (data && data.promedio) bcvRate = data.promedio;
     }
-  } catch (e) { console.warn("Usando tasa de respaldo en Admin:", bcvRate); }
+  } catch (e) { console.warn("Usando tasa de respaldo", bcvRate); }
 }
 
-const fmtUSD = n => "$ " + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtBs = n => "Bs " + Number(n).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
+let isLoginMode = true;
+let currentUserId = null;
+let currentUserEmail = null;
+let myOrdersData = []; 
+let currentTab = 'todos'; 
+let portalSiteConfig = {}; 
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -492,6 +347,209 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const eyeIcon = btn.querySelector('.eye-icon');
+  const eyeOffIcon = btn.querySelector('.eye-off-icon');
+  if (input.type === 'password') { input.type = 'text'; eyeIcon.style.display = 'none'; eyeOffIcon.style.display = 'block'; } 
+  else { input.type = 'password'; eyeIcon.style.display = 'block'; eyeOffIcon.style.display = 'none'; }
+}
+
+const statusLabels = { 'pendiente': 'Pendiente', 'verificado': 'Verificado', 'enviado': 'Enviado', 'cuota1_confirmada': 'Cuota 1 Confirmada', 'cuota2_confirmada': 'Cuota 2 Confirmada', 'cuota3_confirmada': 'Cuota 3 Confirmada', 'registro_pago': 'Registro de Pago', 'cancelado': 'Cancelado' };
+
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err)); }); }
+
+async function recoverPassword() {
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email) return showToast("Escribe tu correo arriba para enviarte el enlace.", 'error');
+  
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/portal.html' });
+  if (error) showToast("Error: " + error.message, 'error');
+  else showToast("Revisa tu correo. Te enviamos un enlace para cambiar la contraseña.");
+}
+
+function toggleAuthMode() {
+  isLoginMode = !isLoginMode;
+  document.getElementById('authTitle').textContent = isLoginMode ? "Iniciar Sesión" : "Crear Cuenta";
+  document.getElementById('authSub').textContent = isLoginMode ? "Accede para ver tus pedidos." : "Regístrate para gestionar tus compras.";
+  document.getElementById('btnAuthSubmit').textContent = isLoginMode ? "Entrar" : "Registrarse";
+  document.getElementById('nameField').style.display = isLoginMode ? 'none' : 'block';
+  document.getElementById('phoneField').style.display = isLoginMode ? 'none' : 'block';
+  document.getElementById('addressField').style.display = isLoginMode ? 'none' : 'block';
+  document.getElementById('switchText').textContent = isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?";
+  document.getElementById('switchBtn').textContent = isLoginMode ? "Regístrate aquí" : "Inicia sesión";
+  document.getElementById('authError').textContent = "";
+}
+
+async function handleAuth(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim(), password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
+  const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
+  errBox.textContent = ""; btn.disabled = true; 
+  btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
+
+  try {
+    if (isLoginMode) {
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error; checkSession();
+    } else {
+      if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
+      const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone, address: address } } });
+      if (error) throw error;
+      if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); toggleAuthMode(); }
+    }
+  } catch (error) { errBox.textContent = error.message; } finally { btn.disabled = false; btn.textContent = isLoginMode ? "Entrar" : "Registrarse"; }
+}
+
+async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+
+async function checkSession() {
+  await fetchBCVRate();
+
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
+  if (user && !error) {
+    currentUserId = user.id; currentUserEmail = user.email;
+    document.getElementById('authScreen').style.display = 'none'; 
+    document.getElementById('dashboardScreen').style.display = 'block';
+    document.getElementById('bottomNav').style.display = 'flex'; 
+    
+    const { data: profile } = await supabaseClient.from('profiles').select('full_name').eq('id', user.id).single();
+    document.getElementById('userNameDisplay').textContent = profile?.full_name || user.user_metadata?.full_name || user.email;
+    
+    const { data: config } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
+    if(config) portalSiteConfig = config;
+
+    checkReviewStatus(user.id); 
+    checkGiftCardBadge(user.id);
+
+    if(currentTab === 'perfil') { renderProfile(); } 
+    else if (currentTab === 'giftcards') { renderGiftCards(); }
+    else { loadMyOrders(currentUserId, currentUserEmail); }
+    
+    suscribirseCambiosCliente();
+  } else { 
+    document.getElementById('authScreen').style.display = 'flex'; 
+    document.getElementById('dashboardScreen').style.display = 'none'; 
+    document.getElementById('bottomNav').style.display = 'none'; 
+  }
+}
+
+// --- LÓGICA DE NOTIFICACIÓN DE GIFT CARDS ---
+async function checkGiftCardBadge(userId) {
+  const { count } = await supabaseClient
+    .from('gift_cards')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('is_used', false)
+    .eq('is_seen', false);
+
+  const badge = document.getElementById('gcBadge');
+  if (count && count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'grid';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+async function markGiftCardsAsSeen() {
+  const badge = document.getElementById('gcBadge');
+  if (badge && badge.style.display !== 'none') {
+    badge.style.display = 'none'; 
+    await supabaseClient.from('gift_cards').update({ is_seen: true }).eq('user_id', currentUserId).eq('is_seen', false);
+  }
+}
+
+function suscribirseCambiosCliente() {
+  supabaseClient.channel('cambios-cliente')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => { if (payload.new.user_id === currentUserId || payload.new.customer_email === currentUserEmail) loadMyOrders(currentUserId, currentUserEmail); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'installments' }, payload => { loadMyOrders(currentUserId, currentUserEmail); })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gift_cards' }, payload => { if (payload.new.user_id === currentUserId) checkGiftCardBadge(currentUserId); })
+    .subscribe();
+}
+
+async function loadMyOrders(userId, userEmail) {
+  const list = document.getElementById('ordersList');
+  
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando tus pedidos...</p></div>`;
+
+  try {
+    const { data: orders, error } = await supabaseClient.from('orders').select('*, order_items(*, products(image_url, description)), installments(*)').or(`user_id.eq.${userId},customer_email.eq.${userEmail}`).order('created_at', { ascending: false });
+    if (error) throw error;
+    checkLoyaltyStatus(orders, userId);
+    myOrdersData = orders || [];
+    renderFilteredOrders(); 
+  } catch (err) { 
+    list.innerHTML = `
+      <div class="error-state">
+        <div class="error-icon">⚠️</div>
+        <h3 class="error-title">Error al cargar pedidos</h3>
+        <p class="error-sub">${err.message}</p>
+        <button class="btn-retry" onclick="loadMyOrders('${userId}', '${userEmail}')">Reintentar</button>
+      </div>`; 
+  }
+}
+
+function switchPortalTab(tabName, btnElement) {
+  currentTab = tabName;
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+  if(btnElement) btnElement.classList.add('active');
+  
+  const titles = { 'pendientes': 'Pedidos Pendientes', 'todos': 'Mis Pedidos', 'finalizados': 'Pedidos Finalizados', 'perfil': 'Mi Perfil', 'giftcards': 'Mis Tarjetas de Regalo' };
+  document.getElementById('dashTitle').textContent = titles[tabName];
+
+  if (tabName === 'perfil') {
+    renderProfile();
+  } else if (tabName === 'giftcards') {
+    renderGiftCards();
+    markGiftCardsAsSeen(); 
+  } else {
+    renderFilteredOrders();
+  }
+}
+
+async function renderGiftCards() {
+  const list = document.getElementById('ordersList');
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando tarjetas...</p></div>`;
+  
+  const { data: cards, error } = await supabaseClient.from('gift_cards').select('*').eq('user_id', currentUserId).eq('is_used', false).order('created_at', { ascending: false });
+  
+  if (error) { 
+    list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar tarjetas</h3><p class="error-sub">${error.message}</p></div>`; 
+    return; 
+  }
+  
+  if (!cards || cards.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎁</div>
+        <h3 class="empty-title">No tienes tarjetas disponibles</h3>
+        <p class="empty-sub">Compra de contado por más de $250 y recibe una tarjeta de regalo de $25.</p>
+        <button class="btn-primary" onclick="switchPortalTab('todos', document.querySelectorAll('.nav-item')[1])" style="width:auto; padding:12px 24px;">Ir a Mis Pedidos</button>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = `
+    <div style="text-align:center; margin-bottom:24px;">
+      <p style="color:var(--muted); font-size:14px;">Puedes usar estas tarjetas en tu próxima compra de contado.</p>
+    </div>
+    <div class="gift-card-container">
+      ${cards.map(c => `
+        <div class="gift-card-visual">
+          <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" class="gift-card-logo" alt="Sam's">
+          <div>
+            <div class="gift-card-amount">$${c.amount.toFixed(2)}</div>
+            <div class="gift-card-text">Tarjeta de Regalo</div>
+          </div>
+          <div class="gift-card-code">${String(c.id).slice(0,8).toUpperCase()}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 async function viewReceipt(fileName) {
   if(!fileName) return showToast("No hay comprobante.", 'error');
   if(fileName.startsWith('http')) { window.open(fileName, '_blank'); return; }
@@ -500,785 +558,364 @@ async function viewReceipt(fileName) {
   window.open(data.signedUrl, '_blank');
 }
 
-async function handleLogin(){
-  const email = document.getElementById('loginEmail').value, password = document.getElementById('loginPassword').value;
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if(error) { document.getElementById('loginError').textContent = error.message; return; }
-  await checkAdminSession();
-}
-
-async function handleLogout() { 
-  await supabaseClient.auth.signOut(); 
-  location.reload(); 
-}
-
-async function checkAdminSession() {
-  await fetchBCVRate(); 
+function renderFilteredOrders() {
+  const list = document.getElementById('ordersList');
+  let filtered = myOrdersData;
   
-  const { data: { session }, error } = await supabaseClient.auth.getSession();
-  if (session) {
-    const { data: profile } = await supabaseClient.from('profiles').select('role, is_active').eq('id', session.user.id).single();
-    if(profile && ['super_admin','admin','vendedor'].includes(profile.role) && profile.is_active !== false) {
-      currentUserId = session.user.id; currentUserRole = profile.role;
-      document.getElementById('loginView').style.display = 'none'; 
-      document.getElementById('adminPanel').style.display = 'block';
-      loadAllData();
-      if (!isRealTimeSubscribed) { suscribirseCambios(); isRealTimeSubscribed = true; }
-    } else {
-      await supabaseClient.auth.signOut();
-      document.getElementById('loginView').style.display = 'flex'; 
-      document.getElementById('adminPanel').style.display = 'none';
-    }
-  } else {
-    document.getElementById('loginView').style.display = 'flex'; 
-    document.getElementById('adminPanel').style.display = 'none';
-  }
-}
-
-function loadAllData() { 
-  loadOrders(); loadInstallments(); loadProducts(); loadCategoriesAdmin(); loadUsers(); loadRequests(); loadSiteConfig();
-  loadCoupons(); loadReviewsAdmin();
-}
-
-function suscribirseCambios() {
-  supabaseClient.channel('cambios-admin')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => { loadOrders(); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'installments' }, payload => { loadInstallments(); loadOrders(); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { loadProducts(); })
-    .subscribe();
-}
-
-function calculateKPIs() {
-  const now = new Date();
-  let salesUsdt = 0; let pendingOrdersCount = 0;
-
-  allOrdersData.forEach(o => {
-    const d = new Date(o.created_at);
-    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && o.status !== 'cancelado') {
-      salesUsdt += Number(o.total_usdt);
-    }
-    if (!['enviado', 'cancelado', 'entregado'].includes(o.status)) pendingOrdersCount++;
-  });
-
-  document.getElementById('kpiSalesBs').textContent = fmtUSD(salesUsdt);
-  document.getElementById('kpiSalesUsdt').textContent = "≈ " + fmtBs(salesUsdt * bcvRate);
-  document.getElementById('kpiPendingOrders').textContent = pendingOrdersCount;
-
-  let pendingPayments = 0;
-  if(allInstallments) allInstallments.forEach(i => { if(i.status === 'pendiente') pendingPayments++; });
-  document.getElementById('kpiPendingPayments').textContent = pendingPayments;
-
-  let lowStockCount = 0; let lowStockNames = [];
-  allProducts.forEach(p => {
-    if (p.stock <= 5 && p.is_active) {
-      lowStockCount++;
-      if(lowStockNames.length < 3) lowStockNames.push(p.name);
-    }
-  });
-  document.getElementById('kpiLowStock').textContent = lowStockCount;
-  document.getElementById('kpiLowStockNames').textContent = lowStockNames.length > 0 ? lowStockNames.join(', ') + (lowStockCount > 3 ? '...' : '') : 'Todo en orden';
-}
-
-function openExportModal() {
-  const today = new Date().toLocaleDateString('en-CA');
-  document.getElementById('exportEndDate').value = today;
-  document.getElementById('exportStartDate').value = "";
-  document.getElementById('exportModal').classList.add('open');
-}
-
-function generateExcelReport() {
-  const type = document.getElementById('exportType').value;
-  const start = document.getElementById('exportStartDate').value;
-  const end = document.getElementById('exportEndDate').value;
-  const btn = document.getElementById('btnExport');
-  btn.disabled = true; btn.textContent = "Generando...";
-
-  const isInDateRange = (dateString) => {
-    if (!start && !end) return true;
-    const itemDate = new Date(dateString);
-    const itemDateStr = itemDate.toLocaleDateString('en-CA');
-    if (start && itemDateStr < start) return false;
-    if (end && itemDateStr > end) return false;
-    return true;
-  };
-
-  let dataToExport = [];
-  let headers = "";
-  let fileName = "";
-
-  if (type === 'orders') {
-    headers = "Pedido;Fecha;Cliente;Telefono;Direccion;Total USD;Total Bs;Estado;Metodo;Cupon\n";
-    const filtered = allOrdersData.filter(o => isInDateRange(o.created_at));
-    dataToExport = filtered.map(o => {
-      return `"${String(o.id).slice(0,8).toUpperCase()}";"${new Date(o.created_at).toLocaleDateString('es-VE')}";"${o.customer_name}";"${o.customer_phone}";"${o.customer_address || ''}";"${o.total_usdt}";"${o.total_bs}";"${o.status}";"${o.payment_method}";"${o.coupon_code || ''}"`;
-    });
-    fileName = `Reporte_Pedidos_${start || 'Inicio'}_${end || 'Fin'}.csv`;
-  } else if (type === 'installments') {
-    headers = "ID Abono;ID Pedido;Fecha;Monto USD;Monto Bs;Metodo;Referencia;Estado\n";
-    const filtered = allInstallments.filter(i => isInDateRange(i.paid_at));
-    dataToExport = filtered.map(i => {
-      return `"${String(i.id).slice(0,8).toUpperCase()}";"${String(i.order_id).slice(0,8).toUpperCase()}";"${new Date(i.paid_at).toLocaleDateString('es-VE')}";"${i.amount_usdt}";"${i.amount_bs}";"${i.method}";"${i.reference || ''}";"${i.status}"`;
-    });
-    fileName = `Reporte_Abonos_${start || 'Inicio'}_${end || 'Fin'}.csv`;
+  if (currentTab === 'pendientes') {
+    filtered = myOrdersData.filter(o => !['enviado', 'cancelado', 'entregado'].includes(o.status));
+  } else if (currentTab === 'finalizados') {
+    filtered = myOrdersData.filter(o => ['enviado', 'entregado', 'cancelado'].includes(o.status));
   }
 
-  if (dataToExport.length === 0) {
-    btn.disabled = false; btn.textContent = "Descargar Excel (.csv)";
-    return showToast("No hay datos en el rango seleccionado.", 'error');
-  }
-
-  const csvContent = "\uFEFF" + headers + dataToExport.join("\n");
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  document.getElementById('exportModal').classList.remove('open');
-  btn.disabled = false; btn.textContent = "Descargar Excel (.csv)";
-  showToast("Reporte descargado con éxito.");
-}
-
-async function loadOrders(){
-  const tbody = document.getElementById('ordersTableBody');
-  const { data, error } = await supabaseClient.from('orders').select('*, order_items(*, products(image_url, description)), installments(amount_bs, amount_usdt, status, method)').order('created_at', { ascending: false });
-  if(error) return; allOrdersData = data || [];
-  calculateKPIs();
-
-  if(allOrdersData.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Sin pedidos</td></tr>`; return; }
-
-  tbody.innerHTML = allOrdersData.map(o => {
-    let abonadoBs = 0; 
-    if(o.installments) o.installments.forEach(i => { if(i.status !== 'pendiente' && i.method !== 'gift_card') abonadoBs += Number(i.amount_bs || 0); });
-    const saldoBs = Math.max(0, Number(o.total_bs) - abonadoBs);
-    const saldoUsd = saldoBs / (Number(o.total_bs)/Number(o.total_usdt));
-    const isPaid = saldoBs <= 0.1;
-    
-    let statusOptions = "";
-    if (o.payment_plan === 'contado') {
-      statusOptions = `<option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="verificado" ${o.status==='verificado'?'selected':''}>Verificado</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
-    } else if (o.payment_plan === 'credito') {
-      statusOptions = `<option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="cuota1_confirmada" ${o.status==='cuota1_confirmada'?'selected':''}>Cuota 01 Confirmada</option><option value="cuota2_confirmada" ${o.status==='cuota2_confirmada'?'selected':''}>Cuota 02 Confirmada</option><option value="cuota3_confirmada" ${o.status==='cuota3_confirmada'?'selected':''}>Cuota 03 Confirmada</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
-    } else if (o.payment_plan === 'apartado') {
-      statusOptions = `<option value="registro_pago" ${o.status==='registro_pago'?'selected':''}>Registro de Pago</option><option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
-    }
-
-    return `
-      <tr>
-        <td data-label="Pedido"><strong>#${String(o.id).slice(0,8).toUpperCase()}</strong><br><small>${new Date(o.created_at).toLocaleDateString()}</small></td>
-        <td data-label="Cliente">${escapeHTML(o.customer_name)}</td>
-        <td data-label="Total">${fmtUSD(o.total_usdt)}</td>
-        <td data-label="Saldo" style="color:${isPaid ? 'var(--success)' : 'var(--danger)'}; font-weight:600;">${isPaid ? 'Pagado' : fmtUSD(saldoUsd)}</td>
-        <td data-label="Estado"><select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">${statusOptions}</select></td>
-        <td data-label="Acciones"><button class="btn-sm btn-view" onclick="viewOrderDetails('${o.id}')">Ver Detalles</button></td>
-      </tr>
-    `;
-  }).join('');
-}
-
-async function updateOrderStatus(orderId, newStatus){
-  try {
-    const orderIndex = allOrdersData.findIndex(o => o.id === orderId);
-    if (orderIndex === -1) return;
-
-    const currentOrder = allOrdersData[orderIndex];
-    let updatedPlanDetails = currentOrder.payment_plan_details || {};
-
-    if (currentOrder.payment_plan === 'credito') {
-      if (newStatus === 'cuota1_confirmada') { updatedPlanDetails.cuota1_pagada = true; }
-      else if (newStatus === 'cuota2_confirmada') { updatedPlanDetails.cuota1_pagada = true; updatedPlanDetails.cuota2_pagada = true; }
-      else if (newStatus === 'cuota3_confirmada') { updatedPlanDetails.cuota1_pagada = true; updatedPlanDetails.cuota2_pagada = true; updatedPlanDetails.cuota3_pagada = true; }
-      else if (newStatus === 'pendiente' || newStatus === 'cancelado') { updatedPlanDetails.cuota1_pagada = false; updatedPlanDetails.cuota2_pagada = false; updatedPlanDetails.cuota3_pagada = false; }
-    }
-
-    const { error } = await supabaseClient.from('orders').update({ status: newStatus, payment_plan_details: updatedPlanDetails }).eq('id', orderId);
-    if(error) throw error;
-
-    allOrdersData[orderIndex].status = newStatus;
-    allOrdersData[orderIndex].payment_plan_details = updatedPlanDetails;
-
-    calculateKPIs();
-    loadOrders(); 
-    showToast("Estado del pedido actualizado.");
-  } catch(err) { showToast("Error al actualizar: " + err.message, 'error'); loadOrders(); }
-}
-
-function viewOrderDetails(orderId) {
-  const o = allOrdersData.find(x => x.id === orderId);
-  if(!o) return;
-  
-  let gcTotalUsdt = 0;
-  let paidUsdt = 0;
-  let methodsUsed = new Set();
-
-  if(o.installments) { 
-    o.installments.forEach(i => { 
-      if (i.method === 'gift_card') {
-        gcTotalUsdt += Number(i.amount_usdt || 0);
-      } else if (i.status !== 'pendiente') {
-        paidUsdt += Number(i.amount_usdt || 0);
-        if (i.method) methodsUsed.add(i.method.replace('_', ' '));
-      }
-    }); 
-  }
-
-  const originalTotalUsdt = (o.order_items || []).reduce((sum, item) => sum + Number(item.subtotal_usdt), 0) || Number(o.total_usdt);
-  const netTotalUsdt = Math.max(0, originalTotalUsdt - gcTotalUsdt);
-  const remainingUsdt = Math.max(0, netTotalUsdt - paidUsdt);
-
-  const itemsHtml = (o.order_items || []).map(item => `
-    <div class="item-detail-row">
-      <div class="item-detail-info">
-        ${item.products?.image_url ? `<img src="${item.products.image_url}" class="item-detail-img">` : `<div class="item-detail-img"></div>`}
-        <div class="item-detail-text"><div><strong>${item.quantity}x</strong> ${escapeHTML(item.product_name)} (Talla: ${escapeHTML(item.size)})</div>
-          ${item.products?.description ? `<span class="item-detail-desc">${escapeHTML(item.products.description)}</span>` : ''}
-          ${item.custom_note ? `<span class="item-detail-note">Nota: "${escapeHTML(item.custom_note)}"</span>` : ''}
-        </div>
-      </div>
-      <div style="font-weight:600; white-space:nowrap;">${fmtUSD(item.subtotal_usdt)}</div>
-    </div>
-  `).join('');
-
-  let planDetailsHtml = "";
-  if(o.payment_plan_details) {
-    const d = o.payment_plan_details;
-    const ratio = Number(o.total_bs) / Number(o.total_usdt);
-    if(o.payment_plan === 'credito') {
-      planDetailsHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Detalles del Crédito</h4><p style="font-size:13px; margin-bottom:4px;">Cuota 1 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p><p style="font-size:13px; margin-bottom:4px;">Cuota 2 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p><p style="font-size:13px; margin-bottom:4px;">Cuota 3 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p></div>`;
-    } else if (o.payment_plan === 'apartado') {
-      planDetailsHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Detalles del Apartado</h4><p style="font-size:13px; margin-bottom:4px;">Abono Inicial: ${fmtUSD(d.abono_inicial / ratio)}</p><p style="font-size:13px;">Saldo Inicial Pendiente: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></p></div>`;
-    }
-  }
-
-  const receiptHtml = o.receipt_url ? `<div style="margin-top:16px;"><label style="font-size:12px; color:var(--muted); font-weight:600;">Comprobante:</label><br><button class="btn-primary" style="margin-top:8px; padding:10px 20px; width:auto;" onclick="viewReceipt('${o.receipt_url}')">Ver Comprobante</button></div>` : `<div style="margin-top:16px; color:var(--muted); font-size:13px;">Sin comprobante inicial.</div>`;
-
-  document.getElementById('orderDetailContent').innerHTML = `
-    <div style="margin-bottom:16px; font-size:14px; color:var(--muted); line-height: 1.6; background: var(--bg); padding: 12px; border-radius: 8px;">
-      <strong>Cliente:</strong> ${escapeHTML(o.customer_name)} <br>
-      <strong>Teléfono:</strong> ${escapeHTML(o.customer_phone)} <br>
-      <strong>Dirección de Envío:</strong> ${escapeHTML(o.customer_address || 'No especificada')}
-    </div>
-    <div style="margin-bottom:20px;"><h4 style="font-size:14px; margin-bottom:8px;">Productos Comprados</h4>${itemsHtml}</div>
-    ${planDetailsHtml}
-    
-    <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-      ${gcTotalUsdt > 0 ? `
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
-          <span>🎁 Monto pagado con Gift Card:</span>
-          <span>- ${fmtUSD(gcTotalUsdt)}</span>
-        </div>
-      ` : ''}
-      
-      ${paidUsdt > 0 ? `
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
-          <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
-          <span>${fmtUSD(paidUsdt)}</span>
-        </div>
-      ` : ''}
-
-      <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
-        <span>Saldo Restante:</span>
-        <strong style="color:${remainingUsdt <= 0.1 ? 'var(--success)' : 'var(--danger)'};">
-          ${remainingUsdt <= 0.1 ? 'Pagado' : fmtUSD(remainingUsdt)}
-        </strong>
-      </div>
-    </div>
-
-    <div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Método de Pago Inicial</h4><p style="font-size:14px; font-weight:600; text-transform:capitalize;">${o.payment_method.replace('_', ' ')}</p></div>
-    ${receiptHtml}
-  `;
-  document.getElementById('orderDetailModal').classList.add('open');
-}
-
-async function loadInstallments(){
-  const tbody = document.getElementById('installmentsTableBody');
-  const { data } = await supabaseClient.from('installments').select('*, orders(customer_name)').order('paid_at', { ascending: false });
-  allInstallments = data || [];
-  calculateKPIs();
-
-  tbody.innerHTML = allInstallments.map(i => `
-    <tr>
-      <td data-label="Pedido">#${String(i.order_id).slice(0,8)}</td>
-      <td data-label="Monto Bs">${fmtBs(i.amount_bs)}</td>
-      <td data-label="Monto USDT">${fmtUSD(i.amount_usdt)}</td>
-      <td data-label="Método">${i.method}</td>
-      <td data-label="Referencia">${i.reference || '-'}</td>
-      <td data-label="Fecha">${new Date(i.paid_at).toLocaleDateString()}</td>
-      <td data-label="Estado">${i.status === 'pendiente' ? '<span style="color:orange;font-weight:bold;">Pendiente</span>' : '<span style="color:green;">Verificado</span>'}</td>
-      <td data-label="Acciones">
-        ${i.receipt_url ? `<button onclick="viewReceipt('${i.receipt_url}')" class="btn-sm" style="background:var(--bg); border:1px solid var(--border); display:inline-block; margin-bottom:4px; cursor:pointer;">Ver Comp.</button>` : ''}
-        ${i.status === 'pendiente' ? `<button class="btn-sm" style="background:var(--success);color:#fff; display:block; width:100%;" onclick="verifyInstallment('${i.id}')">Verificar</button>` : ''}
-      </td>
-    </tr>
-  `).join('') || `<tr><td colspan="8" style="text-align:center;">Sin abonos</td></tr>`;
-}
-
-async function verifyInstallment(id) {
-  if(!confirm("¿Verificar este pago? El monto se restará del saldo del cliente.")) return;
-  await supabaseClient.from('installments').update({ status: 'verificado' }).eq('id', id);
-  loadInstallments(); loadOrders();
-  showToast("Pago verificado correctamente.");
-}
-
-async function loadCoupons() {
-  const tbody = document.getElementById('couponsTableBody');
-  const { data } = await supabaseClient.from('coupons').select('*').order('created_at', { ascending: false });
-  if(!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay cupones.</td></tr>`; return; }
-  tbody.innerHTML = data.map(c => `
-    <tr>
-      <td><strong>${escapeHTML(c.code)}</strong></td>
-      <td>${c.discount_percent}%</td>
-      <td>${c.is_active ? '🟢 Activo' : '🔴 Inactivo'}</td>
-      <td><button class="btn-sm btn-delete" onclick="deleteCoupon('${c.id}')">Eliminar</button></td>
-    </tr>
-  `).join('');
-}
-
-async function saveCoupon(e) {
-  e.preventDefault();
-  const code = document.getElementById('couponCode').value.trim().toUpperCase();
-  const discount_percent = parseInt(document.getElementById('couponDiscount').value);
-  try {
-    const { error } = await supabaseClient.from('coupons').insert([{ code, discount_percent }]);
-    if(error) throw error;
-    document.getElementById('couponForm').reset();
-    loadCoupons();
-    showToast("Cupón creado con éxito.");
-  } catch(err) { showToast("Error: " + err.message, 'error'); }
-}
-
-async function deleteCoupon(id) {
-  if(!confirm("¿Eliminar este cupón?")) return;
-  await supabaseClient.from('coupons').delete().eq('id', id);
-  loadCoupons();
-  showToast("Cupón eliminado.");
-}
-
-async function loadReviewsAdmin() {
-  const tbody = document.getElementById('reviewsTableBody');
-  const { data } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
-  if(!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay reseñas.</td></tr>`; return; }
-  tbody.innerHTML = data.map(r => `
-    <tr>
-      <td>${escapeHTML(r.customer_name)}</td>
-      <td>${'⭐'.repeat(r.rating)}</td>
-      <td><span style="font-size:13px; color:var(--muted);">${escapeHTML(r.comment || '-')}</span></td>
-      <td>${new Date(r.created_at).toLocaleDateString()}</td>
-      <td><button class="btn-sm btn-delete" onclick="deleteReview('${r.id}')">Eliminar</button></td>
-    </tr>
-  `).join('');
-}
-
-async function deleteReview(id) {
-  if(!confirm("¿Eliminar esta reseña?")) return;
-  await supabaseClient.from('reviews').delete().eq('id', id);
-  loadReviewsAdmin();
-  showToast("Reseña eliminada.");
-}
-
-async function loadRequests() {
-  const tbody = document.getElementById('requestsTableBody');
-  const { data: requests, error } = await supabaseClient.from('upgrade_requests').select('*').eq('status', 'pendiente');
-  if (error) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--danger);">Error al cargar solicitudes.</td></tr>`; return; }
-  if (!requests || requests.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay solicitudes pendientes.</td></tr>`; return; }
-
-  const userIds = requests.map(r => r.user_id);
-  const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, email').in('id', userIds);
-  const profileMap = {};
-  profiles.forEach(p => { profileMap[p.id] = p; });
-
-  tbody.innerHTML = requests.map(r => {
-    const profile = profileMap[r.user_id];
-    return `
-      <tr>
-        <td data-label="Usuario"><strong>${escapeHTML(profile?.full_name) || 'Usuario'}</strong><br><small>${escapeHTML(profile?.email) || 'Sin email'}</small></td>
-        <td data-label="Fecha">${new Date(r.created_at).toLocaleDateString()}</td>
-        <td data-label="Acciones"><button class="btn-sm" style="background:var(--success); color:#fff; cursor:pointer; width: 100%; padding: 12px;" onclick="approveRequest('${r.id}', '${r.user_id}')">Aprobar Vendedor</button></td>
-      </tr>
-    `;
-  }).join('');
-}
-
-async function approveRequest(reqId, userId) {
-  if(!confirm("¿Ascender a este cliente a Vendedor?")) return;
-  await supabaseClient.from('profiles').update({ role: 'vendedor' }).eq('id', userId);
-  await supabaseClient.from('upgrade_requests').update({ status: 'aprobado' }).eq('id', reqId);
-  loadRequests();
-  showToast("Cliente ascendido a Vendedor exitosamente.");
-}
-
-async function loadProducts(){
-  const tbody = document.getElementById('productsTableBody');
-  const { data } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-  allProducts = data || [];
-  calculateKPIs();
-
-  tbody.innerHTML = allProducts.map(p => `
-    <tr>
-      <td data-label="Producto"><strong>${escapeHTML(p.name)}</strong></td>
-      <td data-label="Categoría">${escapeHTML(p.category)}</td>
-      <td data-label="Precios">${fmtUSD(p.price_usdt)}<br><small style="color:var(--muted);">${fmtBs(p.price_usdt * bcvRate)}</small></td>
-      <td data-label="Stock">${p.stock}</td>
-      <td data-label="Acciones">
-        <button class="btn-sm btn-view" onclick="editProduct('${p.id}')">Editar</button>
-        <button class="btn-sm btn-delete" onclick="deleteProduct('${p.id}')">Eliminar</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-async function deleteProduct(id) {
-  if(!confirm("¿Estás seguro de que deseas eliminar este producto permanentemente? Esta acción no se puede deshacer.")) return;
-  try {
-    const { error } = await supabaseClient.from('products').delete().eq('id', id);
-    if(error) throw error;
-    loadProducts();
-    showToast("Producto eliminado.");
-  } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
-}
-
-function openProductForm(){ 
-  document.getElementById('productForm').reset(); document.getElementById('pId').value=''; 
-  document.getElementById('imgPreview').style.display='none'; document.getElementById('galleryPreview').innerHTML = '';
-  document.getElementById('productModal').classList.add('open'); 
-}
-
-function calcBsPrice() {
-  const usdt = parseFloat(document.getElementById('pPriceUsdt').value) || 0;
-  document.getElementById('pPriceBs').value = (usdt * bcvRate).toFixed(2);
-}
-
-function editProduct(id){
-  const p = allProducts.find(x => x.id === id); if(!p) return;
-  document.getElementById('pId').value=p.id; document.getElementById('pName').value=p.name; document.getElementById('pCategory').value=p.category;
-  document.getElementById('pSizes').value=(p.sizes||[]).join(', '); document.getElementById('pPriceUsdt').value=p.price_usdt; 
-  calcBsPrice();
-  document.getElementById('pStock').value=p.stock; document.getElementById('pBadge').value=p.badge||''; document.getElementById('pActive').checked=p.is_active;
-  document.getElementById('pDescription').value=p.description || '';
-  
-  if(p.image_url){ document.getElementById('imgPreview').src=p.image_url; document.getElementById('imgPreview').style.display='block'; } 
-  else { document.getElementById('imgPreview').style.display='none'; }
-
-  const galleryContainer = document.getElementById('galleryPreview');
-  galleryContainer.innerHTML = '';
-  if(p.gallery && p.gallery.length > 0) { p.gallery.forEach(url => { galleryContainer.innerHTML += `<img src="${url}">`; }); }
-  
-  document.getElementById('productModal').classList.add('open');
-}
-
-function previewImage(event){ 
-  const file = event.target.files[0]; if(!file) return; 
-  const reader = new FileReader(); 
-  reader.onload = e => { document.getElementById('imgPreview').src=e.target.result; document.getElementById('imgPreview').style.display='block'; }; 
-  reader.readAsDataURL(file); 
-}
-
-async function saveProduct(e){
-  e.preventDefault(); 
-  const btn = document.getElementById('btnSaveProduct'); btn.disabled=true; btn.textContent = "Guardando...";
-  
-  const id=document.getElementById('pId').value, name=document.getElementById('pName').value.trim(), category=document.getElementById('pCategory').value;
-  const sizes=document.getElementById('pSizes').value.split(',').map(s=>s.trim());
-  const price_usdt=parseFloat(document.getElementById('pPriceUsdt').value), price_bs=parseFloat(document.getElementById('pPriceBs').value);
-  const stock=parseInt(document.getElementById('pStock').value), badge=document.getElementById('pBadge').value.trim();
-  const description=document.getElementById('pDescription').value.trim(), is_active=document.getElementById('pActive').checked;
-  
-  const imageFile = document.getElementById('pImage').files[0], galleryFiles = document.getElementById('pGallery').files;
-
-  try {
-    let image_url = null;
-    if (imageFile) {
-      const fileToUpload = await imageCompression(imageFile, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
-      const fileName = `${Date.now()}_main.${fileToUpload.name.split('.').pop()}`;
-      await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
-      image_url = supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
-    }
-    let galleryUrls = [];
-    if (galleryFiles && galleryFiles.length > 0) {
-      btn.textContent = "Subiendo galería...";
-      for (let i = 0; i < galleryFiles.length; i++) {
-        const fileToUpload = await imageCompression(galleryFiles[i], { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
-        const fileName = `${Date.now()}_gal_${i}.${fileToUpload.name.split('.').pop()}`;
-        await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
-        galleryUrls.push(supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl);
-      }
-    }
-
-    const productData = { name, category, sizes, price_usdt, price_bs, stock, badge, description, is_active };
-    if(image_url) productData.image_url = image_url;
-    else if(id) productData.image_url = allProducts.find(x=>x.id===id)?.image_url;
-
-    if(galleryUrls.length > 0) productData.gallery = galleryUrls;
-    else if (id) productData.gallery = allProducts.find(x=>x.id===id)?.gallery || [];
-    else productData.gallery = [];
-
-    if(id) await supabaseClient.from('products').update(productData).eq('id', id);
-    else await supabaseClient.from('products').insert([productData]);
-    
-    document.getElementById('productModal').classList.remove('open'); loadProducts();
-    showToast("Producto guardado exitosamente.");
-  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } finally { btn.disabled=false; btn.textContent = "Guardar"; }
-}
-
-async function loadCategoriesAdmin() {
-  const { data, error } = await supabaseClient.from('categories').select('*').order('name');
-  const tbody = document.getElementById('categoriesTableBody');
-  
-  if (error || !data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay categorías.</td></tr>`;
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3 class="empty-title">No hay pedidos aquí</h3>
+        <p class="empty-sub">Cuando tengas pedidos en esta categoría, aparecerán aquí.</p>
+        <a href="/" class="btn-primary" style="width:auto; padding:12px 24px; text-decoration:none;">Ir a la Tienda</a>
+      </div>`;
     return;
   }
 
-  allCategories = data;
-  
-  tbody.innerHTML = data.map(c => `
-    <tr>
-      <td data-label="Nombre"><strong>${escapeHTML(c.name)}</strong></td>
-      <td data-label="Slug">${escapeHTML(c.slug)}</td>
-      <td data-label="Acciones">
-        <button class="btn-sm btn-delete" onclick="deleteCategory('${c.id}')">Eliminar</button>
-      </td>
-    </tr>
-  `).join('');
-
-  const select = document.getElementById('pCategory');
-  select.innerHTML = data.map(c => `<option value="${c.slug}">${escapeHTML(c.name)}</option>`).join('');
-}
-
-async function saveCategory(e) {
-  e.preventDefault();
-  const name = document.getElementById('cName').value.trim();
-  const slug = document.getElementById('cSlug').value.trim().toLowerCase().replace(/\s+/g, '-');
-  
-  const btn = document.querySelector('#categoryForm button');
-  btn.disabled = true; btn.textContent = "Guardando...";
-
-  try {
-    const { error } = await supabaseClient.from('categories').insert([{ name, slug }]);
-    if(error) throw error;
+  list.innerHTML = filtered.map(o => {
+    const shortId = String(o.id).slice(0,8).toUpperCase();
+    const date = new Date(o.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' });
     
-    document.getElementById('categoryForm').reset();
-    loadCategoriesAdmin();
-    showToast("Categoría añadida.");
-  } catch(err) {
-    showToast("Error al añadir: " + err.message, 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = "Añadir";
-  }
-}
+    let abonadoUsdt = 0, pendienteUsdt = 0, gcTotalUsdt = 0;
+    let methodsUsed = new Set();
+    
+    if (o.installments) { 
+      o.installments.forEach(i => { 
+        if (i.method === 'gift_card') {
+          gcTotalUsdt += Number(i.amount_usdt || 0);
+        } else if (i.status === 'pendiente') { 
+          pendienteUsdt += Number(i.amount_usdt || 0); 
+        } else { 
+          abonadoUsdt += Number(i.amount_usdt || 0); 
+          if (i.method) methodsUsed.add(i.method.replace('_', ' '));
+        } 
+      }); 
+    }
+    
+    const originalTotalUsdt = (o.order_items || []).reduce((sum, item) => sum + Number(item.subtotal_usdt), 0) || Number(o.total_usdt);
+    const netTotalUsdt = Math.max(0, originalTotalUsdt - gcTotalUsdt);
+    const remainingUsdt = Math.max(0, netTotalUsdt - abonadoUsdt - pendienteUsdt);
+    const remainingBs = remainingUsdt * bcvRate;
+    const isPaid = remainingUsdt <= 0.1;
+    const statusClass = `status-${o.status}`, statusText = statusLabels[o.status] || o.status;
 
-async function deleteCategory(id) {
-  if(!confirm("¿Eliminar esta categoría? Los productos asociados no se borrarán, pero deberás asignarles otra.")) return;
-  try {
-    await supabaseClient.from('categories').delete().eq('id', id);
-    loadCategoriesAdmin();
-    showToast("Categoría eliminada.");
-  } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
-}
+    const itemsHtml = (o.order_items || []).map(item => `
+      <div class="item-row">
+        ${item.products?.image_url ? `<img src="${item.products.image_url}" class="item-img">` : `<div class="item-img"></div>`}
+        <div class="item-details">
+          <div class="item-title">${escapeHTML(item.product_name)}</div>
+          <div class="item-variant">Talla: ${escapeHTML(item.size)} | Cant: ${item.quantity}</div>
+          ${item.products?.description ? `<div class="item-desc">${escapeHTML(item.products.description)}</div>` : ''}
+          ${item.custom_note ? `<div class="item-note">📝 Nota: "${escapeHTML(item.custom_note)}"</div>` : ''}
+        </div>
+        <div class="item-price">${fmtUSD(item.subtotal_usdt)}</div>
+      </div>
+    `).join('');
 
-async function loadUsers(){
-  const tbody = document.getElementById('usersTableBody');
-  const { data } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-  allUsers = data || [];
-  tbody.innerHTML = allUsers.map(u => `<tr><td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td><td data-label="Email">${escapeHTML(u.email)||'-'}</td><td data-label="Rol">${u.role}</td><td data-label="Estado">${u.is_active ? 'Activo' : 'Inactivo'}</td><td data-label="Acciones">-</td></tr>`).join('');
-}
-
-function openUserForm(){ document.getElementById('userForm').reset(); document.getElementById('userModal').classList.add('open'); }
-
-async function saveUser(e){
-  e.preventDefault();
-  const btn = document.getElementById('btnSaveUser');
-  btn.disabled = true; btn.textContent = "Creando...";
-  
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) throw new Error("Sesión expirada");
-
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify({
-        email:    document.getElementById('uEmail').value,
-        password: document.getElementById('uPassword').value,
-        full_name: document.getElementById('uName').value,
-        role:     document.getElementById('uRole').value
-      })
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al crear usuario');
-
-    document.getElementById('userModal').classList.remove('open');
-    loadUsers();
-    showToast("Usuario creado exitosamente.");
-  } catch(err) {
-    showToast(err.message, 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = "Crear";
-  }
-}
-
-function switchTab(name, event){ 
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); 
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); 
-  event.target.classList.add('active'); 
-  document.getElementById('panel-'+name).classList.add('active'); 
-}
-
-async function loadSiteConfig() {
-  const { data, error } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
-  if(error) return;
-  currentSiteConfig = data;
-
-  document.getElementById('promoActive').checked = data.promo_active || false;
-  document.getElementById('promoTitle').value = data.promo_title || '';
-  document.getElementById('promoText').value = data.promo_text || '';
-  document.getElementById('promoLink').value = data.promo_link || '';
-
-  if(data.promo_image) {
-    const img = document.getElementById('promoPreview');
-    img.src = data.promo_image;
-    img.style.display = 'block';
-  }
-
-  const details = data.hero_details || [];
-  for(let i=0; i<3; i++) {
-    const d = details[i] || {};
-    document.getElementById(`heroBadge${i+1}`).value = d.badge || '';
-    document.getElementById(`heroTitle${i+1}`).value = d.title || '';
-    document.getElementById(`heroDesc${i+1}`).value = d.desc || '';
-    document.getElementById(`heroBtnText${i+1}`).value = d.btn_text || '';
-  }
-
-  const heroPreview = document.getElementById('heroPreviewBox');
-  heroPreview.innerHTML = '';
-  if(data.hero_images && data.hero_images.length > 0) {
-    data.hero_images.forEach(url => { if(url) heroPreview.innerHTML += `<img src="${url}">`; });
-  }
-
-  const p = data.payment_details || {};
-  document.getElementById('payBank').value = p.bank || '';
-  document.getElementById('payCedula').value = p.cedula || '';
-  document.getElementById('payPhone').value = p.phone || '';
-  document.getElementById('payTitular').value = p.titular || '';
-  document.getElementById('payBinanceEmail').value = p.binance_email || '';
-  document.getElementById('payBinanceUid').value = p.binance_uid || '';
-}
-
-async function savePaymentConfig(e) {
-  e.preventDefault();
-  const btn = document.getElementById('btnSavePayment');
-  btn.disabled = true; btn.textContent = "Guardando...";
-  const details = {
-    bank: document.getElementById('payBank').value.trim(),
-    cedula: document.getElementById('payCedula').value.trim(),
-    phone: document.getElementById('payPhone').value.trim(),
-    titular: document.getElementById('payTitular').value.trim(),
-    binance_email: document.getElementById('payBinanceEmail').value.trim(),
-    binance_uid: document.getElementById('payBinanceUid').value.trim()
-  };
-  try {
-    const { error } = await supabaseClient.from('site_config').update({ payment_details: details }).eq('id', 1);
-    if(error) throw error;
-    showToast("Datos de pago guardados.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error: " + err.message, 'error'); } 
-  finally { btn.disabled = false; btn.textContent = "Guardar Datos de Pago"; }
-}
-
-async function saveHeroImages(e) {
-  e.preventDefault();
-  const btn = document.getElementById('btnSaveHero');
-  btn.disabled = true; btn.textContent = "Guardando...";
-
-  const files = [document.getElementById('heroImg1').files[0], document.getElementById('heroImg2').files[0], document.getElementById('heroImg3').files[0]];
-  
-  const newDetails = [];
-  for(let i=1; i<=3; i++) {
-    newDetails.push({
-      badge: document.getElementById(`heroBadge${i}`).value.trim(),
-      title: document.getElementById(`heroTitle${i}`).value.trim(),
-      desc: document.getElementById(`heroDesc${i}`).value.trim(),
-      btn_text: document.getElementById(`heroBtnText${i}`).value.trim()
-    });
-  }
-
-  try {
-    let currentHero = currentSiteConfig.hero_images || [];
-    let newUrls = [currentHero[0] || '', currentHero[1] || '', currentHero[2] || ''];
-
-    for(let i = 0; i < files.length; i++) {
-      if(files[i]) {
-        btn.textContent = `Subiendo foto ${i+1}...`;
-        const fileToUpload = await imageCompression(files[i], { maxSizeMB: 0.8, maxWidthOrHeight: 1920, useWebWorker: true });
-        const fileName = `hero_${i}_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
-        const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
-        if (uploadError) throw uploadError;
-        newUrls[i] = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
+    let planDetailsHtml = "";
+    if(o.payment_plan_details) {
+      const d = o.payment_plan_details;
+      const ratio = Number(o.total_bs) / Number(o.total_usdt);
+      if(o.payment_plan === 'credito') {
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Crédito (3 cuotas de ${fmtUSD(d.cuota_monto / ratio)}):</strong><br>Cuota 1: ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 2: ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 3: ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</div>`;
+      } else if (o.payment_plan === 'apartado') {
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Apartado:</strong><br>Abono Inicial: ${fmtUSD(d.abono_inicial / ratio)}<br>Saldo Pendiente inicial: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></div>`;
       }
     }
 
-    const { error } = await supabaseClient.from('site_config').update({ 
-      hero_images: newUrls,
-      hero_details: newDetails
-    }).eq('id', 1);
-    
-    if(error) throw error;
+    const canPay = remainingUsdt > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado');
+    const payButtonHtml = canPay ? `<div style="margin-top:16px;"><button class="btn-primary" style="background:var(--text); color:#fff; width:100%;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Realizar Pago / Abono</button>${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px; text-align:center;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}</div>` : '';
+    const mainReceiptHtml = o.receipt_url ? `<button onclick="viewReceipt('${o.receipt_url}')" class="upload-receipt-btn view-receipt-btn">👁️ Ver Comprobante Inicial</button>` : '';
 
-    showToast("Carrusel actualizado con éxito.");
-    loadSiteConfig();
-  } catch(err) { 
-    showToast("Error al guardar: " + err.message, 'error'); 
-  } finally { 
-    btn.disabled = false; 
-    btn.textContent = "Guardar Cambios del Carrusel"; 
+    return `
+      <div class="order-card">
+        <div class="order-top">
+          <div><div class="order-id">Pedido #${shortId}</div><div class="order-date">${date}</div></div>
+          <div class="order-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="order-items">${itemsHtml}</div>
+        ${planDetailsHtml}
+        
+        <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
+          ${gcTotalUsdt > 0 ? `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
+              <span>🎁 Monto pagado con Gift Card:</span>
+              <span>- ${fmtUSD(gcTotalUsdt)}</span>
+            </div>
+          ` : ''}
+          
+          ${abonadoUsdt > 0 ? `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
+              <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
+              <span>${fmtUSD(abonadoUsdt)}</span>
+            </div>
+          ` : ''}
+
+          <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
+            <span>Saldo Restante:</span>
+            <strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">
+              ${isPaid ? 'Pagado' : fmtUSD(remainingUsdt)}
+            </strong>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border);">${payButtonHtml}${mainReceiptHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function renderProfile() {
+  const list = document.getElementById('ordersList');
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando perfil...</p></div>`;
+  
+  const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUserId).single();
+  if (error) { list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar perfil</h3><p class="error-sub">${error.message}</p></div>`; return; }
+
+  list.innerHTML = `
+    <div class="order-card" style="max-width: 500px; margin: 0 auto;">
+      <h2 style="font-size: 20px; margin-bottom: 24px;">Mis Datos Personales</h2>
+      <div class="field">
+        <label>Nombre Completo</label>
+        <input type="text" id="profName" value="${escapeHTML(profile.full_name || '')}">
+      </div>
+      <div class="field">
+        <label>Correo (No editable)</label>
+        <input type="email" value="${escapeHTML(profile.email || '')}" disabled style="background:#f0f0f0;">
+      </div>
+      <div class="field">
+        <label>Teléfono</label>
+        <input type="tel" id="profPhone" value="${escapeHTML(profile.phone || '')}">
+      </div>
+      <div class="field">
+        <label>Dirección de Envío</label>
+        <textarea id="profAddress" rows="3">${escapeHTML(profile.address || '')}</textarea>
+      </div>
+      
+      <hr style="border:none; border-top: 1px solid var(--border); margin: 24px 0;">
+      
+      <h2 style="font-size: 20px; margin-bottom: 16px;">Cambiar Contraseña</h2>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Déjalo en blanco si no deseas cambiarla.</p>
+      <div class="field">
+        <label>Nueva Contraseña</label>
+        <div class="password-container">
+          <input type="password" id="profPassword" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="toggle-password" onclick="togglePassword('profPassword', this)">
+            <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="margin-top: 16px;" onclick="updateProfile()" id="btnSaveProfile">Guardar Cambios</button>
+      <div id="profError" class="err"></div>
+    </div>
+  `;
+}
+
+async function updateProfile() {
+  const btn = document.getElementById('btnSaveProfile');
+  const errBox = document.getElementById('profError');
+  btn.disabled = true; 
+  btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Guardando...`;
+  errBox.textContent = "";
+
+  const name = document.getElementById('profName').value.trim();
+  const phone = document.getElementById('profPhone').value.trim();
+  const address = document.getElementById('profAddress').value.trim();
+  const newPassword = document.getElementById('profPassword').value;
+
+  try {
+    if (!name || !phone || !address) throw new Error("Nombre, teléfono y dirección son obligatorios.");
+    
+    const { error: profileError } = await supabaseClient.from('profiles').update({ full_name: name, phone: phone, address: address }).eq('id', currentUserId);
+    if (profileError) throw profileError;
+
+    if (newPassword) {
+      if (newPassword.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres.");
+      const { error: authError } = await supabaseClient.auth.updateUser({ password: newPassword });
+      if (authError) throw authError;
+    }
+
+    showToast("Perfil actualizado correctamente.");
+    document.getElementById('userNameDisplay').textContent = name;
+  } catch (error) {
+    errBox.textContent = error.message;
+  } finally {
+    btn.disabled = false; btn.textContent = "Guardar Cambios";
   }
 }
 
-async function savePromoConfig(e) {
-  e.preventDefault();
-  const btn = document.getElementById('btnSavePromo');
-  btn.disabled = true; btn.textContent = "Guardando...";
+async function checkLoyaltyStatus(orders, userId) {
+  const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', userId).single();
+  if (profile && (profile.role === 'vendedor' || profile.role === 'admin' || profile.role === 'super_admin')) return;
 
-  const active = document.getElementById('promoActive').checked;
-  const title = document.getElementById('promoTitle').value.trim();
-  const text = document.getElementById('promoText').value.trim();
-  const link = document.getElementById('promoLink').value.trim();
-  const imgFile = document.getElementById('promoImage').files[0];
+  const { data: reqs } = await supabaseClient.from('upgrade_requests').select('status').eq('user_id', userId).eq('status', 'pendiente');
+  if (reqs && reqs.length > 0) {
+    document.getElementById('loyaltyBanner').style.display = 'flex';
+    document.getElementById('btnRequestUpgrade').textContent = 'Solicitud en revisión...';
+    document.getElementById('btnRequestUpgrade').disabled = true;
+    return;
+  }
 
-  try {
-    let image_url = currentSiteConfig.promo_image;
+  const productStats = {};
+  orders.forEach(o => {
+    const seenInOrder = new Set();
+    (o.order_items || []).forEach(item => {
+      if(!productStats[item.product_id]) productStats[item.product_id] = { totalQty: 0, ordersCount: 0 };
+      productStats[item.product_id].totalQty += item.quantity;
+      if(!seenInOrder.has(item.product_id)) { productStats[item.product_id].ordersCount += 1; seenInOrder.add(item.product_id); }
+    });
+  });
 
-    if (imgFile) {
-      btn.textContent = "Subiendo imagen...";
-      const fileToUpload = await imageCompression(imgFile, { maxSizeMB: 0.5, maxWidthOrHeight: 800, useWebWorker: true });
-      const fileName = `promo_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
-      const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
-      if (uploadError) throw uploadError;
-      image_url = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
-    }
-
-    const { error } = await supabaseClient.from('site_config').update({
-      promo_active: active, promo_image: image_url, promo_title: title, promo_text: text, promo_link: link
-    }).eq('id', 1);
-
-    if(error) throw error;
-    showToast("Ventana emergente guardada con éxito.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } finally { btn.disabled = false; btn.textContent = "Guardar Promoción"; }
+  let qualifies = false;
+  for (const pid in productStats) { if (productStats[pid].totalQty >= 12 && productStats[pid].ordersCount >= 5) qualifies = true; }
+  if (qualifies) document.getElementById('loyaltyBanner').style.display = 'flex';
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await fetchBCVRate(); 
-  checkAdminSession();
-});
+async function requestUpgrade() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const btn = document.getElementById('btnRequestUpgrade');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  const { error } = await supabaseClient.from('upgrade_requests').insert({ user_id: session.user.id });
+  if (!error) btn.textContent = 'Solicitud enviada con éxito'; else { showToast("Error: " + error.message, 'error'); btn.disabled = false; btn.textContent = 'Solicitar Ascenso'; }
+}
+
+// --- SISTEMA DE PAGOS ---
+let currentPayOrderId = null, currentPaySaldoBs = 0;
+
+function openPaymentModal(orderId, saldoBs) {
+  currentPayOrderId = orderId; currentPaySaldoBs = saldoBs;
+  document.getElementById('payAmount').value = saldoBs.toFixed(2);
+  document.getElementById('payMethod').value = 'bs_pago_movil';
+  updatePayDetails();
+  document.getElementById('payReceipt').value = "";
+  document.getElementById('payError').textContent = "";
+  document.getElementById('paymentModal').classList.add('open');
+}
+
+function closePaymentModal() { document.getElementById('paymentModal').classList.remove('open'); }
+
+function updatePayDetails() {
+  const method = document.getElementById('payMethod').value;
+  const div = document.getElementById('payDetails');
+  
+  const p = portalSiteConfig.payment_details || {};
+  const bank = p.bank || '0134 Banesco';
+  const cedula = p.cedula || '26464322';
+  const phone = p.phone || '04243351245';
+  const titular = p.titular || "Tiendas Sam's";
+  const bEmail = p.binance_email || 'samiibelisario@gmail.com';
+  const bUid = p.binance_uid || '219555454';
+
+  if (method === 'bs_pago_movil') div.innerHTML = `<strong>Banco:</strong> ${bank}<br><strong>Teléfono:</strong> ${phone}<br><strong>Cédula:</strong> ${cedula}`;
+  else if (method === 'bs_transfer') div.innerHTML = `<strong>Banco:</strong> ${bank}<br><strong>Cédula:</strong> ${cedula}<br><strong>Titular:</strong> ${titular}`;
+  else if (method === 'usdt_binance') div.innerHTML = `<strong>Correo:</strong> ${bEmail}<br><strong>UID:</strong> ${bUid}`;
+}
+
+async function submitPayment() {
+  const errBox = document.getElementById('payError');
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  const method = document.getElementById('payMethod').value;
+  const fileInput = document.getElementById('payReceipt');
+  
+  if (isNaN(amount) || amount <= 0) { errBox.textContent = "Ingresa un monto válido."; return; }
+  if (amount > currentPaySaldoBs + 0.1) { errBox.textContent = "El monto no puede superar el saldo pendiente real."; return; }
+  if (fileInput.files.length === 0) { errBox.textContent = "Debes subir un comprobante."; return; }
+  
+  const btn = document.querySelector('#paymentModal .btn-primary');
+  btn.disabled = true; 
+  btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Enviando...`;
+  
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) throw new Error("Sesión expirada.");
+
+    const file = fileInput.files[0];
+    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true };
+    const compressedFile = await imageCompression(file, options);
+    const ext = compressedFile.name.split('.').pop();
+    
+    const fileName = `${user.id}/receipt_${currentPayOrderId}_${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressedFile);
+    if (uploadError) throw new Error("Error al subir comprobante: " + uploadError.message);
+    
+    const { data: order } = await supabaseClient.from('orders').select('total_bs, total_usdt').eq('id', currentPayOrderId).single();
+    const ratio = Number(order.total_bs) / Number(order.total_usdt);
+    const amountUsdt = amount / ratio;
+    
+    const { error: instError } = await supabaseClient.from('installments').insert({
+      order_id: currentPayOrderId,
+      amount_bs: amount, amount_usdt: amountUsdt, method: method,
+      reference: "Pago desde Portal", receipt_url: fileName,
+      notes: "Pendiente de verificación", status: "pendiente"
+    });
+    
+    if (instError) throw instError;
+    closePaymentModal(); checkSession();
+    showToast("Pago enviado. En breve será verificado.");
+  } catch(err) { errBox.textContent = err.message; } finally { btn.disabled = false; btn.textContent = "Enviar Pago"; }
+}
+
+// --- SISTEMA DE RESEÑAS ---
+async function checkReviewStatus(userId) {
+  const banner = document.getElementById('reviewBanner');
+  const { data: reviews } = await supabaseClient.from('reviews').select('id').eq('user_id', userId).limit(1);
+  
+  if (reviews && reviews.length > 0) {
+    banner.style.display = 'none'; 
+  } else {
+    banner.style.display = 'flex'; 
+  }
+}
+
+function openReviewModal() {
+  document.getElementById('reviewModal').classList.add('open');
+  document.getElementById('reviewError').textContent = "";
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').classList.remove('open');
+}
+
+async function submitReview() {
+  const rating = document.getElementById('reviewRating').value;
+  const comment = document.getElementById('reviewComment').value.trim();
+  const errBox = document.getElementById('reviewError');
+  const btn = document.querySelector('#reviewModal .btn-primary');
+  
+  btn.disabled = true; btn.textContent = "Enviando...";
+  
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if(!user) throw new Error("Debes iniciar sesión.");
+    
+    const { error } = await supabaseClient.from('reviews').insert({
+      user_id: user.id,
+      customer_name: document.getElementById('userNameDisplay').textContent,
+      rating: parseInt(rating),
+      comment: comment
+    });
+    
+    if(error) throw error;
+    showToast("¡Gracias por tu reseña!");
+    closeReviewModal();
+    document.getElementById('reviewBanner').style.display = 'none'; 
+  } catch(err) {
+    errBox.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = "Enviar Reseña";
+  }
+}
+
+checkSession();
 </script>
 </body>
 </html>
