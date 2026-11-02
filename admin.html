@@ -869,4 +869,403 @@ async function deleteReview(id) {
 async function loadRequests() {
   const tbody = document.getElementById('requestsTableBody');
   const { data: requests, error } = await supabaseClient.from('upgrade_requests').select('*').eq('status', 'pendiente');
-  if (error) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--danger
+  if (error) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--danger);">Error al cargar solicitudes.</td></tr>`; return; }
+  if (!requests || requests.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay solicitudes pendientes.</td></tr>`; return; }
+
+  const userIds = requests.map(r => r.user_id);
+  const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, email').in('id', userIds);
+  const profileMap = {};
+  profiles.forEach(p => { profileMap[p.id] = p; });
+
+  tbody.innerHTML = requests.map(r => {
+    const profile = profileMap[r.user_id];
+    return `
+      <tr>
+        <td data-label="Usuario"><strong>${escapeHTML(profile?.full_name) || 'Usuario'}</strong><br><small>${escapeHTML(profile?.email) || 'Sin email'}</small></td>
+        <td data-label="Fecha">${new Date(r.created_at).toLocaleDateString()}</td>
+        <td data-label="Acciones"><button class="btn-sm" style="background:var(--success); color:#fff; cursor:pointer; width: 100%; padding: 12px;" onclick="approveRequest('${r.id}', '${r.user_id}')">Aprobar Vendedor</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function approveRequest(reqId, userId) {
+  if(!confirm("¿Ascender a este cliente a Vendedor?")) return;
+  await supabaseClient.from('profiles').update({ role: 'vendedor' }).eq('id', userId);
+  await supabaseClient.from('upgrade_requests').update({ status: 'aprobado' }).eq('id', reqId);
+  loadRequests();
+  showToast("Cliente ascendido a Vendedor exitosamente.");
+}
+
+async function loadProducts(){
+  const tbody = document.getElementById('productsTableBody');
+  const { data } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+  allProducts = data || [];
+  calculateKPIs();
+
+  tbody.innerHTML = allProducts.map(p => `
+    <tr>
+      <td data-label="Producto"><strong>${escapeHTML(p.name)}</strong></td>
+      <td data-label="Categoría">${escapeHTML(p.category)}</td>
+      <td data-label="Precios">${fmtUSD(p.price_usdt)}<br><small style="color:var(--muted);">${fmtBs(p.price_usdt * bcvRate)}</small></td>
+      <td data-label="Stock">${p.stock}</td>
+      <td data-label="Acciones">
+        <button class="btn-sm btn-view" onclick="editProduct('${p.id}')">Editar</button>
+        <button class="btn-sm btn-delete" onclick="deleteProduct('${p.id}')">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function deleteProduct(id) {
+  if(!confirm("¿Estás seguro de que deseas eliminar este producto permanentemente? Esta acción no se puede deshacer.")) return;
+  try {
+    const { error } = await supabaseClient.from('products').delete().eq('id', id);
+    if(error) throw error;
+    loadProducts();
+    showToast("Producto eliminado.");
+  } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
+}
+
+function openProductForm(){ 
+  document.getElementById('productForm').reset(); document.getElementById('pId').value=''; 
+  document.getElementById('imgPreview').style.display='none'; document.getElementById('galleryPreview').innerHTML = '';
+  document.getElementById('productModal').classList.add('open'); 
+}
+
+function calcBsPrice() {
+  const usdt = parseFloat(document.getElementById('pPriceUsdt').value) || 0;
+  document.getElementById('pPriceBs').value = (usdt * bcvRate).toFixed(2);
+}
+
+function editProduct(id){
+  const p = allProducts.find(x => x.id === id); if(!p) return;
+  document.getElementById('pId').value=p.id; document.getElementById('pName').value=p.name; document.getElementById('pCategory').value=p.category;
+  document.getElementById('pSizes').value=(p.sizes||[]).join(', '); document.getElementById('pPriceUsdt').value=p.price_usdt; 
+  calcBsPrice();
+  document.getElementById('pStock').value=p.stock; document.getElementById('pBadge').value=p.badge||''; document.getElementById('pActive').checked=p.is_active;
+  document.getElementById('pDescription').value=p.description || '';
+  
+  if(p.image_url){ document.getElementById('imgPreview').src=p.image_url; document.getElementById('imgPreview').style.display='block'; } 
+  else { document.getElementById('imgPreview').style.display='none'; }
+
+  const galleryContainer = document.getElementById('galleryPreview');
+  galleryContainer.innerHTML = '';
+  if(p.gallery && p.gallery.length > 0) { p.gallery.forEach(url => { galleryContainer.innerHTML += `<img src="${url}">`; }); }
+  
+  document.getElementById('productModal').classList.add('open');
+}
+
+function previewImage(event){ 
+  const file = event.target.files[0]; if(!file) return; 
+  const reader = new FileReader(); 
+  reader.onload = e => { document.getElementById('imgPreview').src=e.target.result; document.getElementById('imgPreview').style.display='block'; }; 
+  reader.readAsDataURL(file); 
+}
+
+async function saveProduct(e){
+  e.preventDefault(); 
+  const btn = document.getElementById('btnSaveProduct'); btn.disabled=true; btn.textContent = "Guardando...";
+  
+  const id=document.getElementById('pId').value, name=document.getElementById('pName').value.trim(), category=document.getElementById('pCategory').value;
+  const sizes=document.getElementById('pSizes').value.split(',').map(s=>s.trim());
+  const price_usdt=parseFloat(document.getElementById('pPriceUsdt').value), price_bs=parseFloat(document.getElementById('pPriceBs').value);
+  const stock=parseInt(document.getElementById('pStock').value), badge=document.getElementById('pBadge').value.trim();
+  const description=document.getElementById('pDescription').value.trim(), is_active=document.getElementById('pActive').checked;
+  
+  const imageFile = document.getElementById('pImage').files[0], galleryFiles = document.getElementById('pGallery').files;
+
+  try {
+    let image_url = null;
+    if (imageFile) {
+      const fileToUpload = await imageCompression(imageFile, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
+      const fileName = `${Date.now()}_main.${fileToUpload.name.split('.').pop()}`;
+      await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
+      image_url = supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
+    }
+    let galleryUrls = [];
+    if (galleryFiles && galleryFiles.length > 0) {
+      btn.textContent = "Subiendo galería...";
+      for (let i = 0; i < galleryFiles.length; i++) {
+        const fileToUpload = await imageCompression(galleryFiles[i], { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
+        const fileName = `${Date.now()}_gal_${i}.${fileToUpload.name.split('.').pop()}`;
+        await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
+        galleryUrls.push(supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl);
+      }
+    }
+
+    const productData = { name, category, sizes, price_usdt, price_bs, stock, badge, description, is_active };
+    if(image_url) productData.image_url = image_url;
+    else if(id) productData.image_url = allProducts.find(x=>x.id===id)?.image_url;
+
+    if(galleryUrls.length > 0) productData.gallery = galleryUrls;
+    else if (id) productData.gallery = allProducts.find(x=>x.id===id)?.gallery || [];
+    else productData.gallery = [];
+
+    if(id) await supabaseClient.from('products').update(productData).eq('id', id);
+    else await supabaseClient.from('products').insert([productData]);
+    
+    document.getElementById('productModal').classList.remove('open'); loadProducts();
+    showToast("Producto guardado exitosamente.");
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } finally { btn.disabled=false; btn.textContent = "Guardar"; }
+}
+
+async function loadCategoriesAdmin() {
+  const { data, error } = await supabaseClient.from('categories').select('*').order('name');
+  const tbody = document.getElementById('categoriesTableBody');
+  
+  if (error || !data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No hay categorías.</td></tr>`;
+    return;
+  }
+
+  allCategories = data;
+  
+  tbody.innerHTML = data.map(c => `
+    <tr>
+      <td data-label="Nombre"><strong>${escapeHTML(c.name)}</strong></td>
+      <td data-label="Slug">${escapeHTML(c.slug)}</td>
+      <td data-label="Acciones">
+        <button class="btn-sm btn-delete" onclick="deleteCategory('${c.id}')">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+
+  const select = document.getElementById('pCategory');
+  select.innerHTML = data.map(c => `<option value="${c.slug}">${escapeHTML(c.name)}</option>`).join('');
+}
+
+async function saveCategory(e) {
+  e.preventDefault();
+  const name = document.getElementById('cName').value.trim();
+  const slug = document.getElementById('cSlug').value.trim().toLowerCase().replace(/\s+/g, '-');
+  
+  const btn = document.querySelector('#categoryForm button');
+  btn.disabled = true; btn.textContent = "Guardando...";
+
+  try {
+    const { error } = await supabaseClient.from('categories').insert([{ name, slug }]);
+    if(error) throw error;
+    
+    document.getElementById('categoryForm').reset();
+    loadCategoriesAdmin();
+    showToast("Categoría añadida.");
+  } catch(err) {
+    showToast("Error al añadir: " + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = "Añadir";
+  }
+}
+
+async function deleteCategory(id) {
+  if(!confirm("¿Eliminar esta categoría? Los productos asociados no se borrarán, pero deberás asignarles otra.")) return;
+  try {
+    await supabaseClient.from('categories').delete().eq('id', id);
+    loadCategoriesAdmin();
+    showToast("Categoría eliminada.");
+  } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
+}
+
+async function loadUsers(){
+  const tbody = document.getElementById('usersTableBody');
+  const { data } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+  allUsers = data || [];
+  tbody.innerHTML = allUsers.map(u => `<tr><td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td><td data-label="Email">${escapeHTML(u.email)||'-'}</td><td data-label="Rol">${u.role}</td><td data-label="Estado">${u.is_active ? 'Activo' : 'Inactivo'}</td><td data-label="Acciones">-</td></tr>`).join('');
+}
+
+function openUserForm(){ document.getElementById('userForm').reset(); document.getElementById('userModal').classList.add('open'); }
+
+async function saveUser(e){
+  e.preventDefault();
+  const btn = document.getElementById('btnSaveUser');
+  btn.disabled = true; btn.textContent = "Creando...";
+  
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) throw new Error("Sesión expirada");
+
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-user`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({
+        email:    document.getElementById('uEmail').value,
+        password: document.getElementById('uPassword').value,
+        full_name: document.getElementById('uName').value,
+        role:     document.getElementById('uRole').value
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al crear usuario');
+
+    document.getElementById('userModal').classList.remove('open');
+    loadUsers();
+    showToast("Usuario creado exitosamente.");
+  } catch(err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = "Crear";
+  }
+}
+
+function switchTab(name, event){ 
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); 
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); 
+  event.target.classList.add('active'); 
+  document.getElementById('panel-'+name).classList.add('active'); 
+}
+
+async function loadSiteConfig() {
+  const { data, error } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
+  if(error) return;
+  currentSiteConfig = data;
+
+  document.getElementById('promoActive').checked = data.promo_active || false;
+  document.getElementById('promoTitle').value = data.promo_title || '';
+  document.getElementById('promoText').value = data.promo_text || '';
+  document.getElementById('promoLink').value = data.promo_link || '';
+
+  if(data.promo_image) {
+    const img = document.getElementById('promoPreview');
+    img.src = data.promo_image;
+    img.style.display = 'block';
+  }
+
+  const details = data.hero_details || [];
+  for(let i=0; i<3; i++) {
+    const d = details[i] || {};
+    document.getElementById(`heroBadge${i+1}`).value = d.badge || '';
+    document.getElementById(`heroTitle${i+1}`).value = d.title || '';
+    document.getElementById(`heroDesc${i+1}`).value = d.desc || '';
+    document.getElementById(`heroBtnText${i+1}`).value = d.btn_text || '';
+  }
+
+  const heroPreview = document.getElementById('heroPreviewBox');
+  heroPreview.innerHTML = '';
+  if(data.hero_images && data.hero_images.length > 0) {
+    data.hero_images.forEach(url => { if(url) heroPreview.innerHTML += `<img src="${url}">`; });
+  }
+
+  const p = data.payment_details || {};
+  document.getElementById('payBank').value = p.bank || '';
+  document.getElementById('payCedula').value = p.cedula || '';
+  document.getElementById('payPhone').value = p.phone || '';
+  document.getElementById('payTitular').value = p.titular || '';
+  document.getElementById('payBinanceEmail').value = p.binance_email || '';
+  document.getElementById('payBinanceUid').value = p.binance_uid || '';
+}
+
+async function savePaymentConfig(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSavePayment');
+  btn.disabled = true; btn.textContent = "Guardando...";
+  const details = {
+    bank: document.getElementById('payBank').value.trim(),
+    cedula: document.getElementById('payCedula').value.trim(),
+    phone: document.getElementById('payPhone').value.trim(),
+    titular: document.getElementById('payTitular').value.trim(),
+    binance_email: document.getElementById('payBinanceEmail').value.trim(),
+    binance_uid: document.getElementById('payBinanceUid').value.trim()
+  };
+  try {
+    const { error } = await supabaseClient.from('site_config').update({ payment_details: details }).eq('id', 1);
+    if(error) throw error;
+    showToast("Datos de pago guardados.");
+    loadSiteConfig();
+  } catch(err) { showToast("Error: " + err.message, 'error'); } 
+  finally { btn.disabled = false; btn.textContent = "Guardar Datos de Pago"; }
+}
+
+async function saveHeroImages(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSaveHero');
+  btn.disabled = true; btn.textContent = "Guardando...";
+
+  const files = [document.getElementById('heroImg1').files[0], document.getElementById('heroImg2').files[0], document.getElementById('heroImg3').files[0]];
+  
+  const newDetails = [];
+  for(let i=1; i<=3; i++) {
+    newDetails.push({
+      badge: document.getElementById(`heroBadge${i}`).value.trim(),
+      title: document.getElementById(`heroTitle${i}`).value.trim(),
+      desc: document.getElementById(`heroDesc${i}`).value.trim(),
+      btn_text: document.getElementById(`heroBtnText${i}`).value.trim()
+    });
+  }
+
+  try {
+    let currentHero = currentSiteConfig.hero_images || [];
+    let newUrls = [currentHero[0] || '', currentHero[1] || '', currentHero[2] || ''];
+
+    for(let i = 0; i < files.length; i++) {
+      if(files[i]) {
+        btn.textContent = `Subiendo foto ${i+1}...`;
+        const fileToUpload = await imageCompression(files[i], { maxSizeMB: 0.8, maxWidthOrHeight: 1920, useWebWorker: true });
+        const fileName = `hero_${i}_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
+        const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
+        if (uploadError) throw uploadError;
+        newUrls[i] = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
+      }
+    }
+
+    const { error } = await supabaseClient.from('site_config').update({ 
+      hero_images: newUrls,
+      hero_details: newDetails
+    }).eq('id', 1);
+    
+    if(error) throw error;
+
+    showToast("Carrusel actualizado con éxito.");
+    loadSiteConfig();
+  } catch(err) { 
+    showToast("Error al guardar: " + err.message, 'error'); 
+  } finally { 
+    btn.disabled = false; 
+    btn.textContent = "Guardar Cambios del Carrusel"; 
+  }
+}
+
+async function savePromoConfig(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSavePromo');
+  btn.disabled = true; btn.textContent = "Guardando...";
+
+  const active = document.getElementById('promoActive').checked;
+  const title = document.getElementById('promoTitle').value.trim();
+  const text = document.getElementById('promoText').value.trim();
+  const link = document.getElementById('promoLink').value.trim();
+  const imgFile = document.getElementById('promoImage').files[0];
+
+  try {
+    let image_url = currentSiteConfig.promo_image;
+
+    if (imgFile) {
+      btn.textContent = "Subiendo imagen...";
+      const fileToUpload = await imageCompression(imgFile, { maxSizeMB: 0.5, maxWidthOrHeight: 800, useWebWorker: true });
+      const fileName = `promo_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
+      const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
+      if (uploadError) throw uploadError;
+      image_url = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
+    }
+
+    const { error } = await supabaseClient.from('site_config').update({
+      promo_active: active, promo_image: image_url, promo_title: title, promo_text: text, promo_link: link
+    }).eq('id', 1);
+
+    if(error) throw error;
+    showToast("Ventana emergente guardada con éxito.");
+    loadSiteConfig();
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } finally { btn.disabled = false; btn.textContent = "Guardar Promoción"; }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchBCVRate(); 
+  checkAdminSession();
+});
+</script>
+</body>
+</html>
