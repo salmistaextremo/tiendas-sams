@@ -401,7 +401,7 @@ async function handleAuth(e) {
 async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
 
 async function checkSession() {
-  await fetchBCVRate(); // <-- Aseguramos la carga de la tasa
+  await fetchBCVRate();
 
   const { data: { user }, error } = await supabaseClient.auth.getUser();
   if (user && !error) {
@@ -556,6 +556,7 @@ function renderFilteredOrders() {
     const date = new Date(o.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' });
     
     let abonadoUsdt = 0, pendienteUsdt = 0, gcTotalUsdt = 0;
+    let methodsUsed = new Set();
     
     if (o.installments) { 
       o.installments.forEach(i => { 
@@ -565,14 +566,16 @@ function renderFilteredOrders() {
           pendienteUsdt += Number(i.amount_usdt || 0); 
         } else { 
           abonadoUsdt += Number(i.amount_usdt || 0); 
+          if (i.method) methodsUsed.add(i.method.replace('_', ' '));
         } 
       }); 
     }
     
-    const totalUsdt = Number(o.total_usdt);
-    const saldoUsdt = Math.max(0, totalUsdt - abonadoUsdt - pendienteUsdt);
-    const saldoBs = saldoUsdt * bcvRate;
-    const isPaid = saldoUsdt <= 0.1;
+    const originalTotalUsdt = (o.order_items || []).reduce((sum, item) => sum + Number(item.subtotal_usdt), 0) || Number(o.total_usdt);
+    const netTotalUsdt = Math.max(0, originalTotalUsdt - gcTotalUsdt);
+    const remainingUsdt = Math.max(0, netTotalUsdt - abonadoUsdt - pendienteUsdt);
+    const remainingBs = remainingUsdt * bcvRate;
+    const isPaid = remainingUsdt <= 0.1;
     const statusClass = `status-${o.status}`, statusText = statusLabels[o.status] || o.status;
 
     const itemsHtml = (o.order_items || []).map(item => `
@@ -591,20 +594,16 @@ function renderFilteredOrders() {
     let planDetailsHtml = "";
     if(o.payment_plan_details) {
       const d = o.payment_plan_details;
+      const ratio = Number(o.total_bs) / Number(o.total_usdt);
       if(o.payment_plan === 'credito') {
-        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Crédito (3 cuotas de ${fmtUSD(d.cuota_monto / (Number(o.total_bs)/totalUsdt))}):</strong><br>Cuota 1: ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 2: ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 3: ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</div>`;
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Crédito (3 cuotas de ${fmtUSD(d.cuota_monto / ratio)}):</strong><br>Cuota 1: ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 2: ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 3: ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</div>`;
       } else if (o.payment_plan === 'apartado') {
-        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Apartado:</strong><br>Abono Inicial: ${fmtUSD(d.abono_inicial / (Number(o.total_bs)/totalUsdt))}<br>Saldo Pendiente inicial: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / (Number(o.total_bs)/totalUsdt))}</strong></div>`;
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Apartado:</strong><br>Abono Inicial: ${fmtUSD(d.abono_inicial / ratio)}<br>Saldo Pendiente inicial: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></div>`;
       }
     }
 
-    let gcHtml = "";
-    if (gcTotalUsdt > 0) {
-      gcHtml = `<div class="detail-item" style="margin-top: 8px;"><span class="detail-label" style="color:var(--success);">🎁 Gift Card Aplicada</span><span class="detail-value text-success">- ${fmtUSD(gcTotalUsdt)}</span></div>`;
-    }
-
-    const canPay = saldoBs > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado');
-    const payButtonHtml = canPay ? `<div style="margin-top:16px;"><button class="btn-primary" style="background:var(--text); color:#fff; width:100%;" onclick="openPaymentModal('${o.id}', ${saldoBs})">💸 Realizar Pago / Abono</button>${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px; text-align:center;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}</div>` : '';
+    const canPay = remainingUsdt > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado');
+    const payButtonHtml = canPay ? `<div style="margin-top:16px;"><button class="btn-primary" style="background:var(--text); color:#fff; width:100%;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Realizar Pago / Abono</button>${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px; text-align:center;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}</div>` : '';
     const mainReceiptHtml = o.receipt_url ? `<button onclick="viewReceipt('${o.receipt_url}')" class="upload-receipt-btn view-receipt-btn">👁️ Ver Comprobante Inicial</button>` : '';
 
     return `
@@ -616,12 +615,28 @@ function renderFilteredOrders() {
         <div class="order-items">${itemsHtml}</div>
         ${planDetailsHtml}
         
-        <div class="order-details">
-          <div class="detail-item"><span class="detail-label">Total</span><span class="detail-value">${fmtUSD(totalUsdt)}</span><span class="detail-sub">≈ ${fmtBs(totalUsdt * bcvRate)}</span></div>
-          <div class="detail-item"><span class="detail-label">Saldo Restante</span>${isPaid ? `<span class="detail-value text-success">Pagado</span>` : `<span class="detail-value text-danger">${fmtUSD(saldoUsdt)}</span><span class="detail-sub text-danger">≈ ${fmtBs(saldoBs)}</span>`}</div>
+        <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
+          ${gcTotalUsdt > 0 ? `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
+              <span>🎁 Monto pagado con Gift Card:</span>
+              <span>- ${fmtUSD(gcTotalUsdt)}</span>
+            </div>
+          ` : ''}
+          
+          ${abonadoUsdt > 0 ? `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
+              <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
+              <span>${fmtUSD(abonadoUsdt)}</span>
+            </div>
+          ` : ''}
+
+          <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
+            <span>Saldo Restante:</span>
+            <strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">
+              ${isPaid ? 'Pagado' : fmtUSD(remainingUsdt)}
+            </strong>
+          </div>
         </div>
-        
-        ${gcHtml}
 
         <div style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border);">${payButtonHtml}${mainReceiptHtml}</div>
       </div>
