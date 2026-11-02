@@ -183,20 +183,30 @@
   .review-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; cursor: pointer; transition: all 0.2s; }
   .review-dot.active { background: var(--text); transform: scale(1.3); }
   
-  /* FOOTER AMARILLO ESTILO WEB */
-  .footer { background-color: var(--accent); color: var(--text); padding: 60px 0 30px; }
+  /* FOOTER NEGRO CON LOGO Y TEXTOS BLANCOS */
+  .footer { background-color: var(--text); color: #ffffff; padding: 60px 0 30px; }
   .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.5fr 1fr; gap: 40px; margin-bottom: 40px; }
-  .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-  .footer-col a { display: block; color: var(--text); opacity: 0.8; font-size: 14px; margin-bottom: 10px; transition: opacity 0.2s; }
+  .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; color: #ffffff; text-align: center; }
+  .footer-col a { display: block; color: #ffffff; opacity: 0.8; font-size: 14px; margin-bottom: 10px; transition: opacity 0.2s; text-align: center; }
   .footer-col a:hover { opacity: 1; text-decoration: underline; }
-  .footer-logo-wrap img { max-width: 150px; height: auto; object-fit: contain; }
   
-  .social-icons { display: flex; gap: 12px; }
-  .social-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: var(--text); color: var(--accent); transition: transform 0.2s; }
-  .social-icon:hover { transform: scale(1.1); }
-  .social-icon svg { width: 20px; height: 20px; fill: currentColor; }
+  /* Forzar el logo a ser blanco */
+  .footer-logo-wrap img { max-width: 150px; height: auto; object-fit: contain; filter: brightness(0) invert(1); margin: 0 auto; }
   
-  .fbot { border-top: 1px solid rgba(0,0,0,0.1); padding-top: 24px; text-align: center; font-size: 13px; color: var(--text); opacity: 0.7; }
+  /* Íconos sociales centrados, sin fondo y de color amarillo */
+  .social-icons { display: flex; justify-content: center; gap: 20px; }
+  .social-icon { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background-color: transparent; 
+    color: var(--accent); 
+    transition: transform 0.2s, color 0.2s; 
+  }
+  .social-icon:hover { transform: scale(1.15); color: #ffffff; }
+  .social-icon svg { width: 28px; height: 28px; fill: currentColor; }
+  
+  .fbot { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center; font-size: 13px; color: #ffffff; opacity: 0.7; }
 
   /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -218,8 +228,7 @@
     
     /* Footer responsive */
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
-    .footer-logo-col { grid-column: span 2; text-align: center; margin-bottom: 16px; }
-    .footer-logo-col .footer-logo-wrap { margin: 0 auto; }
+    .footer-logo-col { grid-column: span 2; margin-bottom: 16px; }
   }
   @media(max-width:600px){ 
     .product-grid{ grid-template-columns:1fr 1fr; gap:20px 12px; } 
@@ -368,7 +377,7 @@
   </div>
 </section>
 
-<!-- FOOTER AMARILLO ESTILO WEB -->
+<!-- FOOTER NEGRO CON TEXTOS Y LOGO BLANCO, ICONOS AMARILLOS SIN FONDO -->
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
