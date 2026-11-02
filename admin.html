@@ -710,23 +710,24 @@ function viewOrderDetails(orderId) {
   const o = allOrdersData.find(x => x.id === orderId);
   if(!o) return;
   
-  let abonadoBs = 0; 
   let gcTotalUsdt = 0;
+  let paidUsdt = 0;
+  let methodsUsed = new Set();
 
   if(o.installments) { 
     o.installments.forEach(i => { 
       if (i.method === 'gift_card') {
         gcTotalUsdt += Number(i.amount_usdt || 0);
       } else if (i.status !== 'pendiente') {
-        abonadoBs += Number(i.amount_bs || 0); 
+        paidUsdt += Number(i.amount_usdt || 0);
+        if (i.method) methodsUsed.add(i.method.replace('_', ' '));
       }
     }); 
   }
 
-  const saldoBs = Math.max(0, Number(o.total_bs) - abonadoBs);
-  const ratio = Number(o.total_bs) / Number(o.total_usdt);
-  const saldoUsd = saldoBs / ratio;
-  const isPaid = saldoBs <= 0.1;
+  const originalTotalUsdt = (o.order_items || []).reduce((sum, item) => sum + Number(item.subtotal_usdt), 0) || Number(o.total_usdt);
+  const netTotalUsdt = Math.max(0, originalTotalUsdt - gcTotalUsdt);
+  const remainingUsdt = Math.max(0, netTotalUsdt - paidUsdt);
 
   const itemsHtml = (o.order_items || []).map(item => `
     <div class="item-detail-row">
@@ -744,19 +745,12 @@ function viewOrderDetails(orderId) {
   let planDetailsHtml = "";
   if(o.payment_plan_details) {
     const d = o.payment_plan_details;
+    const ratio = Number(o.total_bs) / Number(o.total_usdt);
     if(o.payment_plan === 'credito') {
       planDetailsHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Detalles del Crédito</h4><p style="font-size:13px; margin-bottom:4px;">Cuota 1 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p><p style="font-size:13px; margin-bottom:4px;">Cuota 2 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p><p style="font-size:13px; margin-bottom:4px;">Cuota 3 (${fmtUSD(d.cuota_monto / ratio)}): ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</p></div>`;
     } else if (o.payment_plan === 'apartado') {
       planDetailsHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Detalles del Apartado</h4><p style="font-size:13px; margin-bottom:4px;">Abono Inicial: ${fmtUSD(d.abono_inicial / ratio)}</p><p style="font-size:13px;">Saldo Inicial Pendiente: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></p></div>`;
     }
-  }
-
-  let gcHtml = "";
-  if (gcTotalUsdt > 0) {
-    gcHtml = `<div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px; border: 1px dashed var(--success);">
-                <h4 style="font-size:14px; margin-bottom:8px; color:var(--success);">🎁 Gift Card Aplicada</h4>
-                <p style="font-size:14px; font-weight:700;">- ${fmtUSD(gcTotalUsdt)}</p>
-              </div>`;
   }
 
   const receiptHtml = o.receipt_url ? `<div style="margin-top:16px;"><label style="font-size:12px; color:var(--muted); font-weight:600;">Comprobante:</label><br><button class="btn-primary" style="margin-top:8px; padding:10px 20px; width:auto;" onclick="viewReceipt('${o.receipt_url}')">Ver Comprobante</button></div>` : `<div style="margin-top:16px; color:var(--muted); font-size:13px;">Sin comprobante inicial.</div>`;
@@ -769,11 +763,30 @@ function viewOrderDetails(orderId) {
     </div>
     <div style="margin-bottom:20px;"><h4 style="font-size:14px; margin-bottom:8px;">Productos Comprados</h4>${itemsHtml}</div>
     ${planDetailsHtml}
-    ${gcHtml}
+    
     <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-      <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total del Pedido:</span><strong>${fmtUSD(o.total_usdt)}</strong></div>
-      <div style="display:flex; justify-content:space-between;"><span>Saldo Restante:</span><strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">${isPaid ? 'Pagado' : fmtUSD(saldoUsd)}</strong></div>
+      ${gcTotalUsdt > 0 ? `
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
+          <span>🎁 Monto pagado con Gift Card:</span>
+          <span>- ${fmtUSD(gcTotalUsdt)}</span>
+        </div>
+      ` : ''}
+      
+      ${paidUsdt > 0 ? `
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
+          <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
+          <span>${fmtUSD(paidUsdt)}</span>
+        </div>
+      ` : ''}
+
+      <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
+        <span>Saldo Restante:</span>
+        <strong style="color:${remainingUsdt <= 0.1 ? 'var(--success)' : 'var(--danger)'};">
+          ${remainingUsdt <= 0.1 ? 'Pagado' : fmtUSD(remainingUsdt)}
+        </strong>
+      </div>
     </div>
+
     <div style="background:var(--bg); padding:16px; border-radius:8px; margin-bottom:16px;"><h4 style="font-size:14px; margin-bottom:8px;">Método de Pago Inicial</h4><p style="font-size:14px; font-weight:600; text-transform:capitalize;">${o.payment_method.replace('_', ' ')}</p></div>
     ${receiptHtml}
   `;
