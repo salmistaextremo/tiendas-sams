@@ -298,7 +298,7 @@
       </div>
     </div>
 
-    <!-- PANEL GIFT CARDS (NUEVO) -->
+    <!-- PANEL GIFT CARDS -->
     <div class="panel" id="panel-giftcards">
       <div class="table-actions">
         <input type="text" class="search-box" id="searchGC" placeholder="Buscar por cliente o código..." oninput="filterGiftCards(this.value)">
@@ -938,17 +938,38 @@ async function deleteCoupon(id) {
   showToast("Cupón eliminado.");
 }
 
-// --- GESTIÓN DE GIFT CARDS ---
+// --- GESTIÓN DE GIFT CARDS (CORREGIDO) ---
 async function loadGiftCardsAdmin() {
   const tbody = document.getElementById('giftCardsTableBody');
   tbody.innerHTML = getLoadingRow(6);
 
-  const { data, error } = await supabaseClient.from('gift_cards').select('*, profiles(full_name, email)').order('created_at', { ascending: false });
-  if(error) { tbody.innerHTML = getErrorRow(6, 'loadGiftCardsAdmin()'); return; }
-
-  allGiftCards = data || [];
+  // 1. Traer las tarjetas (Sin hacer el Join automático que fallaba)
+  const { data: gcData, error: gcError } = await supabaseClient.from('gift_cards').select('*').order('created_at', { ascending: false });
   
-  if(allGiftCards.length === 0) { tbody.innerHTML = getEmptyRow(6, 'No hay tarjetas emitidas aún.'); return; }
+  if(gcError) { tbody.innerHTML = getErrorRow(6, 'loadGiftCardsAdmin()'); return; }
+  
+  if(!gcData || gcData.length === 0) { 
+    allGiftCards = [];
+    tbody.innerHTML = getEmptyRow(6, 'No hay tarjetas emitidas aún.'); 
+    return; 
+  }
+
+  // 2. Obtener la información de los perfiles de los clientes manualmente
+  const userIds = [...new Set(gcData.map(g => g.user_id).filter(Boolean))];
+  let profileMap = {};
+
+  if(userIds.length > 0) {
+    const { data: profilesData } = await supabaseClient.from('profiles').select('id, full_name, email').in('id', userIds);
+    if(profilesData) {
+      profilesData.forEach(p => { profileMap[p.id] = p; });
+    }
+  }
+
+  // 3. Unir la información
+  allGiftCards = gcData.map(g => ({
+    ...g,
+    profile: profileMap[g.user_id] || { full_name: 'Usuario Desconocido', email: '' }
+  }));
 
   filterGiftCards(document.getElementById('searchGC').value);
 }
@@ -958,8 +979,8 @@ function filterGiftCards(query) {
   const q = query.toLowerCase().trim();
 
   const filtered = allGiftCards.filter(gc => 
-    (gc.profiles?.full_name && gc.profiles.full_name.toLowerCase().includes(q)) ||
-    (gc.profiles?.email && gc.profiles.email.toLowerCase().includes(q)) ||
+    (gc.profile?.full_name && gc.profile.full_name.toLowerCase().includes(q)) ||
+    (gc.profile?.email && gc.profile.email.toLowerCase().includes(q)) ||
     String(gc.id).toLowerCase().includes(q)
   );
 
@@ -978,7 +999,7 @@ function filterGiftCards(query) {
     return `
       <tr>
         <td data-label="Código"><strong>${String(gc.id).slice(0,8).toUpperCase()}</strong></td>
-        <td data-label="Cliente">${escapeHTML(gc.profiles?.full_name || 'Usuario')}<br><small>${escapeHTML(gc.profiles?.email || '')}</small></td>
+        <td data-label="Cliente">${escapeHTML(gc.profile?.full_name || 'Usuario')}<br><small>${escapeHTML(gc.profile?.email || '')}</small></td>
         <td data-label="Monto">${fmtUSD(gc.amount)}</td>
         <td data-label="Estado">${statusHtml}</td>
         <td data-label="Fecha Emisión">${new Date(gc.created_at).toLocaleDateString()}</td>
