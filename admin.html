@@ -149,7 +149,14 @@
 <div id="adminPanel">
   <header class="admin-header">
     <div class="logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></div>
-    <div class="admin-header-right"><button class="logout-btn" onclick="handleLogout()">Cerrar sesión</button></div>
+    <div class="admin-header-right">
+  <!-- NUEVO INDICADOR DE TASA -->
+  <div id="bcvIndicator" style="background:var(--bg); border:1px solid var(--border); padding:8px 16px; border-radius:100px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
+    <span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%;" id="bcvPulse"></span>
+    Tasa BCV: <span id="bcvRateDisplay">...</span> Bs
+  </div>
+  <button class="logout-btn" onclick="handleLogout()">Cerrar sesión</button>
+</div>
   </header>
 
   <main class="admin-main">
@@ -545,15 +552,42 @@ let currentSiteConfig = {};
 let isRealTimeSubscribed = false;
 let bcvRate = 40.00;
 
-async function fetchBCVRate() {
+async function fetchBCVRate(silent = false) {
   try {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     if (res.ok) {
       const data = await res.json();
-      if (data && data.promedio) bcvRate = data.promedio;
+      if (data && data.promedio) {
+        const newRate = data.promedio;
+        
+        // Si la tasa cambió o es la primera carga, actualizamos la vista
+        if (bcvRate !== newRate || !silent) {
+          bcvRate = newRate;
+          
+          // Actualizar el indicador visual
+          const disp = document.getElementById('bcvRateDisplay');
+          if(disp) disp.textContent = Number(bcvRate).toFixed(2);
+
+          // Si ya hay productos cargados, volver a dibujarlos para actualizar los Bs
+          if (allProducts && allProducts.length > 0) filterProducts(document.getElementById('searchProductsAdmin').value);
+          
+          // Efecto visual de "pulso" para avisar que se actualizó
+          const pulse = document.getElementById('bcvPulse');
+          if(pulse) {
+            pulse.style.transform = 'scale(1.5)';
+            pulse.style.background = '#3b82f6';
+            setTimeout(() => { pulse.style.transform = 'scale(1)'; pulse.style.background = 'var(--success)'; }, 1000);
+          }
+
+          if(silent) showToast("🔄 La tasa BCV ha sido actualizada automáticamente a " + bcvRate.toFixed(2), 'success');
+        }
+      }
     }
   } catch (e) { console.warn("Usando tasa de respaldo en Admin:", bcvRate); }
 }
+
+// Configurar el temporizador para que se actualice cada 20 minutos (en milisegundos)
+setInterval(() => { fetchBCVRate(true); }, 20 * 60 * 1000);
 
 const fmtUSD = n => "$ " + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtBs = n => "Bs " + Number(n).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
