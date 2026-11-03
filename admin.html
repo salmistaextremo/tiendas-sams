@@ -192,7 +192,6 @@
       <div class="table-actions">
         <div class="filters-wrap">
           <input type="text" class="search-box" id="searchOrders" placeholder="Buscar cliente o ID..." oninput="filterOrders()">
-          <!-- NUEVO FILTRO POR ESTADO -->
           <select class="filter-select" id="filterOrderStatus" onchange="filterOrders()">
             <option value="todos">Todos los Estados</option>
             <option value="pendiente">Pendientes</option>
@@ -854,15 +853,44 @@ function filterOrders() {
     const isPaid = saldoBs <= 0.1;
     
     let statusOptions = "";
+    
     if (o.payment_plan === 'contado') {
-      statusOptions = `<option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="verificado" ${o.status==='verificado'?'selected':''}>Verificado</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
+      statusOptions = `
+        <option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="verificado" ${o.status==='verificado'?'selected':''}>Verificado</option>
+        <option value="enviado" ${o.status==='enviado'?'selected':''} ${o.status === 'pendiente' ? 'disabled style="color:#aaa;"' : ''}>
+          ${o.status === 'pendiente' ? '🚫 Enviado (Verifica primero)' : 'Enviado'}
+        </option>
+        <option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>
+      `;
     } else if (o.payment_plan === 'credito') {
-      statusOptions = `<option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="cuota1_confirmada" ${o.status==='cuota1_confirmada'?'selected':''}>Cuota 01 Confirmada</option><option value="cuota2_confirmada" ${o.status==='cuota2_confirmada'?'selected':''}>Cuota 02 Confirmada</option><option value="cuota3_confirmada" ${o.status==='cuota3_confirmada'?'selected':''}>Cuota 03 Confirmada</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
+      const isPendiente = o.status === 'pendiente';
+      const isCuota1 = o.status === 'cuota1_confirmada';
+      const isCuota2 = o.status === 'cuota2_confirmada';
+      const isCuota3 = o.status === 'cuota3_confirmada';
+      const isEnviado = o.status === 'enviado';
+
+      statusOptions = `
+        <option value="pendiente" ${isPendiente?'selected':''}>Pendiente</option>
+        <option value="cuota1_confirmada" ${isCuota1?'selected':''}>Cuota 01 Confirmada</option>
+        <option value="cuota2_confirmada" ${isCuota2?'selected':''} ${isPendiente ? 'disabled style="color:#aaa;"' : ''}>Cuota 02 Confirmada</option>
+        <option value="cuota3_confirmada" ${isCuota3?'selected':''} ${(isPendiente || isCuota1) ? 'disabled style="color:#aaa;"' : ''}>Cuota 03 Confirmada</option>
+        <option value="enviado" ${isEnviado?'selected':''} ${(!isCuota3 && !isEnviado) ? 'disabled style="color:#aaa;"' : ''}>
+          ${(!isCuota3 && !isEnviado) ? '🚫 Enviado (Faltan cuotas)' : 'Enviado'}
+        </option>
+        <option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>
+      `;
     } else if (o.payment_plan === 'apartado') {
-      statusOptions = `<option value="registro_pago" ${o.status==='registro_pago'?'selected':''}>Registro de Pago</option><option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option><option value="enviado" ${o.status==='enviado'?'selected':''}>Enviado</option><option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>`;
+      statusOptions = `
+        <option value="registro_pago" ${o.status==='registro_pago'?'selected':''}>Registro de Pago</option>
+        <option value="pendiente" ${o.status==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="enviado" ${o.status==='enviado'?'selected':''} ${o.status === 'registro_pago' ? 'disabled style="color:#aaa;"' : ''}>
+          ${o.status === 'registro_pago' ? '🚫 Enviado (Verifica pago)' : 'Enviado'}
+        </option>
+        <option value="cancelado" ${o.status==='cancelado'?'selected':''}>Cancelado</option>
+      `;
     }
 
-    // NUEVO: Input para tracking number si está enviado o verificado
     let trackingInput = "";
     if (o.status === 'enviado' || o.status === 'verificado') {
       trackingInput = `<input type="text" placeholder="Nº de Guía" value="${o.tracking_number || ''}" onchange="updateTrackingNumber('${o.id}', this.value)" style="width:100%; margin-top:8px; padding:6px; font-size:12px; border:1px solid var(--border); border-radius:4px;">`;
@@ -890,6 +918,20 @@ async function updateOrderStatus(orderId, newStatus){
     if (orderIndex === -1) return;
 
     const currentOrder = allOrdersData[orderIndex];
+    
+    // --- VALIDACIÓN DE FLUJO ESTRICTO ---
+    if (newStatus === 'enviado') {
+      if (currentOrder.payment_plan === 'contado' && currentOrder.status === 'pendiente') {
+        showToast("⚠️ Debes marcar el pedido como 'Verificado' antes de enviarlo.", "error");
+        loadOrders(); return;
+      }
+      if (currentOrder.payment_plan === 'credito' && currentOrder.status !== 'cuota3_confirmada') {
+        showToast("⚠️ Faltan cuotas por confirmar para poder enviar.", "error");
+        loadOrders(); return;
+      }
+    }
+    // ------------------------------------
+
     let updatedPlanDetails = currentOrder.payment_plan_details || {};
 
     if (currentOrder.payment_plan === 'credito') {
@@ -908,7 +950,10 @@ async function updateOrderStatus(orderId, newStatus){
     calculateKPIs();
     loadOrders(); 
     showToast("Estado del pedido actualizado.");
-  } catch(err) { showToast("Error al actualizar: " + err.message, 'error'); loadOrders(); }
+  } catch(err) { 
+    showToast("Error al actualizar: " + err.message, 'error'); 
+    loadOrders(); 
+  }
 }
 
 async function updateTrackingNumber(orderId, trackingNumber) {
