@@ -228,7 +228,7 @@
   .error-sub { color: #b91c1c; font-size: 14px; margin-bottom: 16px; }
   .btn-retry { background: #991b1b; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
 
-  /  /* MODAL DE PRIVACIDAD (COOKIES) */
+  /* MODAL DE PRIVACIDAD (COOKIES) */
   .privacy-banner {
     position: fixed; bottom: 24px; left: 24px; right: 24px; z-index: 999999;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
@@ -249,6 +249,7 @@
   .btn-reject:hover { background: var(--bg); }
   .btn-accept { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; border: none; background: var(--text); color: #fff; cursor: pointer; transition: all 0.2s; }
   .btn-accept:hover { background: #333; transform: translateY(-2px); }
+
   /* RESPONSIVE */
   @media(max-width:900px) {
     .nav{ display:none; } 
@@ -527,14 +528,12 @@ function checkPrivacyConsent() {
   try {
     const consent = localStorage.getItem('sams_privacy_consent_v1');
     if (!consent) {
-      // El pequeño delay (300ms) evita que extensiones de navegador lo bloqueen de inmediato
       setTimeout(() => {
         const banner = document.getElementById('privacyBanner');
         if (banner) banner.classList.add('show');
       }, 300);
     }
   } catch (e) {
-    // Si el navegador bloquea localStorage (ej. modo incógnito estricto), mostramos el banner igual
     setTimeout(() => {
       const banner = document.getElementById('privacyBanner');
       if (banner) banner.classList.add('show');
@@ -553,7 +552,13 @@ function rejectPrivacy() {
 }
 // ---------------------------------------
 
+// RECUPERAR CARRITO GUARDADO
 let PRODUCTS = [], cart = [], currentFilter = "todo", selectedSize = null, currentProduct = null, currentQty = 1, paymentPlan = "contado", paymentMethod = "bs_transfer";
+try {
+  const savedCart = localStorage.getItem('sams_cart_v1');
+  if (savedCart) cart = JSON.parse(savedCart);
+} catch(e) { console.warn("Error al cargar carrito guardado", e); }
+
 let isLoginMode = true;
 let DYNAMIC_CATEGORIES = [];
 let currentSiteConfig = {};
@@ -775,7 +780,22 @@ async function loadProducts(){
   try {
     const { data, error } = await supabaseClient.from('products').select('*').eq('is_active', true).order('created_at', { ascending: true });
     if(error) throw error;
+    
     PRODUCTS = data || [];
+
+    // VALIDAR QUE LOS PRODUCTOS EN EL CARRITO AÚN EXISTAN Y TENGAN STOCK
+    if (cart.length > 0) {
+      const initialLength = cart.length;
+      cart = cart.filter(item => {
+        const prodReal = PRODUCTS.find(p => p.id === item.productId);
+        return prodReal && prodReal.stock >= item.qty && prodReal.is_active;
+      });
+      if (cart.length !== initialLength) {
+        renderCart();
+        showToast("Algunos productos ya no están disponibles y fueron removidos de tu carrito.", "error");
+      }
+    }
+
     renderProducts();
   } catch (err) {
     container.innerHTML = `
@@ -960,6 +980,9 @@ function addToCart(product, size, qty, note = ""){
   renderCart();
 }
 function renderCart(){
+  // GUARDAR EN LOCALSTORAGE CADA VEZ QUE SE RENDERIZA
+  localStorage.setItem('sams_cart_v1', JSON.stringify(cart));
+
   document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
   const body = document.getElementById('cartBody'), foot = document.getElementById('cartFoot');
   
@@ -1036,10 +1059,17 @@ async function handleStoreAuth(e) {
       closeAuthModal(); openCheckout();
     } else {
       if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
-      const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone, address: address } } });
+      const { data, error } = await supabaseClient.auth.signUp({ 
+        email, 
+        password, 
+        options: { 
+          data: { full_name: name, phone: phone, address: address },
+          emailRedirectTo: window.location.origin + '/portal.html'
+        } 
+      });
       if (error) throw error;
       if (data.session) { closeAuthModal(); openCheckout(); } 
-      else { showToast("Cuenta creada. Por favor, inicia sesión."); toggleStoreAuthMode(); }
+      else { showToast("Te enviamos un correo de confirmación. Revisa tu bandeja (y spam)."); toggleStoreAuthMode(); }
     }
   } catch (err) { errBox.textContent = err.message === "Invalid login credentials" ? "Correo o contraseña incorrectos." : err.message; } 
   finally { btn.disabled = false; btn.textContent = isLoginMode ? "Entrar y Continuar" : "Registrarse y Continuar"; }
@@ -1407,7 +1437,7 @@ async function submitOrder(){
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  checkPrivacyConsent(); // <-- VERIFICA EL MODAL DE PRIVACIDAD AL ENTRAR
+  checkPrivacyConsent();
   
   await fetchBCVRate(); 
   loadCategories(); loadProducts(); loadReviews(); renderCart(); suscribirseProductos(); startHeroAutoplay(); loadSiteConfig();
