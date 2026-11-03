@@ -537,10 +537,21 @@ async function fetchBCVRate() {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     if (res.ok) {
       const data = await res.json();
-      if (data && data.promedio) bcvRate = data.promedio;
+      if (data && data.promedio) {
+        const oldRate = bcvRate;
+        bcvRate = data.promedio;
+        
+        // Si la tasa cambió, actualizar todos los productos visibles
+        if (oldRate !== bcvRate && PRODUCTS.length > 0) {
+          renderProducts();
+        }
+      }
     }
   } catch (e) { console.warn("Usando tasa de respaldo"); }
 }
+
+// Actualizar cada 20 minutos
+setInterval(() => { fetchBCVRate(); }, 20 * 60 * 1000);
 
 // --- LÓGICA DE PRIVACIDAD (COOKIES) ---
 function checkPrivacyConsent() {
