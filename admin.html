@@ -53,7 +53,11 @@
   
   .panel{ display:none; } .panel.active{ display:block; }
 
-  /* TABLAS */
+  /* TABLAS Y BUSCADORES */
+  .table-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; flex-wrap: wrap; }
+  .search-box { padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border); font-family: inherit; font-size: 14px; outline: none; width: 300px; max-width: 100%; background: var(--surface); }
+  .search-box:focus { border-color: var(--text); }
+
   .data-table-wrap{ background:var(--surface); border-radius:var(--radius-lg); box-shadow:0 10px 30px rgba(0,0,0,0.04); overflow-x:auto; }
   .data-table{ width:100%; border-collapse:collapse; min-width: 900px; }
   .data-table th, .data-table td{ padding:16px 20px; text-align:left; font-size:14px; border-bottom:1px solid var(--border); vertical-align: middle; }
@@ -123,6 +127,8 @@
     .data-table td .btn-view, .data-table td .btn-sm { width: auto; margin: 0; }
     .panel .btn-new { width: 100%; text-align: center; padding: 14px; margin-bottom: 12px; }
     .panel-header-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+    .table-actions { flex-direction: column; align-items: stretch; }
+    .search-box { width: 100%; }
   }
   @media(max-width:500px) { .kpi-grid { grid-template-columns: 1fr; } }
 </style>
@@ -165,12 +171,15 @@
       <div class="tab" onclick="switchTab('usuarios', event)">👥 Usuarios</div>
       <div class="tab" onclick="switchTab('solicitudes', event)">⭐ Solicitudes</div>
       <div class="tab" onclick="switchTab('cupones', event)">🎟️ Cupones</div>
+      <div class="tab" onclick="switchTab('giftcards', event)">🎁 Gift Cards</div>
       <div class="tab" onclick="switchTab('resenas', event)">🌟 Reseñas</div>
       <div class="tab" onclick="switchTab('config', event)">🎨 Diseño Web</div>
     </div>
 
+    <!-- PANEL PEDIDOS -->
     <div class="panel active" id="panel-pedidos">
-      <div style="display:flex; justify-content:flex-end; margin-bottom: 16px;">
+      <div class="table-actions">
+        <input type="text" class="search-box" id="searchOrders" placeholder="Buscar pedido por cliente o ID..." oninput="filterOrders(this.value)">
         <button class="btn-new" onclick="openExportModal()" style="background:var(--success); color:#fff;">📊 Descargar Reporte</button>
       </div>
       <div class="data-table-wrap">
@@ -181,6 +190,7 @@
       </div>
     </div>
 
+    <!-- PANEL ABONOS -->
     <div class="panel" id="panel-abonos">
       <div class="data-table-wrap">
         <table class="data-table">
@@ -190,18 +200,21 @@
       </div>
     </div>
 
+    <!-- PANEL PRODUCTOS -->
     <div class="panel" id="panel-productos">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Inventario</h3><button class="btn-new" onclick="openProductForm()">+ Nuevo</button>
+      <div class="table-actions">
+        <input type="text" class="search-box" id="searchProductsAdmin" placeholder="Buscar producto por nombre..." oninput="filterProducts(this.value)">
+        <button class="btn-new" onclick="openProductForm()">+ Nuevo Producto</button>
       </div>
       <div class="data-table-wrap">
         <table class="data-table">
           <thead><tr><th>Producto</th><th>Categoría</th><th>Precios</th><th>Stock</th><th>Acciones</th></tr></thead>
-          <tbody id="productsTableBody"><tr><td colspan="5" style="text-align:center;">Cargando...</td></tr></tbody>
+          <tbody id="productsTableBody"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- PANEL CATEGORÍAS -->
     <div class="panel" id="panel-categorias">
       <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
         <h3>Categorías de Productos</h3>
@@ -229,18 +242,21 @@
       </div>
     </div>
 
+    <!-- PANEL USUARIOS -->
     <div class="panel" id="panel-usuarios">
-      <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-        <h3>Usuarios</h3><button class="btn-new" onclick="openUserForm()">+ Nuevo</button>
+      <div class="table-actions">
+        <input type="text" class="search-box" id="searchUsers" placeholder="Buscar usuario por nombre o email..." oninput="filterUsers(this.value)">
+        <button class="btn-new" onclick="openUserForm()">+ Nuevo Usuario</button>
       </div>
       <div class="data-table-wrap">
         <table class="data-table">
           <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="usersTableBody"><tr><td colspan="5" style="text-align:center;">Cargando...</td></tr></tbody>
+          <tbody id="usersTableBody"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- PANEL SOLICITUDES -->
     <div class="panel" id="panel-solicitudes">
       <div class="data-table-wrap">
         <table class="data-table">
@@ -257,24 +273,42 @@
       </div>
       <div class="data-table-wrap" style="margin-bottom: 24px;">
         <table class="data-table">
-          <thead><tr><th>Código</th><th>Descuento</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="couponsTableBody"><tr><td colspan="4" style="text-align:center;">Cargando...</td></tr></tbody>
+          <thead><tr><th>Código</th><th>Descuento</th><th>Usos</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="couponsTableBody"><tr><td colspan="5" style="text-align:center;">Cargando...</td></tr></tbody>
         </table>
       </div>
       
       <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
         <h3 style="margin-bottom: 16px;">Crear Nuevo Cupón</h3>
         <form id="couponForm" onsubmit="saveCoupon(event); return false;" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
+          <div class="form-group" style="flex:1; margin:0; min-width: 150px;">
             <label>Código (Ej. SAM10)</label>
             <input type="text" id="couponCode" required placeholder="SAM10" style="text-transform:uppercase;">
           </div>
-          <div class="form-group" style="flex:1; margin:0; min-width: 150px;">
+          <div class="form-group" style="flex:1; margin:0; min-width: 120px;">
             <label>Descuento (%)</label>
             <input type="number" id="couponDiscount" required min="1" max="100" placeholder="10">
           </div>
+          <div class="form-group" style="flex:1; margin:0; min-width: 120px;">
+            <label>Límite de Usos</label>
+            <input type="number" id="couponMaxUses" required min="1" placeholder="100" value="100">
+          </div>
           <button type="button" onclick="saveCoupon(event)" class="btn-primary" style="width:auto; padding:14px 24px; margin:0;">Crear</button>
         </form>
+      </div>
+    </div>
+
+    <!-- PANEL GIFT CARDS (NUEVO) -->
+    <div class="panel" id="panel-giftcards">
+      <div class="table-actions">
+        <input type="text" class="search-box" id="searchGC" placeholder="Buscar por cliente o código..." oninput="filterGiftCards(this.value)">
+        <h3 style="margin:0;">Historial de Tarjetas de Regalo</h3>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Código</th><th>Cliente</th><th>Monto</th><th>Estado</th><th>Fecha Emisión</th><th>Acciones</th></tr></thead>
+          <tbody id="giftCardsTableBody"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
+        </table>
       </div>
     </div>
 
@@ -460,7 +494,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUserId = null, currentUserRole = null;
-let allOrdersData = [], allProducts = [], allUsers = [], allInstallments = [], allCategories = [];
+let allOrdersData = [], allProducts = [], allUsers = [], allInstallments = [], allCategories = [], allGiftCards = [];
 let currentSiteConfig = {};
 let isRealTimeSubscribed = false;
 let bcvRate = 40.00;
@@ -554,7 +588,7 @@ async function checkAdminSession() {
 
 function loadAllData() { 
   loadOrders(); loadInstallments(); loadProducts(); loadCategoriesAdmin(); loadUsers(); loadRequests(); loadSiteConfig();
-  loadCoupons(); loadReviewsAdmin();
+  loadCoupons(); loadReviewsAdmin(); loadGiftCardsAdmin();
 }
 
 function suscribirseCambios() {
@@ -562,6 +596,7 @@ function suscribirseCambios() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => { loadOrders(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'installments' }, payload => { loadInstallments(); loadOrders(); })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { loadProducts(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'gift_cards' }, payload => { loadGiftCardsAdmin(); })
     .subscribe();
 }
 
@@ -669,10 +704,21 @@ async function loadOrders(){
   
   allOrdersData = data || [];
   calculateKPIs();
+  filterOrders(document.getElementById('searchOrders').value);
+}
 
-  if(allOrdersData.length === 0) { tbody.innerHTML = getEmptyRow(6, 'No hay pedidos registrados.'); return; }
+function filterOrders(query) {
+  const tbody = document.getElementById('ordersTableBody');
+  const q = query.toLowerCase().trim();
+  
+  const filtered = allOrdersData.filter(o => 
+    o.customer_name.toLowerCase().includes(q) || 
+    String(o.id).toLowerCase().includes(q)
+  );
 
-  tbody.innerHTML = allOrdersData.map(o => {
+  if(filtered.length === 0) { tbody.innerHTML = getEmptyRow(6, 'No se encontraron pedidos.'); return; }
+
+  tbody.innerHTML = filtered.map(o => {
     let abonadoBs = 0; 
     if(o.installments) o.installments.forEach(i => { if(i.status !== 'pendiente' && i.method !== 'gift_card') abonadoBs += Number(i.amount_bs || 0); });
     const saldoBs = Math.max(0, Number(o.total_bs) - abonadoBs);
@@ -853,16 +899,17 @@ async function verifyInstallment(id) {
 
 async function loadCoupons() {
   const tbody = document.getElementById('couponsTableBody');
-  tbody.innerHTML = getLoadingRow(4);
+  tbody.innerHTML = getLoadingRow(5);
 
   const { data, error } = await supabaseClient.from('coupons').select('*').order('created_at', { ascending: false });
-  if(error) { tbody.innerHTML = getErrorRow(4, 'loadCoupons()'); return; }
-  if(!data || data.length === 0) { tbody.innerHTML = getEmptyRow(4, 'No hay cupones creados.'); return; }
+  if(error) { tbody.innerHTML = getErrorRow(5, 'loadCoupons()'); return; }
+  if(!data || data.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No hay cupones creados.'); return; }
   
   tbody.innerHTML = data.map(c => `
     <tr>
       <td><strong>${escapeHTML(c.code)}</strong></td>
       <td>${c.discount_percent}%</td>
+      <td>${c.current_uses || 0} / ${c.max_uses || '∞'}</td>
       <td>${c.is_active ? '🟢 Activo' : '🔴 Inactivo'}</td>
       <td><button class="btn-sm btn-delete" onclick="deleteCoupon('${c.id}')">Eliminar</button></td>
     </tr>
@@ -873,8 +920,10 @@ async function saveCoupon(e) {
   e.preventDefault();
   const code = document.getElementById('couponCode').value.trim().toUpperCase();
   const discount_percent = parseInt(document.getElementById('couponDiscount').value);
+  const max_uses = parseInt(document.getElementById('couponMaxUses').value);
+  
   try {
-    const { error } = await supabaseClient.from('coupons').insert([{ code, discount_percent }]);
+    const { error } = await supabaseClient.from('coupons').insert([{ code, discount_percent, max_uses }]);
     if(error) throw error;
     document.getElementById('couponForm').reset();
     loadCoupons();
@@ -889,6 +938,66 @@ async function deleteCoupon(id) {
   showToast("Cupón eliminado.");
 }
 
+// --- GESTIÓN DE GIFT CARDS ---
+async function loadGiftCardsAdmin() {
+  const tbody = document.getElementById('giftCardsTableBody');
+  tbody.innerHTML = getLoadingRow(6);
+
+  const { data, error } = await supabaseClient.from('gift_cards').select('*, profiles(full_name, email)').order('created_at', { ascending: false });
+  if(error) { tbody.innerHTML = getErrorRow(6, 'loadGiftCardsAdmin()'); return; }
+
+  allGiftCards = data || [];
+  
+  if(allGiftCards.length === 0) { tbody.innerHTML = getEmptyRow(6, 'No hay tarjetas emitidas aún.'); return; }
+
+  filterGiftCards(document.getElementById('searchGC').value);
+}
+
+function filterGiftCards(query) {
+  const tbody = document.getElementById('giftCardsTableBody');
+  const q = query.toLowerCase().trim();
+
+  const filtered = allGiftCards.filter(gc => 
+    (gc.profiles?.full_name && gc.profiles.full_name.toLowerCase().includes(q)) ||
+    (gc.profiles?.email && gc.profiles.email.toLowerCase().includes(q)) ||
+    String(gc.id).toLowerCase().includes(q)
+  );
+
+  if(filtered.length === 0) { tbody.innerHTML = getEmptyRow(6, 'No se encontraron tarjetas.'); return; }
+
+  tbody.innerHTML = filtered.map(gc => {
+    let statusHtml = '<span style="color:green;font-weight:bold;">Disponible</span>';
+    let btnHtml = '';
+
+    if (gc.is_used) {
+      statusHtml = '<span style="color:var(--muted);font-weight:bold;">Usada</span>';
+    } else {
+      btnHtml = `<button class="btn-sm btn-delete" onclick="voidGiftCard('${gc.id}')">Anular</button>`;
+    }
+
+    return `
+      <tr>
+        <td data-label="Código"><strong>${String(gc.id).slice(0,8).toUpperCase()}</strong></td>
+        <td data-label="Cliente">${escapeHTML(gc.profiles?.full_name || 'Usuario')}<br><small>${escapeHTML(gc.profiles?.email || '')}</small></td>
+        <td data-label="Monto">${fmtUSD(gc.amount)}</td>
+        <td data-label="Estado">${statusHtml}</td>
+        <td data-label="Fecha Emisión">${new Date(gc.created_at).toLocaleDateString()}</td>
+        <td data-label="Acciones">${btnHtml}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function voidGiftCard(id) {
+  if(!confirm("¿Estás seguro de que deseas anular esta tarjeta? El cliente ya no podrá usarla.")) return;
+  try {
+    await supabaseClient.from('gift_cards').update({ is_used: true, used_at: new Date() }).eq('id', id);
+    showToast("Tarjeta anulada correctamente.");
+    loadGiftCardsAdmin();
+  } catch(err) { showToast("Error: " + err.message, 'error'); }
+}
+
+// --- RESEÑAS ---
 async function loadReviewsAdmin() {
   const tbody = document.getElementById('reviewsTableBody');
   tbody.innerHTML = getLoadingRow(5);
@@ -915,6 +1024,7 @@ async function deleteReview(id) {
   showToast("Reseña eliminada.");
 }
 
+// --- SOLICITUDES ---
 async function loadRequests() {
   const tbody = document.getElementById('requestsTableBody');
   tbody.innerHTML = getLoadingRow(3);
@@ -948,6 +1058,7 @@ async function approveRequest(reqId, userId) {
   showToast("Cliente ascendido a Vendedor exitosamente.");
 }
 
+// --- PRODUCTOS ---
 async function loadProducts(){
   const tbody = document.getElementById('productsTableBody');
   tbody.innerHTML = getLoadingRow(5);
@@ -957,10 +1068,21 @@ async function loadProducts(){
 
   allProducts = data || [];
   calculateKPIs();
+  filterProducts(document.getElementById('searchProductsAdmin').value);
+}
 
-  if(allProducts.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No hay productos en el inventario.'); return; }
+function filterProducts(query) {
+  const tbody = document.getElementById('productsTableBody');
+  const q = query.toLowerCase().trim();
 
-  tbody.innerHTML = allProducts.map(p => `
+  const filtered = allProducts.filter(p => 
+    p.name.toLowerCase().includes(q) || 
+    p.category.toLowerCase().includes(q)
+  );
+
+  if(filtered.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No se encontraron productos.'); return; }
+
+  tbody.innerHTML = filtered.map(p => `
     <tr>
       <td data-label="Producto"><strong>${escapeHTML(p.name)}</strong></td>
       <td data-label="Categoría">${escapeHTML(p.category)}</td>
@@ -1130,9 +1252,21 @@ async function loadUsers(){
   if(error) { tbody.innerHTML = getErrorRow(5, 'loadUsers()'); return; }
 
   allUsers = data || [];
-  if(allUsers.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No hay usuarios registrados.'); return; }
-  
-  tbody.innerHTML = allUsers.map(u => `<tr><td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td><td data-label="Email">${escapeHTML(u.email)||'-'}</td><td data-label="Rol">${u.role}</td><td data-label="Estado">${u.is_active ? 'Activo' : 'Inactivo'}</td><td data-label="Acciones">-</td></tr>`).join('');
+  filterUsers(document.getElementById('searchUsers').value);
+}
+
+function filterUsers(query) {
+  const tbody = document.getElementById('usersTableBody');
+  const q = query.toLowerCase().trim();
+
+  const filtered = allUsers.filter(u => 
+    (u.full_name && u.full_name.toLowerCase().includes(q)) || 
+    (u.email && u.email.toLowerCase().includes(q))
+  );
+
+  if(filtered.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No se encontraron usuarios.'); return; }
+
+  tbody.innerHTML = filtered.map(u => `<tr><td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td><td data-label="Email">${escapeHTML(u.email)||'-'}</td><td data-label="Rol">${u.role}</td><td data-label="Estado">${u.is_active ? 'Activo' : 'Inactivo'}</td><td data-label="Acciones">-</td></tr>`).join('');
 }
 
 function openUserForm(){ document.getElementById('userForm').reset(); document.getElementById('userModal').classList.add('open'); }
