@@ -326,6 +326,23 @@
     <div class="panel" id="panel-config">
       <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         
+        <!-- PANEL DE MANTENIMIENTO (NUEVO) -->
+        <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); border-left: 4px solid var(--danger);">
+          <h3 style="margin-bottom: 16px;">🚧 Modo Mantenimiento</h3>
+          <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Si activas esto, los clientes verán una pantalla de "Tienda en mantenimiento" y no podrán comprar. Útil mientras actualizas el inventario.</p>
+          <form id="maintenanceForm" onsubmit="saveMaintenanceConfig(event); return false;">
+            <div class="form-group" style="display:flex; align-items:center; gap:8px; background:var(--bg); padding:16px; border-radius:12px; border:1px solid var(--border);">
+              <input type="checkbox" id="maintenanceActive" style="width:24px; height:24px; accent-color:var(--danger); cursor:pointer;">
+              <label style="margin:0; cursor:pointer; font-size:16px;" for="maintenanceActive">Activar Modo Mantenimiento (Cerrar Tienda)</label>
+            </div>
+            <div class="form-group">
+              <label>Mensaje para los clientes</label>
+              <textarea id="maintenanceMsg" rows="2" placeholder="Ej: Estamos mejorando nuestra tienda para ti. Volvemos en unos minutos."></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="background:var(--danger);" id="btnSaveMaintenance">Guardar Configuración de Mantenimiento</button>
+          </form>
+        </div>
+
         <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
           <h3 style="margin-bottom: 16px;">Carrusel de Inicio (3 fotos)</h3>
           <form id="heroForm" onsubmit="saveHeroImages(event); return false;">
@@ -938,12 +955,11 @@ async function deleteCoupon(id) {
   showToast("Cupón eliminado.");
 }
 
-// --- GESTIÓN DE GIFT CARDS (CORREGIDO) ---
+// --- GESTIÓN DE GIFT CARDS ---
 async function loadGiftCardsAdmin() {
   const tbody = document.getElementById('giftCardsTableBody');
   tbody.innerHTML = getLoadingRow(6);
 
-  // 1. Traer las tarjetas (Sin hacer el Join automático que fallaba)
   const { data: gcData, error: gcError } = await supabaseClient.from('gift_cards').select('*').order('created_at', { ascending: false });
   
   if(gcError) { tbody.innerHTML = getErrorRow(6, 'loadGiftCardsAdmin()'); return; }
@@ -954,7 +970,6 @@ async function loadGiftCardsAdmin() {
     return; 
   }
 
-  // 2. Obtener la información de los perfiles de los clientes manualmente
   const userIds = [...new Set(gcData.map(g => g.user_id).filter(Boolean))];
   let profileMap = {};
 
@@ -965,7 +980,6 @@ async function loadGiftCardsAdmin() {
     }
   }
 
-  // 3. Unir la información
   allGiftCards = gcData.map(g => ({
     ...g,
     profile: profileMap[g.user_id] || { full_name: 'Usuario Desconocido', email: '' }
@@ -1341,6 +1355,10 @@ async function loadSiteConfig() {
   if(error) { showToast("Error al cargar configuración web.", "error"); return; }
   currentSiteConfig = data;
 
+  // MANTENIMIENTO
+  document.getElementById('maintenanceActive').checked = data.is_maintenance || false;
+  document.getElementById('maintenanceMsg').value = data.maintenance_message || '';
+
   document.getElementById('promoActive').checked = data.promo_active || false;
   document.getElementById('promoTitle').value = data.promo_title || '';
   document.getElementById('promoText').value = data.promo_text || '';
@@ -1376,6 +1394,23 @@ async function loadSiteConfig() {
   document.getElementById('payTitular').value = p.titular || '';
   document.getElementById('payBinanceEmail').value = p.binance_email || '';
   document.getElementById('payBinanceUid').value = p.binance_uid || '';
+}
+
+async function saveMaintenanceConfig(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSaveMaintenance');
+  btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
+  
+  const is_maintenance = document.getElementById('maintenanceActive').checked;
+  const maintenance_message = document.getElementById('maintenanceMsg').value.trim();
+
+  try {
+    const { error } = await supabaseClient.from('site_config').update({ is_maintenance, maintenance_message }).eq('id', 1);
+    if(error) throw error;
+    showToast(is_maintenance ? "Tienda cerrada por mantenimiento." : "Tienda abierta al público.");
+    loadSiteConfig();
+  } catch(err) { showToast("Error: " + err.message, 'error'); } 
+  finally { btn.disabled = false; btn.textContent = "Guardar Configuración de Mantenimiento"; }
 }
 
 async function savePaymentConfig(e) {
