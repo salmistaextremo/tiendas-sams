@@ -1431,11 +1431,52 @@ async function submitOrder(){
     cart = []; renderCart();
     currentDiscount = 0; appliedCouponCode = null;
     userGiftCards = []; 
-  } catch (err) {
-    errBox.textContent = "Error: " + err.message; btn.disabled = false; btn.textContent = "Confirmar Pedido";
-  }
-}
+  } 
+    } catch (err) {
+    // Restauramos el botón
+    btn.disabled = false; 
+    btn.textContent = "Confirmar Pedido";
+    errBox.textContent = "";
 
+    const errorMsg = err.message || "Error desconocido";
+    console.error("Error del RPC:", errorMsg);
+
+    // --- MANEJO DE ERRORES AMIGABLES ---
+
+    if (errorMsg.includes("Debes confirmar tu correo")) {
+      showToast("⚠️ Debes confirmar tu correo electrónico. Revisa tu bandeja de entrada o spam.", 'error');
+      // Opcional: Cerrar el checkout y mandarlo al portal
+      setTimeout(() => { window.location.href = '/portal.html'; }, 2500);
+    } 
+    
+    else if (errorMsg.includes("Stock insuficiente")) {
+      showToast("😢 Lo sentimos, alguien acaba de comprar este producto. Actualizando catálogo...", 'error');
+      closeCheckout(); // Cerramos el modal de pago
+      loadProducts();  // Recargamos el stock real en la tienda
+      openCart();      // Le mostramos el carrito para que vea qué quitar
+    } 
+    
+    else if (errorMsg.includes("límite de usos") || errorMsg.includes("Cupón inválido")) {
+      showToast("🎟️ El cupón que aplicaste ya expiró o llegó a su límite.", 'error');
+      currentDiscount = 0;
+      appliedCouponCode = null;
+      document.getElementById('couponInput').value = "";
+      updateCheckoutTotal();
+      errBox.textContent = "El cupón ha sido removido. El total ha sido actualizado.";
+    } 
+    
+    else if (errorMsg.includes("Gift Card") || errorMsg.includes("tarjetas de regalo")) {
+      showToast("💳 Hubo un problema con tus Tarjetas de Regalo. Actualizando...", 'error');
+      closeCheckout();
+      openCheckout(); // Volvemos a abrir el checkout para que recargue las tarjetas reales
+    } 
+    
+    else {
+      // Error genérico para cualquier otra cosa
+      errBox.textContent = "Error al procesar: " + errorMsg.replace("Error: ", "");
+      showToast("Ocurrió un error al procesar tu pedido. Intenta de nuevo.", 'error');
+    }
+  }
 document.addEventListener('DOMContentLoaded', async () => {
   checkPrivacyConsent();
   
