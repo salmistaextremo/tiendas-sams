@@ -580,7 +580,7 @@ function showToast(message, type = 'success') {
   setTimeout(() => {
     toast.style.animation = 'fadeOut 0.3s forwards';
     setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  }, 4000);
 }
 
 function togglePassword(inputId, btn) {
@@ -1431,8 +1431,7 @@ async function submitOrder(){
     cart = []; renderCart();
     currentDiscount = 0; appliedCouponCode = null;
     userGiftCards = []; 
-  } 
-    } catch (err) {
+  } catch (err) {
     // Restauramos el botón
     btn.disabled = false; 
     btn.textContent = "Confirmar Pedido";
@@ -1445,7 +1444,6 @@ async function submitOrder(){
 
     if (errorMsg.includes("Debes confirmar tu correo")) {
       showToast("⚠️ Debes confirmar tu correo electrónico. Revisa tu bandeja de entrada o spam.", 'error');
-      // Opcional: Cerrar el checkout y mandarlo al portal
       setTimeout(() => { window.location.href = '/portal.html'; }, 2500);
     } 
     
@@ -1477,6 +1475,8 @@ async function submitOrder(){
       showToast("Ocurrió un error al procesar tu pedido. Intenta de nuevo.", 'error');
     }
   }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   checkPrivacyConsent();
   
