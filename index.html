@@ -250,6 +250,17 @@
   .btn-accept { padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; border: none; background: var(--text); color: #fff; cursor: pointer; transition: all 0.2s; }
   .btn-accept:hover { background: #333; transform: translateY(-2px); }
 
+  /* PANTALLA DE MANTENIMIENTO */
+  #maintenanceScreen {
+    display: none; position: fixed; inset: 0; z-index: 9999999;
+    background: var(--bg); flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+  }
+  .maint-icon { font-size: 80px; margin-bottom: 24px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+  .maint-title { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
+  .maint-text { font-size: 16px; color: var(--muted); max-width: 400px; line-height: 1.6; margin-bottom: 32px; }
+
   /* RESPONSIVE */
   @media(max-width:900px) {
     .nav{ display:none; } 
@@ -292,6 +303,14 @@
 </style>
 </head>
 <body>
+
+<!-- PANTALLA DE MANTENIMIENTO -->
+<div id="maintenanceScreen">
+  <div class="maint-icon">🚧</div>
+  <h1 class="maint-title">Tienda en Mantenimiento</h1>
+  <p class="maint-text" id="maintMessage">Estamos realizando mejoras en nuestra tienda. Volvemos en unos minutos.</p>
+  <button class="btn-primary" onclick="location.reload()" style="padding: 16px 32px; border-radius: 100px;">🔄 Reintentar</button>
+</div>
 
 <!-- BANNER DE PRIVACIDAD -->
 <div class="privacy-banner" id="privacyBanner">
@@ -660,6 +679,13 @@ async function loadSiteConfig() {
   if(error) return;
   currentSiteConfig = data;
 
+  // VERIFICAR MODO MANTENIMIENTO
+  if (data.is_maintenance) {
+    document.getElementById('maintMessage').textContent = data.maintenance_message || 'Estamos realizando mejoras en nuestra tienda. Volvemos en unos minutos.';
+    document.getElementById('maintenanceScreen').style.display = 'flex';
+    return; // Detiene la carga de la tienda
+  }
+
   const defaultHero1 = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1500&auto=format&fit=crop";
   const defaultHero2 = "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1500&auto=format&fit=crop";
   const defaultHero3 = "https://images.unsplash.com/photo-1517423568366-8b83523034fd?q=80&w=1500&auto=format&fit=crop";
@@ -783,7 +809,6 @@ async function loadProducts(){
     
     PRODUCTS = data || [];
 
-    // VALIDAR QUE LOS PRODUCTOS EN EL CARRITO AÚN EXISTAN Y TENGAN STOCK
     if (cart.length > 0) {
       const initialLength = cart.length;
       cart = cart.filter(item => {
@@ -980,7 +1005,6 @@ function addToCart(product, size, qty, note = ""){
   renderCart();
 }
 function renderCart(){
-  // GUARDAR EN LOCALSTORAGE CADA VEZ QUE SE RENDERIZA
   localStorage.setItem('sams_cart_v1', JSON.stringify(cart));
 
   document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
@@ -1432,7 +1456,6 @@ async function submitOrder(){
     currentDiscount = 0; appliedCouponCode = null;
     userGiftCards = []; 
   } catch (err) {
-    // Restauramos el botón
     btn.disabled = false; 
     btn.textContent = "Confirmar Pedido";
     errBox.textContent = "";
@@ -1440,20 +1463,16 @@ async function submitOrder(){
     const errorMsg = err.message || "Error desconocido";
     console.error("Error del RPC:", errorMsg);
 
-    // --- MANEJO DE ERRORES AMIGABLES ---
-
     if (errorMsg.includes("Debes confirmar tu correo")) {
       showToast("⚠️ Debes confirmar tu correo electrónico. Revisa tu bandeja de entrada o spam.", 'error');
       setTimeout(() => { window.location.href = '/portal.html'; }, 2500);
     } 
-    
     else if (errorMsg.includes("Stock insuficiente")) {
       showToast("😢 Lo sentimos, alguien acaba de comprar este producto. Actualizando catálogo...", 'error');
-      closeCheckout(); // Cerramos el modal de pago
-      loadProducts();  // Recargamos el stock real en la tienda
-      openCart();      // Le mostramos el carrito para que vea qué quitar
+      closeCheckout(); 
+      loadProducts();  
+      openCart();      
     } 
-    
     else if (errorMsg.includes("límite de usos") || errorMsg.includes("Cupón inválido")) {
       showToast("🎟️ El cupón que aplicaste ya expiró o llegó a su límite.", 'error');
       currentDiscount = 0;
@@ -1462,15 +1481,12 @@ async function submitOrder(){
       updateCheckoutTotal();
       errBox.textContent = "El cupón ha sido removido. El total ha sido actualizado.";
     } 
-    
     else if (errorMsg.includes("Gift Card") || errorMsg.includes("tarjetas de regalo")) {
       showToast("💳 Hubo un problema con tus Tarjetas de Regalo. Actualizando...", 'error');
       closeCheckout();
-      openCheckout(); // Volvemos a abrir el checkout para que recargue las tarjetas reales
+      openCheckout(); 
     } 
-    
     else {
-      // Error genérico para cualquier otra cosa
       errBox.textContent = "Error al procesar: " + errorMsg.replace("Error: ", "");
       showToast("Ocurrió un error al procesar tu pedido. Intenta de nuevo.", 'error');
     }
