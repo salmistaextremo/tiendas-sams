@@ -640,6 +640,13 @@ function renderFilteredOrders() {
         </div>
         <div class="order-items">${itemsHtml}</div>
         ${planDetailsHtml}
+
+        ${o.tracking_number ? `
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:#166534; font-weight:600; font-size:14px;">📦 Nº de Guía:</span>
+            <strong style="color:#166534; font-size:15px; font-family:monospace;">${escapeHTML(o.tracking_number)}</strong>
+          </div>
+        ` : ''}
         
         <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
           ${gcTotalUsdt > 0 ? `
