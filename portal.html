@@ -76,10 +76,11 @@
   .detail-value { font-size: 16px; font-weight: 600; } .detail-sub { font-size: 12px; color: var(--muted); }
   .text-danger { color: var(--danger); } .text-success { color: var(--success); } .text-warning { color: var(--warning); }
   
-  .upload-receipt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--text); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; border: none; }
-  .upload-receipt-btn:hover { background: #333; }
-  .view-receipt-btn { background: var(--success); }
-  .view-receipt-btn:hover { background: #16a34a; }
+  /* BOTÓN DE PAGO Y COMPROBANTE */
+  .order-actions-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); flex-wrap: wrap; gap: 12px; }
+  .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: all 0.2s; text-decoration: none; }
+  .icon-btn:hover { background: var(--surface); border-color: var(--text); color: var(--success); transform: translateY(-2px); }
+  .icon-btn svg { width: 20px; height: 20px; }
   
   .plan-details-box { background: var(--bg); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; font-size: 14px; }
   .loyalty-banner { background: #ecfdf5; border: 1px solid #10b981; padding: 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;}
@@ -154,6 +155,8 @@
     .bottom-nav { height: 68px; }
     .nav-item { font-size: 9px; }
     .gc-badge { top: 6px; right: 10px; }
+    .order-actions-footer { flex-direction: column; align-items: stretch; gap: 16px; }
+    .icon-btn { align-self: flex-end; }
   }
 </style>
 </head>
@@ -629,8 +632,31 @@ function renderFilteredOrders() {
     }
 
     const canPay = remainingUsdt > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado');
-    const payButtonHtml = canPay ? `<div style="margin-top:16px;"><button class="btn-primary" style="background:var(--text); color:#fff; width:100%;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Realizar Pago / Abono</button>${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px; text-align:center;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}</div>` : '';
-    const mainReceiptHtml = o.receipt_url ? `<button onclick="viewReceipt('${o.receipt_url}')" class="upload-receipt-btn view-receipt-btn">👁️ Ver Comprobante Inicial</button>` : '';
+    
+    let payButtonHtml = '';
+    if (canPay) {
+      payButtonHtml = `
+        <div>
+          <button class="btn-primary" style="background:var(--text); color:#fff; width:auto; padding:12px 24px; border-radius:100px;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Realizar Pago / Abono</button>
+          ${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}
+        </div>
+      `;
+    }
+
+    // NUEVO: Icono de Factura en lugar de botón grande
+    let receiptIconHtml = '';
+    if (o.receipt_url) {
+      receiptIconHtml = `
+        <button onclick="viewReceipt('${o.receipt_url}')" class="icon-btn" title="Ver Comprobante Inicial">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path>
+            <line x1="16" y1="8" x2="8" y2="8"></line>
+            <line x1="16" y1="12" x2="8" y2="12"></line>
+            <line x1="16" y1="16" x2="8" y2="16"></line>
+          </svg>
+        </button>
+      `;
+    }
 
     return `
       <div class="order-card">
@@ -671,7 +697,15 @@ function renderFilteredOrders() {
           </div>
         </div>
 
-        <div style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border);">${payButtonHtml}${mainReceiptHtml}</div>
+        <!-- NUEVO DISEÑO DE ACCIONES INFERIORES -->
+        <div class="order-actions-footer">
+          <div style="flex: 1;">
+            ${payButtonHtml}
+          </div>
+          <div>
+            ${receiptIconHtml}
+          </div>
+        </div>
       </div>
     `;
   }).join('');
