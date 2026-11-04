@@ -105,6 +105,11 @@
   .product-prices{ display:flex; align-items:baseline; gap:12px; } 
   .price-usd{ font-size:18px; font-weight:700; color: var(--text); } 
   .price-bs{ font-size:13px; color:var(--muted); font-weight: 500;}
+
+  /* SCROLL INFINITO */
+  #loadMoreSentinel { height: 40px; display: flex; justify-content: center; align-items: center; margin-top: 20px; }
+  .load-more-spinner { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+  .end-of-list { color: var(--muted); font-size: 14px; font-weight: 500; display: none; }
   
   /* MODALES Y DRAWER */
   .overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); opacity:0; pointer-events:none; z-index:90; transition: opacity .3s; } .overlay.open{ opacity:1; pointer-events:auto; }
@@ -391,11 +396,15 @@
 <section class="catalog" id="catalog">
   <div class="container">
     <div class="section-head"><h2 class="display">Explorar</h2><div class="filters" id="filters"></div></div>
+    
     <div class="product-grid" id="productGrid">
-      <div style="text-align:center; padding: 60px 20px; grid-column: 1/-1;">
-        <div class="spinner"></div>
-        <p style="color: var(--muted); font-weight: 500;">Cargando colección...</p>
-      </div>
+      <!-- Los productos se inyectan aquí vía JS -->
+    </div>
+
+    <!-- SENTINELA DE SCROLL INFINITO -->
+    <div id="loadMoreSentinel">
+      <div class="load-more-spinner" id="loadMoreSpinner"></div>
+      <div class="end-of-list" id="endOfList">No hay más productos que mostrar.</div>
     </div>
   </div>
 </section>
@@ -537,21 +546,10 @@ async function fetchBCVRate() {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     if (res.ok) {
       const data = await res.json();
-      if (data && data.promedio) {
-        const oldRate = bcvRate;
-        bcvRate = data.promedio;
-        
-        // Si la tasa cambió, actualizar todos los productos visibles
-        if (oldRate !== bcvRate && PRODUCTS.length > 0) {
-          renderProducts();
-        }
-      }
+      if (data && data.promedio) bcvRate = data.promedio;
     }
   } catch (e) { console.warn("Usando tasa de respaldo"); }
 }
-
-// Actualizar cada 20 minutos
-setInterval(() => { fetchBCVRate(); }, 20 * 60 * 1000);
 
 // --- LÓGICA DE PRIVACIDAD (COOKIES) ---
 function checkPrivacyConsent() {
@@ -598,6 +596,14 @@ let userGiftCards = [];
 let shippingStates = [];
 let selectedShippingState = "";
 let currentShippingCost = 0;
+
+// --- VARIABLES PARA PAGINACIÓN ---
+let currentPage = 0;
+const PRODUCTS_PER_PAGE = 12;
+let hasMoreProducts = true;
+let isLoadingProducts = false;
+let currentSearchQuery = "";
+// ---------------------------------
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -813,62 +819,92 @@ function updateReviewCarousel() {
   });
 }
 
-async function loadProducts(){
-  const container = document.getElementById('productGrid');
-  container.innerHTML = `<div style="text-align:center; padding: 60px 20px; grid-column: 1/-1;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando colección...</p></div>`;
+// --- VALIDACIÓN DEL CARRITO AL CARGAR ---
+async function validateCartOnLoad() {
+  if (cart.length === 0) return;
+  const cartProductIds = cart.map(i => i.productId);
   
-  try {
-    const { data, error } = await supabaseClient.from('products').select('*').eq('is_active', true).order('created_at', { ascending: true });
-    if(error) throw error;
-    
-    PRODUCTS = data || [];
-
-    if (cart.length > 0) {
-      const initialLength = cart.length;
-      cart = cart.filter(item => {
-        const prodReal = PRODUCTS.find(p => p.id === item.productId);
-        return prodReal && prodReal.stock >= item.qty && prodReal.is_active;
-      });
-      if (cart.length !== initialLength) {
-        renderCart();
-        showToast("Algunos productos ya no están disponibles y fueron removidos de tu carrito.", "error");
-      }
+  const { data, error } = await supabaseClient.from('products').select('id, stock, is_active').in('id', cartProductIds);
+  if (!error && data) {
+    const initialLength = cart.length;
+    cart = cart.filter(item => {
+      const prodReal = data.find(p => p.id === item.productId);
+      return prodReal && prodReal.stock >= item.qty && prodReal.is_active;
+    });
+    if (cart.length !== initialLength) {
+      renderCart();
+      showToast("Algunos productos ya no están disponibles y fueron removidos de tu carrito.", "error");
     }
-
-    renderProducts();
-  } catch (err) {
-    container.innerHTML = `
-      <div class="error-state">
-        <div class="error-icon">⚠️</div>
-        <h3 class="error-title">Error al cargar productos</h3>
-        <p class="error-sub">${err.message}</p>
-        <button class="btn-retry" onclick="loadProducts()">Reintentar</button>
-      </div>`;
   }
 }
 
-function suscribirseProductos() {
-  supabaseClient.channel('cambios-tienda').on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { loadProducts(); }).subscribe();
-}
-function renderFilters(){
-  document.getElementById('filters').innerHTML = DYNAMIC_CATEGORIES.map(c => `<button class="filter ${c.slug===currentFilter?'active':''}" onclick="setFilter('${c.slug}')">${escapeHTML(c.name)}</button>`).join('');
-}
-function setFilter(key){ currentFilter = key; renderFilters(); renderProducts(); document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); }
+// --- LÓGICA DE PAGINACIÓN Y SCROLL INFINITO ---
+async function fetchProducts(reset = false) {
+  if (isLoadingProducts) return;
+  if (!reset && !hasMoreProducts) return;
 
-function renderProducts(){
-  const list = currentFilter === 'todo' ? PRODUCTS : PRODUCTS.filter(p => p.category === currentFilter);
+  isLoadingProducts = true;
+  
+  if (reset) {
+    currentPage = 0;
+    PRODUCTS = [];
+    hasMoreProducts = true;
+    document.getElementById('productGrid').innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px;"><div class="spinner"></div></div>';
+    document.getElementById('endOfList').style.display = 'none';
+  }
+
+  const spinner = document.getElementById('loadMoreSpinner');
+  if(spinner && !reset) spinner.style.display = 'block';
+
+  let query = supabaseClient.from('products').select('*').eq('is_active', true);
+
+  // Aplicar filtros
+  if (currentFilter !== 'todo') query = query.eq('category', currentFilter);
+  if (currentSearchQuery) query = query.ilike('name', `%${currentSearchQuery}%`);
+
+  const from = currentPage * PRODUCTS_PER_PAGE;
+  const to = from + PRODUCTS_PER_PAGE - 1;
+
+  const { data, error } = await query.order('created_at', { ascending: false }).range(from, to);
+
+  if(error) {
+    if(reset) document.getElementById('productGrid').innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar productos</h3><p class="error-sub">${error.message}</p><button class="btn-retry" onclick="fetchProducts(true)">Reintentar</button></div>`;
+    isLoadingProducts = false;
+    if(spinner) spinner.style.display = 'none';
+    return;
+  }
+
+  if (data.length < PRODUCTS_PER_PAGE) hasMoreProducts = false;
+
+  // Si es la primera carga, reemplazamos. Si no, añadimos.
+  if (reset) PRODUCTS = data;
+  else PRODUCTS = [...PRODUCTS, ...data];
+
+  renderProducts(reset);
+  
+  currentPage++;
+  isLoadingProducts = false;
+  if(spinner) spinner.style.display = 'none';
+
+  if (!hasMoreProducts && PRODUCTS.length > 0) {
+    document.getElementById('endOfList').style.display = 'block';
+  }
+}
+
+function renderProducts(isReset = false) {
+  const list = PRODUCTS;
   
   if (list.length === 0) {
     document.getElementById('productGrid').innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🛍️</div>
         <h3 class="empty-title">No hay productos</h3>
-        <p class="empty-sub">Pronto tendremos nuevos drops disponibles. ¡Vuelve pronto!</p>
+        <p class="empty-sub">No encontramos resultados para tu búsqueda o filtro.</p>
       </div>`;
     return;
   }
 
-  document.getElementById('productGrid').innerHTML = list.map(p => {
+  const html = list.map(p => {
     const catObj = DYNAMIC_CATEGORIES.find(c => c.slug === p.category);
     const catName = catObj ? catObj.name : p.category;
     return `
@@ -888,43 +924,54 @@ function renderProducts(){
       </div>
     </div>
   `}).join('');
+
+  if (isReset) document.getElementById('productGrid').innerHTML = html;
+  else document.getElementById('productGrid').insertAdjacentHTML('beforeend', html);
 }
 
-function searchProducts(query) {
-  if (query.trim() === '') { renderProducts(); return; }
-  const q = query.toLowerCase().trim();
-  const filtered = PRODUCTS.filter(p => p.name.toLowerCase().includes(q));
-  
-  if (filtered.length === 0) {
-    document.getElementById('productGrid').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <h3 class="empty-title">Sin resultados</h3>
-        <p class="empty-sub">No encontramos productos con el nombre "${escapeHTML(query)}".</p>
-      </div>`;
-    return;
+// Configurar Intersection Observer para Scroll Infinito
+const observer = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    fetchProducts();
   }
+}, { rootMargin: '200px' }); // Se activa 200px antes de llegar al fondo
+// ------------------------------------------------
 
-  document.getElementById('productGrid').innerHTML = filtered.map(p => {
-    const catObj = DYNAMIC_CATEGORIES.find(c => c.slug === p.category);
-    const catName = catObj ? catObj.name : p.category;
-    return `
-    <div class="product-card" onclick="openProduct('${p.id}')">
-      <div class="product-image">
-        <img src="${p.image_url || ''}" alt="${escapeHTML(p.name)}" loading="lazy">
-        ${p.badge ? `<span class="product-badge">${escapeHTML(p.badge)}</span>` : ''}
-        ${p.stock <= 0 ? `<div class="out-of-stock-badge">AGOTADO</div>` : ''}
-      </div>
-      <div class="product-info">
-        <div class="product-cat">${escapeHTML(catName)}</div>
-        <div class="product-name">${escapeHTML(p.name)}</div>
-        <div class="product-prices">
-          <div class="price-usd">${fmtUSD(p.price_usdt)}</div>
-          <div class="price-bs">${fmtBs(p.price_usdt * bcvRate)}</div>
-        </div>
-      </div>
-    </div>
-  `}).join('');
+function suscribirseProductos() {
+  supabaseClient.channel('cambios-tienda').on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { 
+    // Si hay un cambio en los productos, recargar desde cero
+    fetchProducts(true); 
+  }).subscribe();
+}
+
+function renderFilters(){
+  document.getElementById('filters').innerHTML = DYNAMIC_CATEGORIES.map(c => `<button class="filter ${c.slug===currentFilter?'active':''}" onclick="setFilter('${c.slug}')">${escapeHTML(c.name)}</button>`).join('');
+}
+
+function setFilter(key){ 
+  currentFilter = key; 
+  currentSearchQuery = ""; // Limpiar búsqueda al cambiar de filtro
+  document.getElementById('searchInput').value = "";
+  renderFilters(); 
+  fetchProducts(true); 
+  document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); 
+}
+
+let searchTimeout;
+function searchProducts(query) {
+  clearTimeout(searchTimeout);
+  currentSearchQuery = query.trim();
+  // Debounce de 500ms para no saturar la base de datos en cada tecla
+  searchTimeout = setTimeout(() => {
+    if(currentSearchQuery === "" && currentFilter !== 'todo') {
+       // Si borró la búsqueda, volver al filtro
+       fetchProducts(true);
+    } else {
+       currentFilter = 'todo'; // Si busca, ignoramos el filtro de categoría
+       renderFilters();
+       fetchProducts(true);
+    }
+  }, 500);
 }
 
 let productGalleryImages = [], currentProductImageIndex = 0;
@@ -1522,7 +1569,7 @@ async function submitOrder(){
     else if (errorMsg.includes("Stock insuficiente")) {
       showToast("😢 Lo sentimos, alguien acaba de comprar este producto. Actualizando catálogo...", 'error');
       closeCheckout(); 
-      loadProducts();  
+      fetchProducts(true);  
       openCart();      
     } 
     else if (errorMsg.includes("límite de usos") || errorMsg.includes("Cupón inválido")) {
@@ -1549,7 +1596,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   checkPrivacyConsent();
   
   await fetchBCVRate(); 
-  loadCategories(); loadProducts(); loadReviews(); renderCart(); suscribirseProductos(); startHeroAutoplay(); loadSiteConfig();
+  loadCategories(); 
+  fetchProducts(true); // Carga la primera página
+  observer.observe(document.getElementById('loadMoreSentinel')); // Activa el scroll infinito
+  loadReviews(); 
+  renderCart(); 
+  suscribirseProductos(); 
+  startHeroAutoplay(); 
+  loadSiteConfig();
+  
+  // Validar carrito antiguo
+  await validateCartOnLoad();
   
   const { data: sData } = await supabaseClient.from('shipping_rates').select('*').order('state_name');
   if(sData) shippingStates = sData;
