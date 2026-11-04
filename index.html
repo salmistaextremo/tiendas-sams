@@ -27,7 +27,7 @@
 
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#767676; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; --success:#22c55e; --danger:#ef4444; }
+  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; --success:#22c55e; --danger:#ef4444; }
   html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; line-height:1.5; scroll-behavior: smooth; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
   img{ display:block; max-width:100%; } a{ color:inherit; text-decoration:none; }
@@ -417,11 +417,11 @@
     </div>
     
     <div class="reviews-carousel-wrap" id="reviewsWrap" style="display:none;">
-      <button class="review-arrow left" onclick="moveReview(-1)">❮</button>
+      <button class="review-arrow left" onclick="moveReview(-1)" aria-label="Anterior reseña">❮</button>
       <div class="reviews-carousel">
         <div class="reviews-track" id="reviewsContainer"></div>
       </div>
-      <button class="review-arrow right" onclick="moveReview(1)">❯</button>
+      <button class="review-arrow right" onclick="moveReview(1)" aria-label="Siguiente reseña">❯</button>
     </div>
     
     <div class="reviews-dots" id="reviewsDots"></div>
@@ -459,24 +459,24 @@
       <div class="footer-col">
         <h4>Contacto</h4>
         <div class="social-icons">
-          <a href="#" target="_blank" class="social-icon">
+          <a href="#" target="_blank" class="social-icon" aria-label="Instagram">
             <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
           </a>
-          <a href="#" target="_blank" class="social-icon">
+          <a href="#" target="_blank" class="social-icon" aria-label="WhatsApp">
             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
       </div>
     </div>
     <div class="fbot">
-      © 2025 Tiendas Sam's. Todos los derechos reservados.
+      © 2025 Tiendas Sam's. Todos los derechos reservados. RIF: J-12345678-9
     </div>
   </div>
 </footer>
 
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
 <aside class="drawer" id="drawer">
-  <div class="drawer-head"><h3>Tu Carrito</h3><button onclick="closeCart()">✕</button></div>
+  <div class="drawer-head"><h3>Tu Carrito</h3><button onclick="closeCart()" aria-label="Cerrar carrito">✕</button></div>
   <div class="drawer-body" id="cartBody"></div>
   <div class="drawer-foot" id="cartFoot"></div>
 </aside>
@@ -486,7 +486,7 @@
 
 <div class="modal-wrap" id="authModal" onclick="if(event.target.id==='authModal') closeAuthModal()">
   <div class="modal auth-modal">
-    <button class="modal-x" onclick="closeAuthModal()">✕</button>
+    <button class="modal-x" onclick="closeAuthModal()" aria-label="Cerrar">✕</button>
     <h2 id="authTitle" style="font-size:24px; font-weight:700; text-align:center; margin-bottom:8px;">Iniciar Sesión</h2>
     <p id="authSub" style="text-align:center; color:var(--muted); margin-bottom:32px;">Debes ingresar para completar tu compra.</p>
     <form id="authFormStore" onsubmit="handleStoreAuth(event)">
@@ -498,12 +498,21 @@
         <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Contraseña</label>
         <div class="password-container">
           <input type="password" id="authPassword" required style="border:1px solid var(--border);">
-          <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)">
+          <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)" aria-label="Mostrar contraseña">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <svg class="eye-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
           </button>
         </div>
       </div>
+      
+      <!-- CHECKBOX DE MAYOR DE EDAD (Para el registro en la tienda) -->
+      <div class="field" id="storeAgeField" style="display:none; display:flex; align-items:flex-start; gap:8px; margin-top:16px;">
+        <input type="checkbox" id="storeAgeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--text);">
+        <label for="storeAgeCheck" style="font-size:12px; color:var(--muted); font-weight:500; cursor:pointer; line-height:1.4;">
+          Declaro que soy mayor de 18 años y acepto los <a href="/info.html#terminos" target="_blank" style="text-decoration:underline;">Términos del Servicio</a> y la <a href="/info.html#privacidad" target="_blank" style="text-decoration:underline;">Política de Privacidad</a>.
+        </label>
+      </div>
+
       <div style="text-align:right; margin-bottom:12px;">
         <button type="button" onclick="recoverPassword()" style="font-size:12px; color:var(--muted); text-decoration:underline;">¿Olvidaste tu contraseña?</button>
       </div>
@@ -518,7 +527,7 @@
 
 <div class="modal-wrap" id="promoModal" onclick="if(event.target.id==='promoModal') closePromoModal()">
   <div class="modal promo-modal">
-    <button class="modal-x" onclick="closePromoModal()">✕</button>
+    <button class="modal-x" onclick="closePromoModal()" aria-label="Cerrar">✕</button>
     <img id="promoModalImg" src="" alt="Promoción">
     <div class="promo-content">
       <h2 class="promo-title" id="promoModalTitle"></h2>
@@ -984,19 +993,19 @@ function openProduct(id){
   let carouselHtml = "";
   if (productGalleryImages.length > 1) {
     carouselHtml = `
-      <button class="carousel-arrow left" onclick="moveProductCarousel(-1)">❮</button>
-      <button class="carousel-arrow right" onclick="moveProductCarousel(1)">❯</button>
+      <button class="carousel-arrow left" onclick="moveProductCarousel(-1)" aria-label="Imagen anterior">❮</button>
+      <button class="carousel-arrow right" onclick="moveProductCarousel(1)" aria-label="Siguiente imagen">❯</button>
       <div class="carousel-dots" id="carouselDots">
         ${productGalleryImages.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToProductImage(${i})"></span>`).join('')}
       </div>
     `;
   }
   document.getElementById('productModalInner').innerHTML = `
-    <button class="modal-x" onclick="closeProduct()">✕</button>
+    <button class="modal-x" onclick="closeProduct()" aria-label="Cerrar">✕</button>
     <div class="detail">
       <div class="detail-img-wrap">
         <div class="product-carousel">
-          <div class="carousel-track" id="productCarouselTrack">${productGalleryImages.map(img => `<img src="${img}" class="carousel-img">`).join('')}</div>
+          <div class="carousel-track" id="productCarouselTrack">${productGalleryImages.map(img => `<img src="${img}" class="carousel-img" alt="${escapeHTML(p.name)}">`).join('')}</div>
           ${carouselHtml}
         </div>
       </div>
@@ -1085,7 +1094,7 @@ function renderCart(){
 
   body.innerHTML = cart.map((it,idx)=>`
     <div class="cart-item">
-      <img src="${it.image_url || ''}">
+      <img src="${it.image_url || ''}" alt="${escapeHTML(it.name)}">
       <div class="ci-info">
         <div class="ci-name">${escapeHTML(it.name)}</div>
         <div class="ci-meta">Talla: ${it.size}</div>
@@ -1114,6 +1123,7 @@ function toggleStoreAuthMode() {
   document.getElementById('nameField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('phoneField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('addressField').style.display = isLoginMode ? 'none' : 'block';
+  document.getElementById('storeAgeField').style.display = isLoginMode ? 'none' : 'flex';
   document.getElementById('switchText').textContent = isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?";
   document.getElementById('switchBtn').textContent = isLoginMode ? "Regístrate aquí" : "Inicia sesión";
   document.getElementById('authError').textContent = "";
@@ -1134,6 +1144,7 @@ async function handleStoreAuth(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim(), password = document.getElementById('authPassword').value;
   const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
+  const ageCheck = document.getElementById('storeAgeCheck').checked;
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
   errBox.textContent = ""; btn.disabled = true; btn.textContent = "Procesando...";
 
@@ -1144,6 +1155,8 @@ async function handleStoreAuth(e) {
       closeAuthModal(); openCheckout();
     } else {
       if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
+      if (!ageCheck) throw new Error("Debes declarar que eres mayor de 18 años para registrarte.");
+      
       const { data, error } = await supabaseClient.auth.signUp({ 
         email, 
         password, 
@@ -1196,7 +1209,7 @@ function renderCheckout(profile){
   const totalBs = cart.reduce((s,i)=>s + i.price_bs*i.qty, 0), totalUsdt = cart.reduce((s,i)=>s + i.price_usdt*i.qty, 0);
   
   document.getElementById('checkoutModalInner').innerHTML = `
-    <button class="modal-x" onclick="closeCheckout()">✕</button>
+    <button class="modal-x" onclick="closeCheckout()" aria-label="Cerrar">✕</button>
     <h3>Finalizar Pedido</h3><p class="sub">Confirma tus datos y elige cómo pagar.</p>
 
     <div class="dlabel">Datos de Envío</div>
@@ -1531,7 +1544,7 @@ async function submitOrder(){
     const whatsappLink = `https://wa.me/${telefonoAdmin}?text=${encodeURIComponent(msjText)}`;
 
     document.getElementById('checkoutModalInner').innerHTML = `
-      <button class="modal-x" onclick="closeCheckout()">✕</button>
+      <button class="modal-x" onclick="closeCheckout()" aria-label="Cerrar">✕</button>
       <div class="msg">
         ${earnedGiftCardHtml}
         <div style="font-size:48px; margin-bottom:16px;">🎉</div>
