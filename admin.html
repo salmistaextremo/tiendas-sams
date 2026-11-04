@@ -468,6 +468,15 @@
   </main>
 </div>
 
+<!-- MODAL DE DETALLE DE USUARIO (NUEVO) -->
+<div class="modal-wrap" id="userDetailModal" onclick="if(event.target.id==='userDetailModal') this.classList.remove('open')">
+  <div class="modal" style="max-width: 700px;">
+    <button class="modal-x" onclick="document.getElementById('userDetailModal').classList.remove('open')">✕</button>
+    <h3>Perfil del Cliente</h3>
+    <div id="userDetailContent"></div>
+  </div>
+</div>
+
 <!-- MODALES -->
 <div class="modal-wrap" id="orderDetailModal" onclick="if(event.target.id==='orderDetailModal') this.classList.remove('open')">
   <div class="modal"><button class="modal-x" onclick="document.getElementById('orderDetailModal').classList.remove('open')">✕</button><h3>Detalles del Pedido</h3><div id="orderDetailContent"></div></div>
@@ -1507,6 +1516,7 @@ async function deleteCategory(id) {
   } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
 }
 
+// --- USUARIOS ---
 async function loadUsers(){
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = getLoadingRow(5);
@@ -1529,7 +1539,112 @@ function filterUsers(query) {
 
   if(filtered.length === 0) { tbody.innerHTML = getEmptyRow(5, 'No se encontraron usuarios.'); return; }
 
-  tbody.innerHTML = filtered.map(u => `<tr><td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td><td data-label="Email">${escapeHTML(u.email)||'-'}</td><td data-label="Rol">${u.role}</td><td data-label="Estado">${u.is_active ? 'Activo' : 'Inactivo'}</td><td data-label="Acciones">-</td></tr>`).join('');
+  tbody.innerHTML = filtered.map(u => `
+    <tr>
+      <td data-label="Nombre">${escapeHTML(u.full_name)||'-'}</td>
+      <td data-label="Email">${escapeHTML(u.email)||'-'}</td>
+      <td data-label="Rol"><span style="text-transform:capitalize; font-weight:600;">${u.role}</span></td>
+      <td data-label="Estado">${u.is_active ? '🟢 Activo' : '🔴 Inactivo'}</td>
+      <td data-label="Acciones">
+        <button class="btn-sm btn-view" onclick="viewUserDetails('${u.id}')">Ver Perfil</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function viewUserDetails(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  if(!user) return;
+
+  const modalContent = document.getElementById('userDetailContent');
+  modalContent.innerHTML = `<div style="text-align:center; padding:40px;"><div class="spinner"></div> Cargando historial...</div>`;
+  document.getElementById('userDetailModal').classList.add('open');
+
+  // Traer pedidos del cliente para calcular estadísticas
+  const { data: orders } = await supabaseClient.from('orders')
+    .select('id, total_usdt, status, created_at')
+    .or(`user_id.eq.${userId},customer_email.eq.${user.email}`)
+    .order('created_at', { ascending: false });
+
+  const totalGastado = (orders || []).filter(o => o.status !== 'cancelado').reduce((sum, o) => sum + Number(o.total_usdt), 0);
+  const totalPedidos = (orders || []).length;
+
+  modalContent.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+      <div>
+        <h2 style="font-size:24px; font-weight:700; margin-bottom:4px;">${escapeHTML(user.full_name || 'Sin nombre')}</h2>
+        <p style="color:var(--muted); font-size:14px;">${escapeHTML(user.email)}</p>
+        <p style="color:var(--muted); font-size:13px; margin-top:4px;">Miembro desde: ${new Date(user.created_at).toLocaleDateString('es-VE')}</p>
+      </div>
+      <div style="background:var(--bg); padding:16px; border-radius:12px; text-align:center; min-width:150px;">
+        <div style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:600;">Total Gastado</div>
+        <div style="font-size:22px; font-weight:700; color:var(--success);">${fmtUSD(totalGastado)}</div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">${totalPedidos} pedidos en total</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+      <div class="form-group" style="margin:0;">
+        <label>Rol del Usuario</label>
+        <select id="udRole" onchange="updateUserRole('${user.id}', this.value)" style="font-weight:600;">
+          <option value="cliente" ${user.role === 'cliente' ? 'selected' : ''}>Cliente Regular</option>
+          <option value="vendedor" ${user.role === 'vendedor' ? 'selected' : ''}>Vendedor Mayorista</option>
+          <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrador</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label>Estado de la Cuenta</label>
+        <button onclick="toggleUserStatus('${user.id}', ${!user.is_active})" class="btn-primary" style="background:${user.is_active ? 'var(--danger)' : 'var(--success)'}; margin-top:4px;">
+          ${user.is_active ? '🚫 Suspender Cuenta' : '✅ Activar Cuenta'}
+        </button>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px; font-weight:700; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Últimas Compras</h3>
+    <div style="max-height:200px; overflow-y:auto; background:var(--bg); border-radius:8px; padding:12px;">
+      ${(!orders || orders.length === 0) 
+        ? '<p style="text-align:center; color:var(--muted); font-size:14px; padding:12px;">Este cliente no ha realizado compras aún.</p>' 
+        : orders.slice(0, 5).map(o => `
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px dashed var(--border);">
+            <div><strong>#${String(o.id).slice(0,8).toUpperCase()}</strong> - ${new Date(o.created_at).toLocaleDateString()}</div>
+            <div style="font-weight:600; color:${o.status === 'cancelado' ? 'var(--danger)' : 'var(--text)'};">${fmtUSD(o.total_usdt)} <span style="font-size:11px; font-weight:normal; color:var(--muted);">(${o.status})</span></div>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+async function updateUserRole(userId, newRole) {
+  try {
+    const { error } = await supabaseClient.from('profiles').update({ role: newRole }).eq('id', userId);
+    if(error) throw error;
+    
+    const userIdx = allUsers.findIndex(u => u.id === userId);
+    if(userIdx !== -1) allUsers[userIdx].role = newRole;
+    
+    showToast("Rol de usuario actualizado.");
+    filterUsers(document.getElementById('searchUsers').value);
+  } catch(err) {
+    showToast("Error al actualizar rol: " + err.message, 'error');
+  }
+}
+
+async function toggleUserStatus(userId, newStatus) {
+  if(!confirm(`¿Estás seguro de que deseas ${newStatus ? 'activar' : 'suspender'} esta cuenta?`)) return;
+  try {
+    const { error } = await supabaseClient.from('profiles').update({ is_active: newStatus }).eq('id', userId);
+    if(error) throw error;
+
+    const userIdx = allUsers.findIndex(u => u.id === userId);
+    if(userIdx !== -1) allUsers[userIdx].is_active = newStatus;
+
+    showToast(newStatus ? "Cuenta activada." : "Cuenta suspendida.");
+    document.getElementById('userDetailModal').classList.remove('open');
+    filterUsers(document.getElementById('searchUsers').value);
+  } catch(err) {
+    showToast("Error: " + err.message, 'error');
+  }
 }
 
 function openUserForm(){ document.getElementById('userForm').reset(); document.getElementById('userModal').classList.add('open'); }
