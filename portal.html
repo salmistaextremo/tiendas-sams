@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#767676; --border:#e8e5df; --accent:#ffea61; --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
+  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
   html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 80px; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } a{ color:inherit; text-decoration:none; }
   .container{ max-width:900px; margin:0 auto; padding:0 24px; width: 100%; }
@@ -189,6 +189,14 @@
         </div>
       </div>
 
+      <!-- NUEVO: Checkbox de mayor de edad -->
+      <div class="field" id="ageField" style="display:none; display:flex; align-items:flex-start; gap:8px; margin-top:16px;">
+        <input type="checkbox" id="authAgeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--text);">
+        <label for="authAgeCheck" style="font-size:12px; color:var(--muted); font-weight:500; cursor:pointer; line-height:1.4;">
+          Declaro que soy mayor de 18 años y acepto los <a href="/info.html#terminos" target="_blank" style="text-decoration:underline;">Términos del Servicio</a> y la <a href="/info.html#privacidad" target="_blank" style="text-decoration:underline;">Política de Privacidad</a>.
+        </label>
+      </div>
+
       <div style="text-align:right; margin-bottom:12px;">
         <button type="button" onclick="recoverPassword()" style="font-size:12px; color:var(--muted); text-decoration:underline;">¿Olvidaste tu contraseña?</button>
       </div>
@@ -248,7 +256,7 @@
 
 <div class="modal-wrap" id="paymentModal" onclick="if(event.target.id==='paymentModal') closePaymentModal()">
   <div class="modal">
-    <button class="modal-x" onclick="closePaymentModal()">✕</button>
+    <button class="modal-x" onclick="closePaymentModal()" aria-label="Cerrar">✕</button>
     <h3 style="font-size:24px; margin-bottom:8px;">Realizar Pago</h3>
     <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Ingresa el monto y sube tu comprobante.</p>
     
@@ -280,7 +288,7 @@
 
 <div class="modal-wrap" id="reviewModal" onclick="if(event.target.id==='reviewModal') closeReviewModal()">
   <div class="modal">
-    <button class="modal-x" onclick="closeReviewModal()">✕</button>
+    <button class="modal-x" onclick="closeReviewModal()" aria-label="Cerrar">✕</button>
     <h3 style="font-size:24px; margin-bottom:8px;">Deja tu Reseña</h3>
     <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar.</p>
     
@@ -379,6 +387,7 @@ function toggleAuthMode() {
   document.getElementById('nameField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('phoneField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('addressField').style.display = isLoginMode ? 'none' : 'block';
+  document.getElementById('ageField').style.display = isLoginMode ? 'none' : 'flex';
   document.getElementById('switchText').textContent = isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?";
   document.getElementById('switchBtn').textContent = isLoginMode ? "Regístrate aquí" : "Inicia sesión";
   document.getElementById('authError').textContent = "";
@@ -388,6 +397,7 @@ async function handleAuth(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim(), password = document.getElementById('authPassword').value;
   const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
+  const ageCheck = document.getElementById('authAgeCheck').checked;
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
   errBox.textContent = ""; btn.disabled = true; 
   btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
@@ -398,6 +408,8 @@ async function handleAuth(e) {
       if (error) throw error; checkSession();
     } else {
       if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
+      if (!ageCheck) throw new Error("Debes declarar que eres mayor de 18 años para registrarte.");
+      
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone, address: address } } });
       if (error) throw error;
       if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); toggleAuthMode(); }
@@ -609,7 +621,7 @@ function renderFilteredOrders() {
 
     const itemsHtml = (o.order_items || []).map(item => `
       <div class="item-row">
-        ${item.products?.image_url ? `<img src="${item.products.image_url}" class="item-img">` : `<div class="item-img"></div>`}
+        ${item.products?.image_url ? `<img src="${item.products.image_url}" class="item-img" alt="${escapeHTML(item.product_name)}">` : `<div class="item-img"></div>`}
         <div class="item-details">
           <div class="item-title">${escapeHTML(item.product_name)}</div>
           <div class="item-variant">Talla: ${escapeHTML(item.size)} | Cant: ${item.quantity}</div>
@@ -643,11 +655,10 @@ function renderFilteredOrders() {
       `;
     }
 
-    // NUEVO: Icono de Factura en lugar de botón grande
     let receiptIconHtml = '';
     if (o.receipt_url) {
       receiptIconHtml = `
-        <button onclick="viewReceipt('${o.receipt_url}')" class="icon-btn" title="Ver Comprobante Inicial">
+        <button onclick="viewReceipt('${o.receipt_url}')" class="icon-btn" title="Ver Comprobante Inicial" aria-label="Ver comprobante inicial">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path>
             <line x1="16" y1="8" x2="8" y2="8"></line>
@@ -697,7 +708,6 @@ function renderFilteredOrders() {
           </div>
         </div>
 
-        <!-- NUEVO DISEÑO DE ACCIONES INFERIORES -->
         <div class="order-actions-footer">
           <div style="flex: 1;">
             ${payButtonHtml}
@@ -746,7 +756,7 @@ async function renderProfile() {
         <label>Nueva Contraseña</label>
         <div class="password-container">
           <input type="password" id="profPassword" placeholder="Mínimo 6 caracteres">
-          <button type="button" class="toggle-password" onclick="togglePassword('profPassword', this)">
+          <button type="button" class="toggle-password" onclick="togglePassword('profPassword', this)" aria-label="Mostrar contraseña">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </div>
@@ -754,6 +764,12 @@ async function renderProfile() {
 
       <button class="btn-primary" style="margin-top: 16px;" onclick="updateProfile()" id="btnSaveProfile">Guardar Cambios</button>
       <div id="profError" class="err"></div>
+
+      <hr style="border:none; border-top: 1px solid var(--border); margin: 32px 0 24px;">
+      
+      <h2 style="font-size: 18px; margin-bottom: 8px; color: var(--danger);">Zona de Peligro</h2>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Si eliminas tu cuenta, perderás acceso a tu historial de compras y tarjetas de regalo.</p>
+      <button class="btn-primary" style="background: transparent; color: var(--danger); border: 1px solid var(--danger);" onclick="deleteAccount()">🗑️ Eliminar mi cuenta</button>
     </div>
   `;
 }
@@ -788,6 +804,28 @@ async function updateProfile() {
     errBox.textContent = error.message;
   } finally {
     btn.disabled = false; btn.textContent = "Guardar Cambios";
+  }
+}
+
+async function deleteAccount() {
+  if(!confirm("¿Estás completamente seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás acceso a todos tus datos.")) return;
+  
+  const btn = document.querySelector('button[onclick="deleteAccount()"]');
+  if(btn) { btn.disabled = true; btn.textContent = "Eliminando cuenta..."; }
+
+  try {
+    // Soft delete: Marcamos la cuenta como inactiva en lugar de borrarla de auth.users (para mantener integridad de pedidos)
+    const { error } = await supabaseClient.from('profiles').update({ is_active: false }).eq('id', currentUserId);
+    if(error) throw error;
+
+    showToast("Tu cuenta ha sido eliminada. Cerrando sesión...");
+    setTimeout(async () => {
+      await supabaseClient.auth.signOut();
+      location.reload();
+    }, 2500);
+  } catch(err) {
+    showToast("Error al eliminar cuenta: " + err.message, 'error');
+    if(btn) { btn.disabled = false; btn.textContent = "🗑️ Eliminar mi cuenta"; }
   }
 }
 
