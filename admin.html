@@ -143,8 +143,8 @@
   <div class="login-card">
     <div class="login-logo"><img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's"></div>
     <h2 style="text-align:center; font-size:16px; color:var(--muted); margin-bottom:32px;">Panel de Administración</h2>
-    <div class="field"><label>Correo</label><input id="loginEmail" type="email"></div>
-    <div class="field"><label>Contraseña</label><input id="loginPassword" type="password"></div>
+    <div class="field"><label>Correo</label><input id="loginEmail" type="email" maxlength="100"></div>
+    <div class="field"><label>Contraseña</label><input id="loginPassword" type="password" minlength="6" maxlength="50"></div>
     <button class="btn-primary" id="loginBtn" onclick="handleLogin()">Iniciar sesión</button>
     <div class="err" id="loginError" style="color:var(--danger); text-align:center; margin-top:12px; font-size:14px;"></div>
   </div>
@@ -251,11 +251,11 @@
         <form id="categoryForm" onsubmit="saveCategory(event)" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
           <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
             <label>Nombre de la Categoría (Ej. Gorras)</label>
-            <input type="text" id="cName" required placeholder="Ej. Gorras">
+            <input type="text" id="cName" maxlength="50" required placeholder="Ej. Gorras">
           </div>
           <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
             <label>Enlace / Slug (Ej. gorras)</label>
-            <input type="text" id="cSlug" required placeholder="Ej. gorras">
+            <input type="text" id="cSlug" maxlength="50" pattern="[a-z0-9\-]{3,50}" title="Solo minúsculas, números y guiones" required placeholder="Ej. gorras">
           </div>
           <button type="submit" class="btn-primary" style="width:auto; padding:14px 24px; margin:0;">Añadir</button>
         </form>
@@ -303,7 +303,7 @@
         <form id="couponForm" onsubmit="saveCoupon(event); return false;" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
           <div class="form-group" style="flex:1; margin:0; min-width: 150px;">
             <label>Código (Ej. SAM10)</label>
-            <input type="text" id="couponCode" required placeholder="SAM10" style="text-transform:uppercase;">
+            <input type="text" id="couponCode" maxlength="20" pattern="[A-Z0-9]{3,20}" title="Solo letras mayúsculas y números" required placeholder="SAM10" style="text-transform:uppercase;">
           </div>
           <div class="form-group" style="flex:1; margin:0; min-width: 120px;">
             <label>Descuento (%)</label>
@@ -349,7 +349,7 @@
         <form id="shippingForm" onsubmit="saveShippingRate(event); return false;" style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
           <div class="form-group" style="flex:1; margin:0; min-width: 200px;">
             <label>Nombre del Estado</label>
-            <input type="text" id="shipStateName" required placeholder="Ej. Carabobo">
+            <input type="text" id="shipStateName" maxlength="50" required placeholder="Ej. Carabobo">
           </div>
           <div class="form-group" style="flex:1; margin:0; min-width: 150px;">
             <label>Costo (USD)</label>
@@ -384,7 +384,7 @@
             </div>
             <div class="form-group">
               <label>Mensaje para los clientes</label>
-              <textarea id="maintenanceMsg" rows="2" placeholder="Ej: Estamos mejorando nuestra tienda para ti. Volvemos en unos minutos."></textarea>
+              <textarea id="maintenanceMsg" rows="2" maxlength="200" placeholder="Ej: Estamos mejorando nuestra tienda para ti. Volvemos en unos minutos."></textarea>
             </div>
             <button type="submit" class="btn-primary" style="background:var(--danger);" id="btnSaveMaintenance">Guardar Configuración de Mantenimiento</button>
           </form>
@@ -396,28 +396,28 @@
             <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
               <h4 style="margin-bottom:12px; font-size:14px;">Slide 1</h4>
               <div class="form-group"><label>Foto 1</label><div class="file-upload-box"><input type="file" id="heroImg1" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge1" placeholder="Ej: NUEVA COLECCIÓN 2025"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle1" rows="2" placeholder="Ej: Oversize<br>Sin Límites."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc1" rows="2" placeholder="Ej: Descubre nuestra nueva colección..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText1" placeholder="Ej: Ver Colección"></div>
+              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge1" maxlength="20" placeholder="Ej: NUEVA COLECCIÓN 2025"></div>
+              <div class="form-group"><label>Título</label><textarea id="heroTitle1" rows="2" maxlength="50" placeholder="Ej: Oversize<br>Sin Límites."></textarea></div>
+              <div class="form-group"><label>Descripción</label><textarea id="heroDesc1" rows="2" maxlength="100" placeholder="Ej: Descubre nuestra nueva colección..."></textarea></div>
+              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText1" maxlength="20" placeholder="Ej: Ver Colección"></div>
             </div>
 
             <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
               <h4 style="margin-bottom:12px; font-size:14px;">Slide 2</h4>
               <div class="form-group"><label>Foto 2</label><div class="file-upload-box"><input type="file" id="heroImg2" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge2" placeholder="Ej: TENDENCIA URBANA"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle2" rows="2" placeholder="Ej: Camisetas<br>que Destacan."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc2" rows="2" placeholder="Ej: Estampados únicos y cortes perfectos..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText2" placeholder="Ej: Ver Camisetas"></div>
+              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge2" maxlength="20" placeholder="Ej: TENDENCIA URBANA"></div>
+              <div class="form-group"><label>Título</label><textarea id="heroTitle2" rows="2" maxlength="50" placeholder="Ej: Camisetas<br>que Destacan."></textarea></div>
+              <div class="form-group"><label>Descripción</label><textarea id="heroDesc2" rows="2" maxlength="100" placeholder="Ej: Estampados únicos y cortes perfectos..."></textarea></div>
+              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText2" maxlength="20" placeholder="Ej: Ver Camisetas"></div>
             </div>
 
             <div style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border);">
               <h4 style="margin-bottom:12px; font-size:14px;">Slide 3</h4>
               <div class="form-group"><label>Foto 3</label><div class="file-upload-box"><input type="file" id="heroImg3" accept="image/*"></div></div>
-              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge3" placeholder="Ej: COMODIDAD PREMIUM"></div>
-              <div class="form-group"><label>Título</label><textarea id="heroTitle3" rows="2" placeholder="Ej: Pantalones<br>Wide Leg."></textarea></div>
-              <div class="form-group"><label>Descripción</label><textarea id="heroDesc3" rows="2" placeholder="Ej: La comodidad se encuentra con el estilo..."></textarea></div>
-              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText3" placeholder="Ej: Ver Pantalones"></div>
+              <div class="form-group"><label>Etiqueta (Badge)</label><input type="text" id="heroBadge3" maxlength="20" placeholder="Ej: COMODIDAD PREMIUM"></div>
+              <div class="form-group"><label>Título</label><textarea id="heroTitle3" rows="2" maxlength="50" placeholder="Ej: Pantalones<br>Wide Leg."></textarea></div>
+              <div class="form-group"><label>Descripción</label><textarea id="heroDesc3" rows="2" maxlength="100" placeholder="Ej: La comodidad se encuentra con el estilo..."></textarea></div>
+              <div class="form-group"><label>Texto del Botón</label><input type="text" id="heroBtnText3" maxlength="20" placeholder="Ej: Ver Pantalones"></div>
             </div>
             
             <button type="button" onclick="saveHeroImages(event)" class="btn-primary" style="margin-top: 16px;" id="btnSaveHero">Guardar Cambios del Carrusel</button>
@@ -436,9 +436,9 @@
               <div class="file-upload-box"><input type="file" id="promoImage" accept="image/*"></div>
               <img id="promoPreview" style="display:none; height: 100px; border-radius: 8px; margin-top: 8px; object-fit: cover;">
             </div>
-            <div class="form-group"><label>Título de la Promoción</label><input type="text" id="promoTitle" placeholder="Ej: ¡Nuevo Drop Disponible!"></div>
-            <div class="form-group"><label>Texto o Descripción</label><textarea id="promoText" rows="2" placeholder="Ej: Descuento del 20% en toda la colección..."></textarea></div>
-            <div class="form-group"><label>Enlace del Botón (Opcional)</label><input type="text" id="promoLink" placeholder="Ej: #catalog"></div>
+            <div class="form-group"><label>Título de la Promoción</label><input type="text" id="promoTitle" maxlength="50" placeholder="Ej: ¡Nuevo Drop Disponible!"></div>
+            <div class="form-group"><label>Texto o Descripción</label><textarea id="promoText" rows="2" maxlength="100" placeholder="Ej: Descuento del 20% en toda la colección..."></textarea></div>
+            <div class="form-group"><label>Enlace del Botón (Opcional)</label><input type="text" id="promoLink" maxlength="100" placeholder="Ej: #catalog"></div>
             <button type="button" onclick="savePromoConfig(event)" class="btn-primary" style="margin-top: 16px;" id="btnSavePromo">Guardar Promoción</button>
           </form>
         </div>
@@ -448,15 +448,15 @@
           <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Estos datos se mostrarán al cliente cuando vaya a pagar.</p>
           <form id="paymentForm" onsubmit="savePaymentConfig(event); return false;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-              <div class="form-group"><label>Banco</label><input type="text" id="payBank" placeholder="Ej: 0134 Banesco"></div>
-              <div class="form-group"><label>Cédula / RIF</label><input type="text" id="payCedula" placeholder="Ej: 26464322"></div>
-              <div class="form-group"><label>Teléfono (Pago Móvil)</label><input type="text" id="payPhone" placeholder="Ej: 04243351245"></div>
-              <div class="form-group"><label>Titular</label><input type="text" id="payTitular" placeholder="Ej: Tiendas Sam's"></div>
+              <div class="form-group"><label>Banco</label><input type="text" id="payBank" maxlength="50" placeholder="Ej: 0134 Banesco"></div>
+              <div class="form-group"><label>Cédula / RIF</label><input type="text" id="payCedula" maxlength="20" placeholder="Ej: 26464322"></div>
+              <div class="form-group"><label>Teléfono (Pago Móvil)</label><input type="text" id="payPhone" maxlength="20" placeholder="Ej: 04243351245"></div>
+              <div class="form-group"><label>Titular</label><input type="text" id="payTitular" maxlength="50" placeholder="Ej: Tiendas Sam's"></div>
             </div>
             <h4 style="margin:16px 0 8px; font-size:14px;">Datos Binance (USDT)</h4>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-              <div class="form-group"><label>Correo Binance</label><input type="text" id="payBinanceEmail" placeholder="Ej: samiibelisario@gmail.com"></div>
-              <div class="form-group"><label>UID Binance</label><input type="text" id="payBinanceUid" placeholder="Ej: 219555454"></div>
+              <div class="form-group"><label>Correo Binance</label><input type="email" id="payBinanceEmail" maxlength="100" placeholder="Ej: samiibelisario@gmail.com"></div>
+              <div class="form-group"><label>UID Binance</label><input type="text" id="payBinanceUid" maxlength="30" placeholder="Ej: 219555454"></div>
             </div>
             <button type="submit" class="btn-primary" style="margin-top: 16px;" id="btnSavePayment">Guardar Datos de Pago</button>
           </form>
@@ -468,7 +468,7 @@
   </main>
 </div>
 
-<!-- MODAL DE DETALLE DE USUARIO (NUEVO) -->
+<!-- MODAL DE DETALLE DE USUARIO -->
 <div class="modal-wrap" id="userDetailModal" onclick="if(event.target.id==='userDetailModal') this.classList.remove('open')">
   <div class="modal" style="max-width: 700px;">
     <button class="modal-x" onclick="document.getElementById('userDetailModal').classList.remove('open')">✕</button>
@@ -488,16 +488,16 @@
     <h3 id="modalProductTitle">Añadir Producto</h3>
     <form id="productForm" onsubmit="saveProduct(event)">
       <input type="hidden" id="pId">
-      <div class="form-group"><label>Nombre *</label><input type="text" id="pName" required></div>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="pName" maxlength="100" required></div>
       <div class="form-group"><label>Categoría *</label><select id="pCategory" required></select></div>
-      <div class="form-group"><label>Tallas (coma separada) *</label><input type="text" id="pSizes" required placeholder="S, M, L"></div>
+      <div class="form-group"><label>Tallas (coma separada) *</label><input type="text" id="pSizes" maxlength="50" required placeholder="S, M, L"></div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <div class="form-group"><label>Precio en $ (USD) *</label><input type="number" step="0.01" id="pPriceUsdt" required oninput="calcBsPrice()"></div>
+        <div class="form-group"><label>Precio en $ (USD) *</label><input type="number" step="0.01" min="0.01" id="pPriceUsdt" required oninput="calcBsPrice()"></div>
         <div class="form-group"><label>Precio en Bs (Calculado) *</label><input type="number" step="0.01" id="pPriceBs" required readonly style="background:#eee;"></div>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <div class="form-group"><label>Stock *</label><input type="number" id="pStock" required></div>
-        <div class="form-group"><label>Etiqueta</label><input type="text" id="pBadge"></div>
+        <div class="form-group"><label>Stock *</label><input type="number" min="0" id="pStock" required></div>
+        <div class="form-group"><label>Etiqueta</label><input type="text" id="pBadge" maxlength="20"></div>
       </div>
       <div class="form-group">
         <label>Imagen Principal (Portada)</label>
@@ -510,7 +510,7 @@
         <p style="font-size:12px; color:var(--muted); margin-top:4px;">Selecciona varias fotos a la vez.</p>
         <div id="galleryPreview" class="gallery-preview"></div>
       </div>
-      <div class="form-group"><label>Descripción</label><textarea id="pDescription" rows="3"></textarea></div>
+      <div class="form-group"><label>Descripción</label><textarea id="pDescription" rows="3" maxlength="500"></textarea></div>
       <div class="form-group"><label style="display:flex; gap:8px;"><input type="checkbox" id="pActive" checked> Producto Activo</label></div>
       <button type="submit" class="btn-primary" id="btnSaveProduct">Guardar</button>
     </form>
@@ -520,9 +520,9 @@
 <div class="modal-wrap" id="userModal" onclick="if(event.target.id==='userModal') this.classList.remove('open')">
   <div class="modal"><button class="modal-x" onclick="document.getElementById('userModal').classList.remove('open')">✕</button><h3>Nuevo Usuario</h3>
     <form id="userForm" onsubmit="saveUser(event)">
-      <div class="form-group"><label>Nombre *</label><input type="text" id="uName" required></div>
-      <div class="form-group"><label>Email *</label><input type="email" id="uEmail" required></div>
-      <div class="form-group"><label>Contraseña *</label><input type="password" id="uPassword" required minlength="6"></div>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="uName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras, de 3 a 50 caracteres" required></div>
+      <div class="form-group"><label>Email *</label><input type="email" id="uEmail" maxlength="100" required></div>
+      <div class="form-group"><label>Contraseña *</label><input type="password" id="uPassword" minlength="6" maxlength="50" required></div>
       <div class="form-group"><label>Rol *</label><select id="uRole" required><option value="vendedor">Vendedor</option><option value="admin">Admin</option><option value="cliente">Cliente</option></select></div>
       <button type="submit" class="btn-primary" id="btnSaveUser">Crear</button>
     </form>
@@ -902,7 +902,7 @@ function filterOrders() {
 
     let trackingInput = "";
     if (o.status === 'enviado' || o.status === 'verificado') {
-      trackingInput = `<input type="text" placeholder="Nº de Guía" value="${o.tracking_number || ''}" onchange="updateTrackingNumber('${o.id}', this.value)" style="width:100%; margin-top:8px; padding:6px; font-size:12px; border:1px solid var(--border); border-radius:4px;">`;
+      trackingInput = `<input type="text" placeholder="Nº de Guía" maxlength="50" value="${o.tracking_number || ''}" onchange="updateTrackingNumber('${o.id}', this.value)" style="width:100%; margin-top:8px; padding:6px; font-size:12px; border:1px solid var(--border); border-radius:4px;">`;
     }
 
     return `
@@ -1516,7 +1516,6 @@ async function deleteCategory(id) {
   } catch(err) { showToast("Error al eliminar: " + err.message, 'error'); }
 }
 
-// --- USUARIOS ---
 async function loadUsers(){
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = getLoadingRow(5);
