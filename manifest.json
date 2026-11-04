@@ -1,24 +1,91 @@
 {
   "name": "Tiendas Sam's",
-  "short_name": "Sam's",
+  "short_name": "Tiendas Sam's",
   "prefer_related_applications": false,
   "description": "Ropa oversize y más, con pago en Bs y USDT.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#fcfbf8",
   "theme_color": "#111111",
+  "lang": "es-VE",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle"],
   "icons": [
     {
       "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mis Pedidos",
+      "short_name": "Pedidos",
+      "description": "Ver mi historial de compras, abonar cuotas y mis Gift Cards",
+      "url": "/portal.html",
+      "icons": [
+        {
+          "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Explorar Catálogo",
+      "short_name": "Catálogo",
+      "description": "Ver todos los productos disponibles",
+      "url": "/?utm_source=pwa_shortcut&target=catalog#catalog",
+      "icons": [
+        {
+          "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Información y Envíos",
+      "short_name": "Info",
+      "description": "Políticas, envíos, devoluciones y preguntas frecuentes",
+      "url": "/info.html",
+      "icons": [
+        {
+          "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tiendas Sam's — Inicio"
     }
   ]
 }
