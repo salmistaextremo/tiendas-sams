@@ -173,28 +173,20 @@
   <div class="auth-card">
     <h2 id="authTitle">Iniciar Sesión</h2><p id="authSub">Accede para ver tus pedidos.</p>
     <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName"></div>
-      <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone"></div>
-      <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress"></div>
+      <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras"></div>
+      <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" title="10-15 números"></div>
+      <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress" maxlength="150"></div>
       
-      <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" required></div>
+      <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" maxlength="100" required></div>
       <div class="field">
         <label>Contraseña</label>
         <div class="password-container">
-          <input type="password" id="authPassword" required>
+          <input type="password" id="authPassword" minlength="6" maxlength="50" required>
           <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <svg class="eye-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
           </button>
         </div>
-      </div>
-
-      <!-- NUEVO: Checkbox de mayor de edad -->
-      <div class="field" id="ageField" style="display:none; display:flex; align-items:flex-start; gap:8px; margin-top:16px;">
-        <input type="checkbox" id="authAgeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--text);">
-        <label for="authAgeCheck" style="font-size:12px; color:var(--muted); font-weight:500; cursor:pointer; line-height:1.4;">
-          Declaro que soy mayor de 18 años y acepto los <a href="/info.html#terminos" target="_blank" style="text-decoration:underline;">Términos del Servicio</a> y la <a href="/info.html#privacidad" target="_blank" style="text-decoration:underline;">Política de Privacidad</a>.
-        </label>
       </div>
 
       <div style="text-align:right; margin-bottom:12px;">
@@ -256,13 +248,13 @@
 
 <div class="modal-wrap" id="paymentModal" onclick="if(event.target.id==='paymentModal') closePaymentModal()">
   <div class="modal">
-    <button class="modal-x" onclick="closePaymentModal()" aria-label="Cerrar">✕</button>
+    <button class="modal-x" onclick="closePaymentModal()">✕</button>
     <h3 style="font-size:24px; margin-bottom:8px;">Realizar Pago</h3>
     <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Ingresa el monto y sube tu comprobante.</p>
     
     <div class="field">
       <label>Monto a pagar (Bs) *</label>
-      <input type="number" id="payAmount" step="0.01">
+      <input type="number" id="payAmount" min="1" step="0.01">
     </div>
     
     <div class="field">
@@ -288,7 +280,7 @@
 
 <div class="modal-wrap" id="reviewModal" onclick="if(event.target.id==='reviewModal') closeReviewModal()">
   <div class="modal">
-    <button class="modal-x" onclick="closeReviewModal()" aria-label="Cerrar">✕</button>
+    <button class="modal-x" onclick="closeReviewModal()">✕</button>
     <h3 style="font-size:24px; margin-bottom:8px;">Deja tu Reseña</h3>
     <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar.</p>
     
@@ -305,7 +297,7 @@
     
     <div class="field">
       <label>Comentario (Opcional)</label>
-      <textarea id="reviewComment" rows="3" placeholder="¿Qué tal la calidad de la ropa?" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border);"></textarea>
+      <textarea id="reviewComment" rows="3" maxlength="250" placeholder="¿Qué tal la calidad de la ropa?" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border);"></textarea>
     </div>
     
     <button class="btn-primary" onclick="submitReview()">Enviar Reseña</button>
@@ -387,7 +379,6 @@ function toggleAuthMode() {
   document.getElementById('nameField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('phoneField').style.display = isLoginMode ? 'none' : 'block';
   document.getElementById('addressField').style.display = isLoginMode ? 'none' : 'block';
-  document.getElementById('ageField').style.display = isLoginMode ? 'none' : 'flex';
   document.getElementById('switchText').textContent = isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?";
   document.getElementById('switchBtn').textContent = isLoginMode ? "Regístrate aquí" : "Inicia sesión";
   document.getElementById('authError').textContent = "";
@@ -397,9 +388,21 @@ async function handleAuth(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim(), password = document.getElementById('authPassword').value;
   const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
-  const ageCheck = document.getElementById('authAgeCheck').checked;
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
-  errBox.textContent = ""; btn.disabled = true; 
+  errBox.textContent = ""; 
+  
+  // VALIDACIÓN ESTRICTA JS (Antes del submit)
+  if (!isLoginMode) {
+    const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
+    if (!nameRegex.test(name)) { errBox.textContent = "Nombre inválido (solo letras, 3-50 caracteres)."; return; }
+    
+    const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
+    if (!phoneRegex.test(phone)) { errBox.textContent = "Teléfono inválido (10-15 números)."; return; }
+    
+    if (address.length < 5 || address.length > 150) { errBox.textContent = "Dirección inválida (5-150 caracteres)."; return; }
+  }
+
+  btn.disabled = true; 
   btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
 
   try {
@@ -408,8 +411,6 @@ async function handleAuth(e) {
       if (error) throw error; checkSession();
     } else {
       if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
-      if (!ageCheck) throw new Error("Debes declarar que eres mayor de 18 años para registrarte.");
-      
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone, address: address } } });
       if (error) throw error;
       if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); toggleAuthMode(); }
@@ -733,7 +734,7 @@ async function renderProfile() {
       <h2 style="font-size: 20px; margin-bottom: 24px;">Mis Datos Personales</h2>
       <div class="field">
         <label>Nombre Completo</label>
-        <input type="text" id="profName" value="${escapeHTML(profile.full_name || '')}">
+        <input type="text" id="profName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" value="${escapeHTML(profile.full_name || '')}">
       </div>
       <div class="field">
         <label>Correo (No editable)</label>
@@ -741,11 +742,11 @@ async function renderProfile() {
       </div>
       <div class="field">
         <label>Teléfono</label>
-        <input type="tel" id="profPhone" value="${escapeHTML(profile.phone || '')}">
+        <input type="tel" id="profPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" value="${escapeHTML(profile.phone || '')}">
       </div>
       <div class="field">
         <label>Dirección de Envío</label>
-        <textarea id="profAddress" rows="3">${escapeHTML(profile.address || '')}</textarea>
+        <textarea id="profAddress" rows="3" maxlength="150">${escapeHTML(profile.address || '')}</textarea>
       </div>
       
       <hr style="border:none; border-top: 1px solid var(--border); margin: 24px 0;">
@@ -755,7 +756,7 @@ async function renderProfile() {
       <div class="field">
         <label>Nueva Contraseña</label>
         <div class="password-container">
-          <input type="password" id="profPassword" placeholder="Mínimo 6 caracteres">
+          <input type="password" id="profPassword" minlength="6" maxlength="50" placeholder="Mínimo 6 caracteres">
           <button type="button" class="toggle-password" onclick="togglePassword('profPassword', this)" aria-label="Mostrar contraseña">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
@@ -787,7 +788,13 @@ async function updateProfile() {
   const newPassword = document.getElementById('profPassword').value;
 
   try {
-    if (!name || !phone || !address) throw new Error("Nombre, teléfono y dirección son obligatorios.");
+    const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
+    if (!nameRegex.test(name)) throw new Error("El nombre solo debe contener letras (3-50 caracteres).");
+    
+    const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
+    if (!phoneRegex.test(phone)) throw new Error("El teléfono debe tener entre 10 y 15 números.");
+    
+    if (address.length < 5 || address.length > 150) throw new Error("La dirección debe tener entre 5 y 150 caracteres.");
     
     const { error: profileError } = await supabaseClient.from('profiles').update({ full_name: name, phone: phone, address: address }).eq('id', currentUserId);
     if (profileError) throw profileError;
