@@ -13,6 +13,18 @@
 <link rel="apple-touch-icon" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 
+<!-- SEO y Compartir en Redes (Open Graph) -->
+<meta name="description" content="Descubre nuestra nueva colección de ropa oversize, camisetas y más. Envíos a todo el país. Paga en Bs o USDT.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tiendas Sam's — Oversize & más">
+<meta property="og:description" content="Ropa oversize y otros productos de calidad. Envíos a todo el país. Paga en Bolívares o USDT, de contado, a crédito o apartado.">
+<meta property="og:image" content="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
+<meta property="og:url" content="https://tiendassams.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tiendas Sam's — Oversize & más">
+<meta name="twitter:description" content="Ropa oversize y otros productos de calidad. Envíos a todo el país.">
+<meta name="twitter:image" content="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
+
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; --success:#22c55e; --danger:#ef4444; }
@@ -253,6 +265,48 @@
   @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
   .maint-title { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
   .maint-text { font-size: 16px; color: var(--muted); max-width: 400px; line-height: 1.6; margin-bottom: 32px; }
+
+  /* AVISO DE PAGO SEGURO */
+  .payment-warning {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-left: 4px solid #f59e0b;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .payment-warning-icon { font-size: 20px; }
+  .payment-warning-text { font-size: 13px; color: #92400e; line-height: 1.5; margin: 0; }
+  .payment-warning-text strong { display: block; font-size: 14px; margin-bottom: 4px; color: #b45309; }
+  
+  .confirm-checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 24px;
+    background: var(--bg);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .confirm-checkbox-wrapper input {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--text);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .confirm-checkbox-wrapper label {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1.4;
+  }
 
   /* RESPONSIVE */
   @media(max-width:900px) {
@@ -1258,26 +1312,14 @@ function renderCheckout(profile){
       <p style="font-size:13px; color:var(--text);">Saldo pendiente: <strong id="remainingBalance" style="color:var(--danger);">${fmtBs(totalBs)}</strong></p>
     </div>
 
-    ${userGiftCards.length > 0 ? `
-      <div id="giftCardSection" style="display:${paymentPlan === 'contado' ? 'block' : 'none'}; margin-top:16px;">
-        <div class="dlabel" style="color:#ffd700;">🎁 Tienes Tarjetas de Regalo disponibles</div>
-        <div style="margin-bottom:24px;">
-          ${userGiftCards.map(gc => {
-            const isDisabled = gc.amount > totalUsdt;
-            return `
-            <label class="gc-item ${isDisabled ? 'disabled' : ''}" id="gc-label-${gc.id}">
-              <input type="checkbox" class="gc-checkbox" value="${gc.id}" data-amount="${gc.amount}" onchange="toggleGiftCard('${gc.id}', this)" ${isDisabled ? 'disabled' : ''} style="width:18px; height:18px; accent-color:#ffd700;">
-              <div class="gc-icon">S</div>
-              <div class="gc-info">
-                <div class="gc-amount">Tarjeta de $${gc.amount.toFixed(2)}</div>
-                <div class="gc-code">${String(gc.id).slice(0,8).toUpperCase()}</div>
-              </div>
-            </label>
-          `}).join('')}
-          <p style="font-size:12px; color:var(--muted); margin-top:8px;">* Solo válidas para compras de contado. El total del carrito debe cubrir el monto de la tarjeta.</p>
-        </div>
+    <!-- NUEVO AVISO DE SEGURIDAD -->
+    <div class="payment-warning">
+      <div class="payment-warning-icon">⚠️</div>
+      <div class="payment-warning-text">
+        <strong>¡Atención! No realices el pago todavía.</strong>
+        Primero debes confirmar tu pedido para verificar que el stock sigue disponible. Una vez que hagas clic en "Confirmar Pedido", el sistema te mostrará el número de orden y podrás proceder con la transferencia de forma segura.
       </div>
-    ` : ''}
+    </div>
 
     <div class="dlabel">Método de pago</div>
     <div class="methods">
@@ -1290,9 +1332,10 @@ function renderCheckout(profile){
 
     <div class="dlabel">Comprobante de Pago</div>
     <label class="file-upload-wrapper">
-      <span id="fileNameDisplay">📸 Sube una captura del pago</span>
+      <span id="fileNameDisplay">📸 Sube una captura del pago (Opcional por ahora)</span>
       <input type="file" id="fReceipt" accept="image/*" onchange="document.getElementById('fileNameDisplay').textContent = this.files[0].name" style="display:none;">
     </label>
+    <p style="font-size:11px; color:var(--muted); margin-top:-16px; margin-bottom:24px;">Si pagas ahora, sube el comprobante. Si no, puedes hacerlo luego desde tu portal.</p>
 
     <div class="dlabel" style="margin-top:24px;">Cupón de Descuento</div>
     <div style="display:flex; gap:8px; margin-bottom:24px;">
@@ -1320,7 +1363,16 @@ function renderCheckout(profile){
       Al confirmar tu pedido, aceptas nuestra <a href="/info.html#privacidad" target="_blank" style="text-decoration: underline; font-weight: 600;">Política de Privacidad</a> y nuestros Términos de Servicio.
     </div>
 
-    <button class="btn-primary" style="width:100%;" onclick="submitOrder()">Confirmar Pedido</button>
+    <!-- NUEVO CHECKBOX DE SEGURIDAD -->
+    <div class="confirm-checkbox-wrapper">
+      <input type="checkbox" id="confirmPaymentCheck" onchange="document.getElementById('btnSubmitOrder').disabled = !this.checked; document.getElementById('btnSubmitOrder').style.opacity = this.checked ? '1' : '0.5';">
+      <label for="confirmPaymentCheck">
+        Entiendo que debo hacer clic en "Confirmar Pedido" y esperar la confirmación del sistema antes de realizar cualquier pago.
+      </label>
+    </div>
+
+    <!-- EL BOTÓN INICIA DESHABILITADO -->
+    <button class="btn-primary" id="btnSubmitOrder" style="width:100%; opacity: 0.5;" disabled onclick="submitOrder()">Confirmar Pedido</button>
     <div id="checkoutError" class="err"></div>
   `;
   setTimeout(updateCheckoutTotal, 50);
@@ -1434,6 +1486,11 @@ async function submitOrder(){
   const phone = document.getElementById('fPhone').value.trim();
   const address = document.getElementById('fAddress').value.trim();
   
+  if (!document.getElementById('confirmPaymentCheck').checked) {
+    errBox.textContent = "Debes confirmar que entiendes las instrucciones antes de proceder.";
+    return;
+  }
+
   const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
   if (!nameRegex.test(name)) { errBox.textContent = "El nombre solo debe contener letras y tener entre 3 y 50 caracteres."; return; }
   
@@ -1448,7 +1505,7 @@ async function submitOrder(){
     return;
   }
 
-  const btn = document.querySelector('#checkoutModalInner .btn-primary');
+  const btn = document.getElementById('btnSubmitOrder');
   btn.disabled = true; 
   btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
 
@@ -1591,19 +1648,14 @@ async function submitOrder(){
       setTimeout(() => { window.location.href = '/portal.html'; }, 2500);
     } 
     else if (errorMsg.includes("Stock insuficiente")) {
-      // MOSTRAR EL NUEVO MODAL DE STOCK AGOTADO
       const productName = errorMsg.split(':')[1] || 'el producto';
       document.getElementById('stockErrorMsg').textContent = `El producto${productName} acaba de agotarse mientras realizabas tu compra.`;
       
-      // Limpiamos el producto del carrito
       cart = cart.filter(item => !errorMsg.includes(item.name));
       renderCart();
       
-      // Cerramos el checkout y mostramos el modal
       closeCheckout();
       document.getElementById('stockErrorModal').classList.add('open');
-      
-      // Refrescamos el catálogo
       fetchProducts(true);
     } 
     else if (errorMsg.includes("límite de usos") || errorMsg.includes("Cupón inválido")) {
