@@ -1312,7 +1312,7 @@ function renderCheckout(profile){
       <p style="font-size:13px; color:var(--text);">Saldo pendiente: <strong id="remainingBalance" style="color:var(--danger);">${fmtBs(totalBs)}</strong></p>
     </div>
 
-    <!-- NUEVO AVISO DE SEGURIDAD -->
+    <!-- AVISO DE SEGURIDAD -->
     <div class="payment-warning">
       <div class="payment-warning-icon">⚠️</div>
       <div class="payment-warning-text">
@@ -1330,12 +1330,12 @@ function renderCheckout(profile){
 
     <div id="methodFieldsContainer">${getMethodFieldsHtml(paymentMethod)}</div>
 
-    <div class="dlabel">Comprobante de Pago</div>
+    <!-- COMPROBANTE OBLIGATORIO -->
+    <div class="dlabel">Comprobante de Pago *</div>
     <label class="file-upload-wrapper">
-      <span id="fileNameDisplay">📸 Sube una captura del pago (Opcional por ahora)</span>
-      <input type="file" id="fReceipt" accept="image/*" onchange="document.getElementById('fileNameDisplay').textContent = this.files[0].name" style="display:none;">
+      <span id="fileNameDisplay">📸 Sube una captura del pago</span>
+      <input type="file" id="fReceipt" accept="image/*" required onchange="document.getElementById('fileNameDisplay').textContent = this.files[0].name" style="display:none;">
     </label>
-    <p style="font-size:11px; color:var(--muted); margin-top:-16px; margin-bottom:24px;">Si pagas ahora, sube el comprobante. Si no, puedes hacerlo luego desde tu portal.</p>
 
     <div class="dlabel" style="margin-top:24px;">Cupón de Descuento</div>
     <div style="display:flex; gap:8px; margin-bottom:24px;">
@@ -1363,7 +1363,7 @@ function renderCheckout(profile){
       Al confirmar tu pedido, aceptas nuestra <a href="/info.html#privacidad" target="_blank" style="text-decoration: underline; font-weight: 600;">Política de Privacidad</a> y nuestros Términos de Servicio.
     </div>
 
-    <!-- NUEVO CHECKBOX DE SEGURIDAD -->
+    <!-- CHECKBOX DE SEGURIDAD -->
     <div class="confirm-checkbox-wrapper">
       <input type="checkbox" id="confirmPaymentCheck" onchange="document.getElementById('btnSubmitOrder').disabled = !this.checked; document.getElementById('btnSubmitOrder').style.opacity = this.checked ? '1' : '0.5';">
       <label for="confirmPaymentCheck">
@@ -1371,7 +1371,7 @@ function renderCheckout(profile){
       </label>
     </div>
 
-    <!-- EL BOTÓN INICIA DESHABILITADO -->
+    <!-- BOTÓN INICIA DESHABILITADO -->
     <button class="btn-primary" id="btnSubmitOrder" style="width:100%; opacity: 0.5;" disabled onclick="submitOrder()">Confirmar Pedido</button>
     <div id="checkoutError" class="err"></div>
   `;
@@ -1491,6 +1491,13 @@ async function submitOrder(){
     return;
   }
 
+  const fileInput = document.getElementById('fReceipt');
+  if (!fileInput || fileInput.files.length === 0) {
+    errBox.textContent = "Debes subir una foto de tu comprobante de pago para completar el pedido.";
+    showToast("⚠️ El comprobante de pago es obligatorio.", "error");
+    return;
+  }
+
   const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
   if (!nameRegex.test(name)) { errBox.textContent = "El nombre solo debe contener letras y tener entre 3 y 50 caracteres."; return; }
   
@@ -1549,18 +1556,15 @@ async function submitOrder(){
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) throw new Error("Tu sesión expiró.");
 
-    let receipt_fileName = null;
-    const fileInput = document.getElementById('fReceipt');
-    if (fileInput && fileInput.files.length > 0) {
-      btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Subiendo comprobante...`;
-      const file = fileInput.files[0];
-      const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
-      const ext = compressed.name.split('.').pop();
-      const fileName = `${session.user.id}/receipt_${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressed);
-      if (uploadError) throw new Error("Error al subir comprobante: " + uploadError.message);
-      receipt_fileName = fileName;
-    }
+    // SUBIR COMPROBANTE (AHORA ES OBLIGATORIO)
+    btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Subiendo comprobante...`;
+    const file = fileInput.files[0];
+    const compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true });
+    const ext = compressed.name.split('.').pop();
+    const fileName = `${session.user.id}/receipt_${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressed);
+    if (uploadError) throw new Error("Error al subir comprobante: " + uploadError.message);
+    const receipt_fileName = fileName;
 
     btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Registrando pedido...`;
     const itemsPayload = cart.map(i => ({ product_id: i.productId, size: i.size, quantity: i.qty, custom_note: i.note || null }));
