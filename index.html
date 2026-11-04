@@ -490,14 +490,26 @@
     <h2 id="authTitle" style="font-size:24px; font-weight:700; text-align:center; margin-bottom:8px;">Iniciar Sesión</h2>
     <p id="authSub" style="text-align:center; color:var(--muted); margin-bottom:32px;">Debes ingresar para completar tu compra.</p>
     <form id="authFormStore" onsubmit="handleStoreAuth(event)">
-      <div class="field" id="nameField" style="display:none;"><label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Nombre Completo</label><input type="text" id="authName" style="border:1px solid var(--border);"></div>
-      <div class="field" id="phoneField" style="display:none;"><label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Teléfono</label><input type="tel" id="authPhone" style="border:1px solid var(--border);"></div>
-      <div class="field" id="addressField" style="display:none;"><label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Dirección de Envío</label><input type="text" id="authAddress" style="border:1px solid var(--border);"></div>
-      <div class="field"><label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Correo Electrónico</label><input type="email" id="authEmail" required style="border:1px solid var(--border);"></div>
+      <div class="field" id="nameField" style="display:none;">
+        <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Nombre Completo</label>
+        <input type="text" id="authName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras, de 3 a 50 caracteres" style="border:1px solid var(--border);">
+      </div>
+      <div class="field" id="phoneField" style="display:none;">
+        <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Teléfono</label>
+        <input type="tel" id="authPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" title="Número de teléfono válido (10-15 dígitos)" style="border:1px solid var(--border);">
+      </div>
+      <div class="field" id="addressField" style="display:none;">
+        <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Dirección de Envío</label>
+        <input type="text" id="authAddress" maxlength="150" style="border:1px solid var(--border);">
+      </div>
+      <div class="field">
+        <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Correo Electrónico</label>
+        <input type="email" id="authEmail" maxlength="100" required style="border:1px solid var(--border);">
+      </div>
       <div class="field">
         <label style="font-size:13px;font-weight:600;margin-bottom:8px;display:block;">Contraseña</label>
         <div class="password-container">
-          <input type="password" id="authPassword" required style="border:1px solid var(--border);">
+          <input type="password" id="authPassword" minlength="6" maxlength="50" required style="border:1px solid var(--border);">
           <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)" aria-label="Mostrar contraseña">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <svg class="eye-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -505,7 +517,7 @@
         </div>
       </div>
       
-      <!-- CHECKBOX DE MAYOR DE EDAD (Para el registro en la tienda) -->
+      <!-- CHECKBOX DE MAYOR DE EDAD -->
       <div class="field" id="storeAgeField" style="display:none; display:flex; align-items:flex-start; gap:8px; margin-top:16px;">
         <input type="checkbox" id="storeAgeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--text);">
         <label for="storeAgeCheck" style="font-size:12px; color:var(--muted); font-weight:500; cursor:pointer; line-height:1.4;">
@@ -1024,7 +1036,7 @@ function openProduct(id){
         </div>
 
         <div class="dlabel">Instrucciones Especiales (Opcional)</div>
-        <textarea id="modalNote" class="notes-input" placeholder="Ej: Color negro, estampado personalizado, etc..." ${isOutOfStock ? 'disabled' : ''}></textarea>
+        <textarea id="modalNote" class="notes-input" maxlength="150" placeholder="Ej: Color negro, estampado personalizado, etc..." ${isOutOfStock ? 'disabled' : ''}></textarea>
         <button class="btn-primary" onclick="addFromModal()" ${isOutOfStock ? 'disabled style="background:#ccc; cursor:not-allowed; width:100%;"' : 'style="width:100%;"'}>${isOutOfStock ? 'Producto Agotado' : 'Añadir al Carrito'}</button>
       </div>
     </div>
@@ -1146,7 +1158,20 @@ async function handleStoreAuth(e) {
   const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
   const ageCheck = document.getElementById('storeAgeCheck').checked;
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
-  errBox.textContent = ""; btn.disabled = true; btn.textContent = "Procesando...";
+  errBox.textContent = ""; 
+  
+  // VALIDACIÓN ESTRICTA JS (Antes del submit)
+  if (!isLoginMode) {
+    const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
+    if (!nameRegex.test(name)) { errBox.textContent = "Nombre inválido (solo letras, 3-50 caracteres)."; return; }
+    
+    const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
+    if (!phoneRegex.test(phone)) { errBox.textContent = "Teléfono inválido (10-15 números)."; return; }
+    
+    if (address.length < 5 || address.length > 150) { errBox.textContent = "Dirección inválida (5-150 caracteres)."; return; }
+  }
+
+  btn.disabled = true; btn.textContent = "Procesando...";
 
   try {
     if (isLoginMode) {
@@ -1213,9 +1238,9 @@ function renderCheckout(profile){
     <h3>Finalizar Pedido</h3><p class="sub">Confirma tus datos y elige cómo pagar.</p>
 
     <div class="dlabel">Datos de Envío</div>
-    <div class="field"><input id="fName" type="text" placeholder="Nombre completo" value="${escapeHTML(profile.full_name || '')}" ${profile.full_name ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}></div>
-    <div class="field"><input id="fPhone" type="text" placeholder="Teléfono / WhatsApp" value="${escapeHTML(profile.phone || '')}" ${profile.phone ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}></div>
-    <div class="field"><textarea id="fAddress" rows="2" placeholder="Dirección exacta de envío" ${profile.address ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}>${escapeHTML(profile.address || '')}</textarea></div>
+    <div class="field"><input id="fName" type="text" placeholder="Nombre completo" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras, de 3 a 50 caracteres" value="${escapeHTML(profile.full_name || '')}" ${profile.full_name ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}></div>
+    <div class="field"><input id="fPhone" type="tel" placeholder="Teléfono / WhatsApp" maxlength="15" pattern="[0-9\+\-\s]{10,15}" title="Número de teléfono válido (10-15 dígitos)" value="${escapeHTML(profile.phone || '')}" ${profile.phone ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}></div>
+    <div class="field"><textarea id="fAddress" rows="2" placeholder="Dirección exacta de envío" maxlength="150" ${profile.address ? 'readonly style="background:#f0f0f0;"' : 'style="border:1px solid var(--border);"'}>${escapeHTML(profile.address || '')}</textarea></div>
 
     <!-- SELECTOR DE ESTADO (Solo si es menor a $50) -->
     <div class="field" id="shippingStateContainer" style="display:${totalUsdt >= 50 ? 'none' : 'block'};">
@@ -1288,7 +1313,7 @@ function renderCheckout(profile){
 
     <div class="dlabel" style="margin-top:24px;">Cupón de Descuento</div>
     <div style="display:flex; gap:8px; margin-bottom:24px;">
-      <input type="text" id="couponInput" placeholder="Ej: SAM10" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border); text-transform:uppercase;">
+      <input type="text" id="couponInput" placeholder="Ej: SAM10" maxlength="20" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border); text-transform:uppercase;">
       <button type="button" onclick="applyCoupon()" style="background:var(--text); color:#fff; padding:0 20px; border-radius:8px; font-weight:600;">Aplicar</button>
     </div>
 
@@ -1427,9 +1452,14 @@ async function submitOrder(){
   const phone = document.getElementById('fPhone').value.trim();
   const address = document.getElementById('fAddress').value.trim();
   
-  if(!name)  { errBox.textContent = "El nombre es obligatorio."; return; }
-  if(!phone) { errBox.textContent = "El teléfono es obligatorio."; return; }
-  if(!address){ errBox.textContent = "La dirección es obligatoria."; return; }
+  // VALIDACIÓN ESTRICTA JS (Antes del submit)
+  const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
+  if (!nameRegex.test(name)) { errBox.textContent = "El nombre solo debe contener letras y tener entre 3 y 50 caracteres."; return; }
+  
+  const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
+  if (!phoneRegex.test(phone)) { errBox.textContent = "El teléfono debe tener entre 10 y 15 números."; return; }
+
+  if (address.length < 5 || address.length > 150) { errBox.textContent = "La dirección debe tener entre 5 y 150 caracteres."; return; }
 
   const totalProductosUsd = cart.reduce((s,i)=> s + i.price_usdt * i.qty, 0);
   if (totalProductosUsd < 50 && !selectedShippingState) {
@@ -1598,6 +1628,10 @@ async function submitOrder(){
       closeCheckout();
       openCheckout(); 
     } 
+    else if (errorMsg.includes("demasiados pedidos")) {
+      showToast("🛑 Has realizado demasiados pedidos seguidos. Espera unos minutos e intenta de nuevo.", 'error');
+      errBox.textContent = errorMsg;
+    }
     else {
       errBox.textContent = "Error al procesar: " + errorMsg.replace("Error: ", "");
       showToast("Ocurrió un error al procesar tu pedido. Intenta de nuevo.", 'error');
