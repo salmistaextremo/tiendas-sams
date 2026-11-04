@@ -13,18 +13,6 @@
 <link rel="apple-touch-icon" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 
-<!-- SEO y Compartir en Redes (Open Graph) -->
-<meta name="description" content="Descubre nuestra nueva colección de ropa oversize, camisetas y más. Envíos a todo el país. Paga en Bs o USDT.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Tiendas Sam's — Oversize & más">
-<meta property="og:description" content="Ropa oversize y otros productos de calidad. Envíos a todo el país. Paga en Bolívares o USDT, de contado, a crédito o apartado.">
-<meta property="og:image" content="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
-<meta property="og:url" content="https://tiendassams.vercel.app/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tiendas Sam's — Oversize & más">
-<meta name="twitter:description" content="Ropa oversize y otros productos de calidad. Envíos a todo el país.">
-<meta name="twitter:image" content="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
-
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; --success:#22c55e; --danger:#ef4444; }
@@ -397,11 +385,8 @@
   <div class="container">
     <div class="section-head"><h2 class="display">Explorar</h2><div class="filters" id="filters"></div></div>
     
-    <div class="product-grid" id="productGrid">
-      <!-- Los productos se inyectan aquí vía JS -->
-    </div>
+    <div class="product-grid" id="productGrid"></div>
 
-    <!-- SENTINELA DE SCROLL INFINITO -->
     <div id="loadMoreSentinel">
       <div class="load-more-spinner" id="loadMoreSpinner"></div>
       <div class="end-of-list" id="endOfList">No hay más productos que mostrar.</div>
@@ -517,7 +502,6 @@
         </div>
       </div>
       
-      <!-- CHECKBOX DE MAYOR DE EDAD -->
       <div class="field" id="storeAgeField" style="display:none; display:flex; align-items:flex-start; gap:8px; margin-top:16px;">
         <input type="checkbox" id="storeAgeCheck" style="width:18px; height:18px; margin-top:2px; accent-color:var(--text);">
         <label for="storeAgeCheck" style="font-size:12px; color:var(--muted); font-weight:500; cursor:pointer; line-height:1.4;">
@@ -546,6 +530,18 @@
       <p class="promo-text" id="promoModalText"></p>
       <button class="btn-primary" style="width:100%;" id="promoModalBtn" onclick="goToPromoLink()">Ver Oferta</button>
     </div>
+  </div>
+</div>
+
+<!-- NUEVO MODAL DE STOCK AGOTADO -->
+<div class="modal-wrap" id="stockErrorModal" onclick="if(event.target.id==='stockErrorModal') this.classList.remove('open')">
+  <div class="modal" style="max-width: 450px; text-align: center; padding: 40px 24px;">
+    <div style="font-size: 64px; margin-bottom: 16px;">😢</div>
+    <h3 style="font-size: 24px; margin-bottom: 12px; font-weight: 700;">¡Lo sentimos!</h3>
+    <p id="stockErrorMsg" style="font-size: 15px; color: var(--muted); margin-bottom: 24px; line-height: 1.6;">
+      El producto que intentas comprar acaba de agotarse.
+    </p>
+    <button class="btn-primary" onclick="document.getElementById('stockErrorModal').classList.remove('open'); closeCheckout(); openCart();" style="width: 100%;">Revisar mi Carrito</button>
   </div>
 </div>
 
@@ -618,13 +614,11 @@ let shippingStates = [];
 let selectedShippingState = "";
 let currentShippingCost = 0;
 
-// --- VARIABLES PARA PAGINACIÓN ---
 let currentPage = 0;
 const PRODUCTS_PER_PAGE = 12;
 let hasMoreProducts = true;
 let isLoadingProducts = false;
 let currentSearchQuery = "";
-// ---------------------------------
 
 function escapeHTML(str) {
   if (!str) return '';
@@ -720,11 +714,10 @@ async function loadSiteConfig() {
   if(error) return;
   currentSiteConfig = data;
 
-  // VERIFICAR MODO MANTENIMIENTO
   if (data.is_maintenance) {
     document.getElementById('maintMessage').textContent = data.maintenance_message || 'Estamos realizando mejoras en nuestra tienda. Volvemos en unos minutos.';
     document.getElementById('maintenanceScreen').style.display = 'flex';
-    return; // Detiene la carga de la tienda
+    return;
   }
 
   const defaultHero1 = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1500&auto=format&fit=crop";
@@ -840,7 +833,6 @@ function updateReviewCarousel() {
   });
 }
 
-// --- VALIDACIÓN DEL CARRITO AL CARGAR ---
 async function validateCartOnLoad() {
   if (cart.length === 0) return;
   const cartProductIds = cart.map(i => i.productId);
@@ -859,7 +851,6 @@ async function validateCartOnLoad() {
   }
 }
 
-// --- LÓGICA DE PAGINACIÓN Y SCROLL INFINITO ---
 async function fetchProducts(reset = false) {
   if (isLoadingProducts) return;
   if (!reset && !hasMoreProducts) return;
@@ -879,7 +870,6 @@ async function fetchProducts(reset = false) {
 
   let query = supabaseClient.from('products').select('*').eq('is_active', true);
 
-  // Aplicar filtros
   if (currentFilter !== 'todo') query = query.eq('category', currentFilter);
   if (currentSearchQuery) query = query.ilike('name', `%${currentSearchQuery}%`);
 
@@ -897,7 +887,6 @@ async function fetchProducts(reset = false) {
 
   if (data.length < PRODUCTS_PER_PAGE) hasMoreProducts = false;
 
-  // Si es la primera carga, reemplazamos. Si no, añadimos.
   if (reset) PRODUCTS = data;
   else PRODUCTS = [...PRODUCTS, ...data];
 
@@ -950,17 +939,14 @@ function renderProducts(isReset = false) {
   else document.getElementById('productGrid').insertAdjacentHTML('beforeend', html);
 }
 
-// Configurar Intersection Observer para Scroll Infinito
 const observer = new IntersectionObserver((entries) => {
   if (entries[0].isIntersecting) {
     fetchProducts();
   }
-}, { rootMargin: '200px' }); // Se activa 200px antes de llegar al fondo
-// ------------------------------------------------
+}, { rootMargin: '200px' });
 
 function suscribirseProductos() {
   supabaseClient.channel('cambios-tienda').on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => { 
-    // Si hay un cambio en los productos, recargar desde cero
     fetchProducts(true); 
   }).subscribe();
 }
@@ -971,7 +957,7 @@ function renderFilters(){
 
 function setFilter(key){ 
   currentFilter = key; 
-  currentSearchQuery = ""; // Limpiar búsqueda al cambiar de filtro
+  currentSearchQuery = ""; 
   document.getElementById('searchInput').value = "";
   renderFilters(); 
   fetchProducts(true); 
@@ -982,13 +968,11 @@ let searchTimeout;
 function searchProducts(query) {
   clearTimeout(searchTimeout);
   currentSearchQuery = query.trim();
-  // Debounce de 500ms para no saturar la base de datos en cada tecla
   searchTimeout = setTimeout(() => {
     if(currentSearchQuery === "" && currentFilter !== 'todo') {
-       // Si borró la búsqueda, volver al filtro
        fetchProducts(true);
     } else {
-       currentFilter = 'todo'; // Si busca, ignoramos el filtro de categoría
+       currentFilter = 'todo'; 
        renderFilters();
        fetchProducts(true);
     }
@@ -1160,7 +1144,6 @@ async function handleStoreAuth(e) {
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
   errBox.textContent = ""; 
   
-  // VALIDACIÓN ESTRICTA JS (Antes del submit)
   if (!isLoginMode) {
     const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
     if (!nameRegex.test(name)) { errBox.textContent = "Nombre inválido (solo letras, 3-50 caracteres)."; return; }
@@ -1412,7 +1395,6 @@ function updateCheckoutTotal() {
   totalUsdt = Math.max(0, totalUsdt - giftTotal);
   totalBs = totalUsdt * bcvRate;
 
-  // Sumar el costo de envío si no llega a $50
   const totalProductosUsd = cart.reduce((s,i)=> s + i.price_usdt * i.qty, 0);
   if (totalProductosUsd < 50) {
     totalUsdt += currentShippingCost;
@@ -1452,7 +1434,6 @@ async function submitOrder(){
   const phone = document.getElementById('fPhone').value.trim();
   const address = document.getElementById('fAddress').value.trim();
   
-  // VALIDACIÓN ESTRICTA JS (Antes del submit)
   const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
   if (!nameRegex.test(name)) { errBox.textContent = "El nombre solo debe contener letras y tener entre 3 y 50 caracteres."; return; }
   
@@ -1610,10 +1591,20 @@ async function submitOrder(){
       setTimeout(() => { window.location.href = '/portal.html'; }, 2500);
     } 
     else if (errorMsg.includes("Stock insuficiente")) {
-      showToast("😢 Lo sentimos, alguien acaba de comprar este producto. Actualizando catálogo...", 'error');
-      closeCheckout(); 
-      fetchProducts(true);  
-      openCart();      
+      // MOSTRAR EL NUEVO MODAL DE STOCK AGOTADO
+      const productName = errorMsg.split(':')[1] || 'el producto';
+      document.getElementById('stockErrorMsg').textContent = `El producto${productName} acaba de agotarse mientras realizabas tu compra.`;
+      
+      // Limpiamos el producto del carrito
+      cart = cart.filter(item => !errorMsg.includes(item.name));
+      renderCart();
+      
+      // Cerramos el checkout y mostramos el modal
+      closeCheckout();
+      document.getElementById('stockErrorModal').classList.add('open');
+      
+      // Refrescamos el catálogo
+      fetchProducts(true);
     } 
     else if (errorMsg.includes("límite de usos") || errorMsg.includes("Cupón inválido")) {
       showToast("🎟️ El cupón que aplicaste ya expiró o llegó a su límite.", 'error');
@@ -1644,15 +1635,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   await fetchBCVRate(); 
   loadCategories(); 
-  fetchProducts(true); // Carga la primera página
-  observer.observe(document.getElementById('loadMoreSentinel')); // Activa el scroll infinito
+  fetchProducts(true); 
+  observer.observe(document.getElementById('loadMoreSentinel')); 
   loadReviews(); 
   renderCart(); 
   suscribirseProductos(); 
   startHeroAutoplay(); 
   loadSiteConfig();
   
-  // Validar carrito antiguo
   await validateCartOnLoad();
   
   const { data: sData } = await supabaseClient.from('shipping_rates').select('*').order('state_name');
