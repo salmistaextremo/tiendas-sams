@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#767676; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
+  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
   html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; line-height:1.6; min-height: 100vh; display: flex; flex-direction: column; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
   a{ color:inherit; text-decoration:none; }
@@ -53,55 +53,6 @@
     .info-card { padding: 24px; }
     .info-card h2 { font-size: 20px; }
   }
-
-   /* =========================================
-     TOQUES ESTÉTICOS PREMIUM
-     ========================================= */
-  
-  /* 1. Selección de texto (Cuando el usuario selecciona con el mouse) */
-  ::selection {
-    background: var(--accent);
-    color: var(--text);
-  }
-
-  /* 2. Barra de desplazamiento personalizada (Scrollbar) */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--bg);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #d4d4d4;
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #a3a3a3;
-  }
-
-  /* 3. Transiciones suaves para botones y enlaces */
-  button, a, input, select {
-    transition: all 0.2s ease-in-out;
-  }
-
-  /* 4. Efecto de foco en los inputs (cuando el usuario hace clic para escribir) */
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--text) !important;
-    box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.1);
-  }
-
-  /* 5. Efecto de carga al hacer clic en los botones (Ripple) */
-  button:active {
-    transform: scale(0.98);
-  }
-
-  /* 6. Imágenes que no cargan (Ej: productos borrados) */
-  img {
-    background-color: var(--bg);
-  }
- <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 </style>
 </head>
 <body>
@@ -162,12 +113,53 @@
         </ul>
       </div>
 
+      <!-- REEMBOLSOS -->
+      <div class="info-card" id="reembolsos">
+        <h2>💸 Política de Reembolsos</h2>
+        <p>Si tu pedido no puede ser entregado por causas ajenas a nosotros (ej. producto agotado no reembolsado en 24h), el cliente podrá elegir entre un cambio o la devolución total del dinero.</p>
+        <p><strong>Tiempos de reembolso:</strong> Los reembolsos se procesan por el mismo método de pago en un lapso de 3 a 5 días hábiles una vez aprobada la solicitud.</p>
+      </div>
+
+      <!-- PRIVACIDAD -->
+      <div class="info-card" id="privacidad">
+        <h2>🛡️ Política de Privacidad y Cookies</h2>
+        <p>En Tiendas Sam's, valoramos tu confianza y nos comprometemos a proteger tu información personal.</p>
+        
+        <p style="margin-top: 16px;"><strong>1. Información que recopilamos:</strong><br>
+        Recopilamos tu nombre, correo, teléfono y dirección cuando te registras o compras. También almacenamos los comprobantes de pago que subes para verificar tus compras.</p>
+
+        <p><strong>2. Uso de Cookies:</strong><br>
+        Utilizamos cookies y almacenamiento local (localStorage) para recordar los productos de tu carrito y mantener tu sesión activa. Puedes rechazar su uso en el banner inicial, aunque algunas funciones de compra podrían no guardarse.</p>
+
+        <p><strong>3. Seguridad:</strong><br>
+        Tu información se almacena de forma segura en Supabase. Los comprobantes de pago son privados y solo el personal autorizado de Tiendas Sam's puede verlos.</p>
+
+        <p><strong>4. Tus derechos:</strong><br>
+        Puedes editar tus datos en cualquier momento desde la sección "Perfil" de tu portal, o solicitar la eliminación de tu cuenta escribiéndonos a nuestras redes de contacto.</p>
+      </div>
+
+      <!-- TÉRMINOS Y DATOS DE EMPRESA -->
+      <div class="info-card" id="terminos">
+        <h2>📜 Términos del Servicio y Datos de la Empresa</h2>
+        <p><strong>Razón Social:</strong> Tiendas Sam's, C.A.</p>
+        <p><strong>RIF:</strong> J-12345678-9</p>
+        <p><strong>Dirección Fiscal:</strong> Av. Principal, Local 4, Caracas, Venezuela.</p>
+        <p><strong>Contacto:</strong> hola@tiendassams.com</p>
+        <p style="margin-top:16px;">Al realizar una compra, aceptas que los precios están sujetos a la tasa BCV del día y que el uso de esta web es bajo tu propio riesgo. Prohibida la reproducción de nuestras imágenes y diseños sin autorización previa.</p>
+      </div>
+
+      <!-- POLÍTICA DE MENORES -->
+      <div class="info-card" id="menores">
+        <h2>👶 Política de Menores</h2>
+        <p>Nuestros servicios están dirigidos exclusivamente a personas mayores de 18 años. No recopilamos a sabiendas información personal de menores de edad. Si eres padre o tutor y descubres que tu hijo nos ha proporcionado datos, contáctanos para eliminarlos de inmediato.</p>
+      </div>
+
       <!-- PREGUNTAS FRECUENTES (FAQ) -->
       <div class="info-card">
         <h2>❓ Preguntas Frecuentes</h2>
         
         <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-label="Mostrar respuesta">
             ¿Cómo sé si mi pedido fue confirmado?
             <span class="icon">+</span>
           </button>
@@ -177,7 +169,7 @@
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-label="Mostrar respuesta">
             ¿Puedo pagar mi apartado en varias partes?
             <span class="icon">+</span>
           </button>
@@ -187,7 +179,7 @@
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-label="Mostrar respuesta">
             ¿Qué pasa si el producto que quiero está agotado?
             <span class="icon">+</span>
           </button>
@@ -197,7 +189,7 @@
         </div>
         
         <div class="faq-item">
-          <button class="faq-question" onclick="toggleFaq(this)">
+          <button class="faq-question" onclick="toggleFaq(this)" aria-label="Mostrar respuesta">
             ¿Los precios están en dólares o en bolívares?
             <span class="icon">+</span>
           </button>
@@ -223,10 +215,8 @@
     const item = button.parentElement;
     const wasOpen = item.classList.contains('open');
     
-    // Cerrar todos los demás
     document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
     
-    // Si no estaba abierto, abrirlo
     if (!wasOpen) {
       item.classList.add('open');
     }
