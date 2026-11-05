@@ -242,47 +242,6 @@
   .maint-title { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
   .maint-text { font-size: 16px; color: var(--muted); max-width: 400px; line-height: 1.6; margin-bottom: 32px; }
 
-  .payment-warning {
-    background: #fffbeb;
-    border: 1px solid #fcd34d;
-    border-left: 4px solid #f59e0b;
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-  .payment-warning-icon { font-size: 20px; }
-  .payment-warning-text { font-size: 13px; color: #92400e; line-height: 1.5; margin: 0; }
-  .payment-warning-text strong { display: block; font-size: 14px; margin-bottom: 4px; color: #b45309; }
-  
-  .confirm-checkbox-wrapper {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 24px;
-    background: var(--bg);
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-  }
-  .confirm-checkbox-wrapper input {
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    accent-color: var(--text);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .confirm-checkbox-wrapper label {
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 600;
-    cursor: pointer;
-    line-height: 1.4;
-  }
-
   .rate-warning {
     background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
     padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
@@ -446,7 +405,7 @@
       <button class="review-arrow right" onclick="moveReview(1)" aria-label="Siguiente reseña">❯</button>
     </div>
     <div class="reviews-dots" id="reviewsDots"></div>
-    <p id="noReviewsMsg" style="text-align:center; color:var(--muted); display:none;">Aún no hay reseñas. ¡Sé el primero en dejar una!</p>
+    <p id="noReviewsMsg" style="text-align:center; color:var(--muted); display:none;">Aún no hay reseñas aprobadas. ¡Sé el primero!</p>
   </div>
 </section>
 
@@ -1116,7 +1075,6 @@ function addFromModal(){
 }
 function closeProduct(e){ if(e && e.target.id !== 'productModal') return; document.getElementById('productModal').classList.remove('open'); }
 
-// 🔧 FIX: addToCart valida stock acumulado
 function addToCart(product, size, qty, note = ""){
   const existing = cart.find(i => i.productId === product.id && i.size === size && i.note === note);
   if(existing){ 
@@ -1182,7 +1140,6 @@ function removeItem(idx){ cart.splice(idx,1); renderCart(); }
 function openCart(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
 function closeCart(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 
-// 🔧 FIX: openAuthModal resetea isLoginMode
 function toggleStoreAuthMode() {
   isLoginMode = !isLoginMode;
   document.getElementById('authTitle').textContent = isLoginMode ? "Iniciar Sesión" : "Crear Cuenta";
@@ -1287,7 +1244,6 @@ async function openCheckout(){
 }
 function closeCheckout(e){ if(e && e.target.id !== 'checkoutModal') return; document.getElementById('checkoutModal').classList.remove('open'); }
 
-// 🔧 FIX: QR de Pago Móvil en el método de pago
 function getMethodFieldsHtml(method) {
   const p = currentSiteConfig.payment_details || {};
   const bank = p.bank || '0134 Banesco';
@@ -1320,6 +1276,9 @@ function getMethodFieldsHtml(method) {
 function renderCheckout(profile){
   const totalUsdt = cart.reduce((s,i)=>s + i.price_usdt*i.qty, 0);
   const totalBs = totalUsdt * (bcvRate || 0);
+  
+  // Calculamos el 30% para el apartado
+  const minApartadoBs = totalBs * 0.30;
   
   document.getElementById('checkoutModalInner').innerHTML = `
     <button class="modal-x" onclick="closeCheckout()" aria-label="Cerrar">✕</button>
@@ -1362,7 +1321,8 @@ function renderCheckout(profile){
 
     <div id="layawayFields" style="display:${paymentPlan==='apartado'?'block':'none'}; margin-bottom:24px; background:var(--bg); padding:16px; border-radius:12px; border:1px solid var(--border);">
       <p style="font-size:13px; color:var(--text); margin-bottom:12px; font-weight:600;">¿Cuánto deseas abonar hoy? (en Bs)</p>
-      <input type="number" id="abonoAmount" style="width:100%; margin-bottom:8px; padding:12px; border-radius:8px; border:1px solid var(--border); font-family:inherit;" oninput="updateCheckoutTotal()" placeholder="Ej: 1000" max="${totalBs}">
+      <input type="number" id="abonoAmount" style="width:100%; margin-bottom:8px; padding:12px; border-radius:8px; border:1px solid var(--border); font-family:inherit;" oninput="updateCheckoutTotal()" placeholder="Mínimo: ${fmtBs(minApartadoBs)}" max="${totalBs}">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:4px;">Mínimo requerido (30%): <strong style="color:var(--text);">${fmtBs(minApartadoBs)}</strong></p>
       <p style="font-size:13px; color:var(--text);">Saldo pendiente: <strong id="remainingBalance" style="color:var(--danger);">${fmtBs(totalBs)}</strong></p>
     </div>
 
@@ -1381,14 +1341,6 @@ function renderCheckout(profile){
       `).join('')}
     </div>
     ` : ''}
-
-    <div class="payment-warning">
-      <div class="payment-warning-icon">⚠️</div>
-      <div class="payment-warning-text">
-        <strong>¡Atención! No realices el pago todavía.</strong>
-        Primero debes confirmar tu pedido para verificar que el stock sigue disponible. Una vez que hagas clic en "Confirmar Pedido", el sistema te mostrará el número de orden y podrás proceder con la transferencia de forma segura.
-      </div>
-    </div>
 
     <div class="dlabel">Método de pago</div>
     <div class="methods">
@@ -1431,14 +1383,7 @@ function renderCheckout(profile){
       Al confirmar tu pedido, aceptas nuestra <a href="/info.html#privacidad" target="_blank" style="text-decoration: underline; font-weight: 600;">Política de Privacidad</a> y nuestros Términos de Servicio.
     </div>
 
-    <div class="confirm-checkbox-wrapper">
-      <input type="checkbox" id="confirmPaymentCheck" onchange="document.getElementById('btnSubmitOrder').disabled = !this.checked; document.getElementById('btnSubmitOrder').style.opacity = this.checked ? '1' : '0.5';">
-      <label for="confirmPaymentCheck">
-        Entiendo que debo hacer clic en "Confirmar Pedido" y esperar la confirmación del sistema antes de realizar cualquier pago.
-      </label>
-    </div>
-
-    <button class="btn-primary" id="btnSubmitOrder" style="width:100%; opacity: 0.5;" disabled onclick="submitOrder()">Confirmar Pedido</button>
+    <button class="btn-primary" id="btnSubmitOrder" style="width:100%;" onclick="submitOrder()">Confirmar Pedido</button>
     <div id="checkoutError" class="err"></div>
   `;
   setTimeout(updateCheckoutTotal, 50);
@@ -1458,7 +1403,6 @@ function toggleGiftCard(id, cb) {
   updateCheckoutTotal();
 }
 
-// 🔧 FIX: applyCoupon usa RPC segura (no lee tabla coupons)
 async function applyCoupon() {
   const code = document.getElementById('couponInput').value.trim().toUpperCase();
   if(!code) return;
@@ -1528,6 +1472,12 @@ function updateCheckoutTotal() {
     amountToPay = isNaN(abonoInputBs) ? 0 : (abonoInputBs / ratio);
     const remaining = Math.max(0, totalBs - abonoInputBs);
     if(document.getElementById('remainingBalance')) document.getElementById('remainingBalance').textContent = fmtBs(remaining);
+    
+    // 🔧 FIX: Actualizar el mínimo en tiempo real si cambia el total
+    const minSpan = document.querySelector('#layawayFields p:nth-child(3) strong');
+    if (minSpan) minSpan.textContent = fmtBs(totalBs * 0.30);
+    const inputAbono = document.getElementById('abonoAmount');
+    if (inputAbono) inputAbono.placeholder = `Mínimo: ${fmtBs(totalBs * 0.30)}`;
   }
   
   if(document.getElementById('amountToPay')) {
@@ -1553,10 +1503,6 @@ async function submitOrder(){
   const phone = document.getElementById('fPhone').value.trim();
   const address = document.getElementById('fAddress').value.trim();
   
-  if (!document.getElementById('confirmPaymentCheck').checked) {
-    errBox.textContent = "Debes confirmar que entiendes las instrucciones antes de proceder."; return;
-  }
-
   const fileInput = document.getElementById('fReceipt');
   if (!fileInput || fileInput.files.length === 0) {
     errBox.textContent = "Debes subir una foto de tu comprobante de pago para completar el pedido.";
@@ -1604,8 +1550,12 @@ async function submitOrder(){
     if (c3) installmentsRecords.push({ amount_bs: totalBs - cuotaBs*2, reference: "Cuota 03" });
   } else if (paymentPlan === 'apartado') {
     const abono = parseFloat(document.getElementById('abonoAmount').value);
+    const minAbono = totalBs * 0.30;
+
     if (isNaN(abono) || abono <= 0)   { errBox.textContent = "Ingresa un abono válido."; btn.disabled=false; btn.textContent="Confirmar Pedido"; return; }
+    if (abono < minAbono)             { errBox.textContent = `El abono mínimo para apartado es del 30% (${fmtBs(minAbono)}).`; btn.disabled=false; btn.textContent="Confirmar Pedido"; return; }
     if (abono > totalBs)              { errBox.textContent = "El abono no puede superar el total."; btn.disabled=false; btn.textContent="Confirmar Pedido"; return; }
+    
     planDetails = { abono_inicial: abono, saldo_pendiente: totalBs - abono };
     installmentsRecords.push({ amount_bs: abono, reference: "Abono inicial" });
   }
@@ -1631,7 +1581,6 @@ async function submitOrder(){
     btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Registrando pedido...`;
     const itemsPayload = cart.map(i => ({ product_id: i.productId, size: i.size, quantity: i.qty, custom_note: i.note || null }));
 
-    // p_exchange_rate se envía pero el server lo ignora (usa site_config.bcv_rate)
     const { data, error } = await supabaseClient.rpc('create_order', {
       p_customer_name: name,
       p_customer_phone: phone,
@@ -1659,7 +1608,6 @@ async function submitOrder(){
          </div>` 
       : '';
 
-    // WhatsApp desde site_config (no hardcoded)
     const telefonoAdmin = (currentSiteConfig.whatsapp_number || "584243351245").replace(/\D/g, '');
     
     let planText = paymentPlan.toUpperCase();
@@ -1757,7 +1705,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: sData } = await supabaseClient.from('shipping_rates').select('*').order('state_name');
   if(sData) shippingStates = sData;
 
-  // Si no hay tasa al cargar, reintentar una vez después de 2s
   if (!bcvRate) {
     setTimeout(fetchBCVRate, 2000);
   }
