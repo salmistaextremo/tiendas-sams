@@ -971,9 +971,22 @@ async function generateExcelReport() {
       </tr>
     `).join('');
 
-    // 4. Generar Gráficos (Lógica de conversión a Imagen para evitar bugs de html2pdf)
+     // 4. Generar Gráficos (Lógica de conversión a Imagen para evitar bugs de html2pdf)
     if (window.pdfBarChartInstance) window.pdfBarChartInstance.destroy();
     if (window.pdfPieChartInstance) window.pdfPieChartInstance.destroy();
+
+    // 🔧 FIX: Plugin para forzar fondo blanco en las imágenes del PDF
+    const whiteBackgroundPlugin = {
+      id: 'customCanvasBackgroundColor',
+      beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = '#ffffff'; // Color blanco
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
 
     // Creamos un canvas en memoria (no en el DOM) para el gráfico de barras
     const canvasBar = document.createElement('canvas');
@@ -991,10 +1004,11 @@ async function generateExcelReport() {
         }]
       },
       options: { 
-        animation: false, // CRUCIAL: Desactivar animación para captura inmediata
+        animation: false, 
         responsive: false, 
         plugins: { legend: { display: false } } 
-      }
+      },
+      plugins: [whiteBackgroundPlugin] // 👈 Aplicamos el fondo blanco
     });
     // Convertir el canvas a imagen Base64 y ponerlo en el HTML del PDF
     document.getElementById('pdfBarChartImg').src = window.pdfBarChartInstance.toBase64Image('image/jpeg', 1.0);
@@ -1014,14 +1028,14 @@ async function generateExcelReport() {
         }]
       },
       options: { 
-        animation: false, // CRUCIAL
+        animation: false, 
         responsive: false, 
         plugins: { legend: { position: 'bottom' } } 
-      }
+      },
+      plugins: [whiteBackgroundPlugin] // 👈 Aplicamos el fondo blanco
     });
     // Convertir a Base64 e inyectar
     document.getElementById('pdfPieChartImg').src = window.pdfPieChartInstance.toBase64Image('image/jpeg', 1.0);
-
     // 5. Generar PDF
     const element = document.getElementById('pdfReportTemplate');
     const opt = {
