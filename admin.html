@@ -5,8 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tiendas Sam's — Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<!-- Librerías para el Reporte PDF -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#111111">
 <link rel="apple-touch-icon" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png">
@@ -19,6 +24,7 @@
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } 
   .container{ max-width:1200px; margin:0 auto; padding:0 24px; }
 
+  /* LOGIN */
   .login-wrapper{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
   .login-card{ background:var(--surface); border-radius:var(--radius-lg); padding:48px; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,0.04); }
   .login-logo { text-align: center; margin-bottom: 32px; display: flex; justify-content: center; }
@@ -27,6 +33,7 @@
   .field input{ width:100%; padding:16px; border-radius:var(--radius-md); background:var(--bg); border:1px solid var(--border); font-family:inherit; }
   .btn-primary{ width:100%; padding:16px; border-radius:var(--radius-md); background:var(--text); color:#fff; font-weight:600; display:flex; justify-content:center; cursor:pointer; }
 
+  /* PANEL */
   #adminPanel{ display:none; }
   .admin-header{ background:var(--surface); border-bottom:1px solid var(--border); padding:0 32px; height:80px; display:flex; align-items:center; justify-content:space-between; }
   .admin-header .logo img { height: 40px; width: auto; object-fit: contain; }
@@ -36,6 +43,7 @@
   .admin-main{ padding:40px 32px; max-width:1240px; margin:0 auto; }
   .admin-title{ font-size:32px; margin-bottom:8px; } .admin-sub{ font-size:15px; color:var(--muted); margin-bottom:32px; }
   
+  /* TARJETAS DE ESTADÍSTICAS (KPIs) */
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
   .kpi-card { background: var(--surface); border-radius: var(--radius-md); padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border); position: relative; overflow: hidden; }
   .kpi-card::before { content: ''; position: absolute; top:0; left:0; width: 4px; height: 100%; background: var(--accent); }
@@ -49,6 +57,7 @@
   
   .panel{ display:none; } .panel.active{ display:block; }
 
+  /* TABLAS Y BUSCADORES */
   .table-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; flex-wrap: wrap; }
   .filters-wrap { display: flex; gap: 12px; flex-wrap: wrap; }
   .search-box, .filter-select { padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border); font-family: inherit; font-size: 14px; outline: none; background: var(--surface); }
@@ -71,6 +80,7 @@
   .btn-delete{ background:#fee2e2; color:#991b1b; margin-left: 8px; cursor: pointer;}
   .btn-new{ background:var(--accent); color:#111; padding:10px 20px; border-radius:var(--radius-sm); font-weight:700; font-size:14px; cursor:pointer; }
 
+  /* MODALES */
   .modal-wrap{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); overflow-y:auto; }
   .modal-wrap.open{ display:flex; }
   .modal{ background:var(--surface); border-radius:var(--radius-lg); max-width:640px; width:100%; max-height:92vh; overflow-y:auto; position:relative; padding:40px; }
@@ -89,6 +99,7 @@
   .item-detail-note { font-size: 12px; color: var(--text); font-style: italic; margin-top: 4px; display: block; background: var(--bg); padding: 2px 6px; border-radius: 4px; }
   .receipt-img-preview { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); cursor: pointer; }
 
+  /* VISTA PREVIA Y UPLOADS */
   .file-upload-box { border: 1px dashed var(--border); padding: 12px; border-radius: var(--radius-md); background: var(--bg); margin-bottom: 8px; }
   .file-upload-box input[type="file"] { width: 100%; font-size: 13px; color: var(--muted); cursor: pointer; }
   .gallery-preview { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; padding-bottom: 8px; }
@@ -96,6 +107,7 @@
   .hero-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
   .hero-preview img { width: 100px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
 
+  /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
   .toast { background: #333; color: #fff; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; max-width: 400px; }
   .toast.success { background: var(--success); }
@@ -106,7 +118,6 @@
   .spinner { width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* 🔧 FIX: chip de estado de reseña */
   .chip-approved { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
   .chip-pending  { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
 
@@ -190,6 +201,7 @@
       <div class="tab" onclick="switchTab('config', event)">🎨 Diseño Web</div>
     </div>
 
+    <!-- PANEL PEDIDOS -->
     <div class="panel active" id="panel-pedidos">
       <div class="table-actions">
         <div class="filters-wrap">
@@ -212,6 +224,7 @@
       </div>
     </div>
 
+    <!-- PANEL ABONOS -->
     <div class="panel" id="panel-abonos">
       <div class="data-table-wrap">
         <table class="data-table">
@@ -221,6 +234,7 @@
       </div>
     </div>
 
+    <!-- PANEL PRODUCTOS -->
     <div class="panel" id="panel-productos">
       <div class="table-actions">
         <input type="text" class="search-box" id="searchProductsAdmin" placeholder="Buscar producto por nombre..." oninput="filterProducts(this.value)">
@@ -234,6 +248,7 @@
       </div>
     </div>
 
+    <!-- PANEL CATEGORÍAS -->
     <div class="panel" id="panel-categorias">
       <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
         <h3>Categorías de Productos</h3>
@@ -261,6 +276,7 @@
       </div>
     </div>
 
+    <!-- PANEL USUARIOS -->
     <div class="panel" id="panel-usuarios">
       <div class="table-actions">
         <input type="text" class="search-box" id="searchUsers" placeholder="Buscar usuario por nombre o email..." oninput="filterUsers(this.value)">
@@ -274,6 +290,7 @@
       </div>
     </div>
 
+    <!-- PANEL SOLICITUDES -->
     <div class="panel" id="panel-solicitudes">
       <div class="data-table-wrap">
         <table class="data-table">
@@ -283,6 +300,7 @@
       </div>
     </div>
 
+    <!-- PANEL CUPONES -->
     <div class="panel" id="panel-cupones">
       <div class="panel-header-actions" style="display:flex; justify-content:space-between; margin-bottom:16px;">
         <h3>Códigos de Descuento</h3>
@@ -314,6 +332,7 @@
       </div>
     </div>
 
+    <!-- PANEL GIFT CARDS -->
     <div class="panel" id="panel-giftcards">
       <div class="table-actions">
         <input type="text" class="search-box" id="searchGC" placeholder="Buscar por cliente o código..." oninput="filterGiftCards(this.value)">
@@ -327,6 +346,7 @@
       </div>
     </div>
 
+    <!-- PANEL ENVÍOS -->
     <div class="panel" id="panel-envios">
       <div class="table-actions">
         <h3 style="margin:0;">Tarifas de Envío por Estado</h3>
@@ -354,6 +374,7 @@
       </div>
     </div>
 
+    <!-- PANEL RESEÑAS -->
     <div class="panel" id="panel-resenas">
       <div class="data-table-wrap">
         <table class="data-table">
@@ -363,15 +384,13 @@
       </div>
     </div>
 
+    <!-- PANEL CONFIGURACIÓN -->
     <div class="panel" id="panel-config">
       <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         
-        <!-- 🔧 FIX: Gestión de Tasa BCV -->
         <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); border-left: 4px solid var(--success);">
           <h3 style="margin-bottom: 16px;">💱 Tasa BCV</h3>
-          <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">
-            Tasa guardada en el sistema. Si la API externa falla, los pedidos se procesan con esta tasa. Actualízala cuando cambie.
-          </p>
+          <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Tasa actual guardada. Si la API externa falla, el sistema usa este valor.</p>
           <form id="bcvForm" onsubmit="saveBCVRate(event); return false;">
             <div class="form-group">
               <label>Tasa BCV (Bs por USD)</label>
@@ -470,7 +489,6 @@
           </form>
         </div>
 
-        <!-- 🔧 FIX: WhatsApp config -->
         <div style="background: var(--surface); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
           <h3 style="margin-bottom: 16px;">📱 Contacto de WhatsApp</h3>
           <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Este número recibe los pedidos notificados desde el checkout.</p>
@@ -489,6 +507,7 @@
   </main>
 </div>
 
+<!-- MODALES -->
 <div class="modal-wrap" id="userDetailModal" onclick="if(event.target.id==='userDetailModal') this.classList.remove('open')">
   <div class="modal" style="max-width: 700px;">
     <button class="modal-x" onclick="document.getElementById('userDetailModal').classList.remove('open')">✕</button>
@@ -551,14 +570,15 @@
 <div class="modal-wrap" id="exportModal" onclick="if(event.target.id==='exportModal') this.classList.remove('open')">
   <div class="modal">
     <button class="modal-x" onclick="document.getElementById('exportModal').classList.remove('open')">✕</button>
-    <h3>Descargar Reporte Excel</h3>
+    <h3>Descargar Reporte</h3>
     <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Selecciona el tipo de datos y el rango de fechas que deseas exportar.</p>
     
     <div class="form-group">
       <label>Tipo de Reporte</label>
       <select id="exportType">
-        <option value="orders">📦 Pedidos (Ventas)</option>
-        <option value="installments">💳 Abonos / Pagos</option>
+        <option value="orders">📦 Pedidos (CSV / Excel)</option>
+        <option value="installments">💳 Abonos / Pagos (CSV)</option>
+        <option value="pdf">📄 Reporte Visual (PDF)</option>
       </select>
     </div>
     
@@ -573,7 +593,80 @@
       </div>
     </div>
     
-    <button class="btn-primary" onclick="generateExcelReport()" id="btnExport">Descargar Excel (.csv)</button>
+    <button class="btn-primary" onclick="generateExcelReport()" id="btnExport">Descargar</button>
+  </div>
+</div>
+
+<!-- CONTENEDOR OCULTO PARA EL PDF -->
+<div style="position: absolute; left: -9999px; top: 0;">
+  <div id="pdfReportTemplate" style="width: 800px; background: #fff; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+    
+    <!-- Cabecera -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #111; padding-bottom: 20px; margin-bottom: 30px;">
+      <div>
+        <h1 style="margin: 0; font-size: 32px; color: #111; font-weight: 800; letter-spacing: -1px;">Tiendas Sam's</h1>
+        <p style="margin: 4px 0 0; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 2px;">Reporte de Ventas</p>
+      </div>
+      <div style="text-align: right;">
+        <h2 style="margin: 0; font-size: 20px; color: #111;">Reporte de Ventas</h2>
+        <p style="margin: 4px 0 0; font-size: 12px; color: #666;" id="pdfDateRange">01/01/2026 - 31/12/2026</p>
+      </div>
+    </div>
+
+    <!-- KPIs Principales -->
+    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #ffea61; border-radius: 8px;">
+        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Ingresos Totales</p>
+        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalRevenue">$0.00</h3>
+        <p style="margin: 4px 0 0; font-size: 12px; color: #666;" id="pdfTotalBs">≈ Bs 0.00</p>
+      </div>
+      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 8px;">
+        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Pedidos Totales</p>
+        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalOrders">0</h3>
+      </div>
+      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #22c55e; border-radius: 8px;">
+        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Unidades Vendidas</p>
+        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalUnits">0</h3>
+      </div>
+      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #ef4444; border-radius: 8px;">
+        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Ticket Promedio</p>
+        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfAvgTicket">$0.00</h3>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+      <div style="flex: 2; border: 1px solid #eee; border-radius: 8px; padding: 20px;">
+        <h4 style="margin: 0 0 16px; font-size: 14px; color: #111;">Evolución de Ventas</h4>
+        <canvas id="pdfBarChart" width="400" height="200"></canvas>
+      </div>
+      <div style="flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 20px;">
+        <h4 style="margin: 0 0 16px; font-size: 14px; color: #111;">Ventas por Estado</h4>
+        <canvas id="pdfPieChart" width="200" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabla de Mejores Clientes -->
+    <div>
+      <h4 style="margin: 0 0 16px; font-size: 14px; color: #111;">Top Clientes (Mayor Volumen)</h4>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="background: #111; color: #fff;">
+            <th style="padding: 12px; text-align: left;">Cliente</th>
+            <th style="padding: 12px; text-align: center;">Pedidos</th>
+            <th style="padding: 12px; text-align: right;">Total Gastado</th>
+          </tr>
+        </thead>
+        <tbody id="pdfTopCustomers">
+          <!-- Filas generadas por JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center; font-size: 11px; color: #999;">
+      Generado automáticamente por el sistema de Tiendas Sam's. Confidencial.
+    </div>
   </div>
 </div>
 
@@ -592,7 +685,6 @@ let isRealTimeSubscribed = false;
 let bcvRate = null;
 let audioCtx = null;
 
-// 🔧 FIX: fetchBCVRate con fallback a site_config
 async function fetchBCVRate(silent = false) {
   try {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { signal: AbortSignal.timeout(5000) });
@@ -619,7 +711,6 @@ async function fetchBCVRate(silent = false) {
     }
   } catch (e) { console.warn("API BCV no disponible:", e.message); }
   
-  // Fallback a site_config
   try {
     const { data } = await supabaseClient.from('site_config').select('bcv_rate').eq('id', 1).single();
     if (data && data.bcv_rate && data.bcv_rate > 0) {
@@ -799,16 +890,140 @@ function openExportModal() {
   document.getElementById('exportModal').classList.add('open');
 }
 
-function generateExcelReport() {
+async function generateExcelReport() {
   const type = document.getElementById('exportType').value;
   const start = document.getElementById('exportStartDate').value;
   const end = document.getElementById('exportEndDate').value;
   
-  // 🔧 FIX: Validar rango de fechas
   if (start && end && start > end) {
     return showToast("Rango inválido: fecha inicio es mayor que fin.", 'error');
   }
-  
+
+  // --- LÓGICA PARA GENERAR PDF ---
+  if (type === 'pdf') {
+    const btn = document.getElementById('btnExport');
+    btn.disabled = true; btn.textContent = "Generando PDF...";
+
+    const isInDateRange = (dateString) => {
+      if (!start && !end) return true;
+      const itemDate = new Date(dateString);
+      const itemDateStr = itemDate.toLocaleDateString('en-CA');
+      if (start && itemDateStr < start) return false;
+      if (end && itemDateStr > end) return false;
+      return true;
+    };
+
+    // 1. Filtrar los pedidos
+    const filteredOrders = allOrdersData.filter(o => isInDateRange(o.created_at) && o.status !== 'cancelado');
+    
+    if (filteredOrders.length === 0) {
+      btn.disabled = false; btn.textContent = "Descargar";
+      return showToast("No hay ventas en el rango seleccionado.", 'error');
+    }
+
+    // 2. Calcular KPIs
+    let totalUsdt = 0, totalUnits = 0;
+    const customersMap = {};
+    const statesMap = {};
+    const monthlySales = {};
+
+    filteredOrders.forEach(o => {
+      totalUsdt += Number(o.total_usdt);
+      
+      const state = o.shipping_state || 'Desconocido';
+      statesMap[state] = (statesMap[state] || 0) + 1;
+
+      const dateObj = new Date(o.created_at);
+      const monthKey = dateObj.toLocaleDateString('es-VE', { month: 'short' });
+      monthlySales[monthKey] = (monthlySales[monthKey] || 0) + Number(o.total_usdt);
+
+      // Top Clientes
+      const email = o.customer_email || 'Invitado';
+      if (!customersMap[email]) customersMap[email] = { name: o.customer_name, orders: 0, total: 0 };
+      customersMap[email].orders += 1;
+      customersMap[email].total += Number(o.total_usdt);
+
+      // Unidades
+      if (o.order_items) {
+        o.order_items.forEach(item => { totalUnits += item.quantity; });
+      }
+    });
+
+    // 3. Rellenar los textos del HTML del PDF
+    document.getElementById('pdfDateRange').textContent = (start || 'Inicio') + " al " + (end || 'Hoy');
+    document.getElementById('pdfTotalRevenue').textContent = fmtUSD(totalUsdt);
+    document.getElementById('pdfTotalBs').textContent = "≈ " + fmtBs(totalUsdt * (bcvRate || 0));
+    document.getElementById('pdfTotalOrders').textContent = filteredOrders.length;
+    document.getElementById('pdfTotalUnits').textContent = totalUnits;
+    document.getElementById('pdfAvgTicket').textContent = fmtUSD(totalUsdt / filteredOrders.length);
+
+    // Rellenar Tabla Top Clientes
+    const topCustomers = Object.values(customersMap).sort((a,b) => b.total - a.total).slice(0, 5);
+    document.getElementById('pdfTopCustomers').innerHTML = topCustomers.map(c => `
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 10px;">${escapeHTML(c.name)}</td>
+        <td style="padding: 10px; text-align: center;">${c.orders}</td>
+        <td style="padding: 10px; text-align: right; font-weight: bold;">${fmtUSD(c.total)}</td>
+      </tr>
+    `).join('');
+
+    // 4. Generar Gráficos (Chart.js)
+    if (window.pdfBarChartInstance) window.pdfBarChartInstance.destroy();
+    if (window.pdfPieChartInstance) window.pdfPieChartInstance.destroy();
+
+    const ctxBar = document.getElementById('pdfBarChart').getContext('2d');
+    window.pdfBarChartInstance = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(monthlySales),
+        datasets: [{
+          label: 'Ventas ($)',
+          data: Object.values(monthlySales),
+          backgroundColor: '#111111',
+          borderRadius: 4
+        }]
+      },
+      options: { responsive: false, plugins: { legend: { display: false } } }
+    });
+
+    const ctxPie = document.getElementById('pdfPieChart').getContext('2d');
+    window.pdfPieChartInstance = new Chart(ctxPie, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(statesMap),
+        datasets: [{
+          data: Object.values(statesMap),
+          backgroundColor: ['#111111', '#ffea61', '#3b82f6', '#22c55e', '#ef4444'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // 5. Generar PDF
+    const element = document.getElementById('pdfReportTemplate');
+    const opt = {
+      margin:       0,
+      filename:     `Reporte_Ventas_Sams_${start || 'Inicio'}_${end || 'Fin'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      document.getElementById('exportModal').classList.remove('open');
+      btn.disabled = false; btn.textContent = "Descargar";
+      showToast("PDF generado con éxito.");
+    }).catch(err => {
+      console.error("Error al generar PDF:", err);
+      btn.disabled = false; btn.textContent = "Descargar";
+      showToast("Error al generar el PDF.", "error");
+    });
+
+    return;
+  }
+
+  // --- LÓGICA EXISTENTE PARA CSV ---
   const btn = document.getElementById('btnExport');
   btn.disabled = true; btn.textContent = "Generando...";
 
@@ -842,7 +1057,7 @@ function generateExcelReport() {
   }
 
   if (dataToExport.length === 0) {
-    btn.disabled = false; btn.textContent = "Descargar Excel (.csv)";
+    btn.disabled = false; btn.textContent = "Descargar";
     return showToast("No hay datos en el rango seleccionado.", 'error');
   }
 
@@ -857,7 +1072,7 @@ function generateExcelReport() {
   document.body.removeChild(link);
   
   document.getElementById('exportModal').classList.remove('open');
-  btn.disabled = false; btn.textContent = "Descargar Excel (.csv)";
+  btn.disabled = false; btn.textContent = "Descargar";
   showToast("Reporte descargado con éxito.");
 }
 
@@ -957,14 +1172,12 @@ function filterOrders() {
   }).join('');
 }
 
-// 🔧 FIX: confirmación al cancelar
 async function updateOrderStatus(orderId, newStatus){
   try {
     const orderIndex = allOrdersData.findIndex(o => o.id === orderId);
     if (orderIndex === -1) return;
     const currentOrder = allOrdersData[orderIndex];
     
-    // Confirmación para cancelación
     if (newStatus === 'cancelado') {
       if (!confirm("⚠️ ¿Cancelar este pedido? Se restaurará el stock y se anularán las gift cards no usadas. Esta acción no se puede deshacer.")) {
         loadOrders(); return;
@@ -1006,7 +1219,6 @@ async function updateOrderStatus(orderId, newStatus){
   }
 }
 
-// 🔧 FIX: onblur en lugar de onchange (más seguro)
 async function updateTrackingNumber(orderId, trackingNumber) {
   try {
     if (!trackingNumber || !trackingNumber.trim()) return;
@@ -1303,7 +1515,6 @@ async function deleteShippingRate(id) {
   showToast("Tarifa eliminada.");
 }
 
-// 🔧 FIX: incluir estado is_approved en tabla y permitir aprobar
 async function loadReviewsAdmin() {
   const tbody = document.getElementById('reviewsTableBody');
   tbody.innerHTML = getLoadingRow(5);
@@ -1328,7 +1539,6 @@ async function loadReviewsAdmin() {
   `).join('');
 }
 
-// 🔧 FIX: nueva función approveReview
 async function approveReview(id) {
   try {
     const { error } = await supabaseClient.from('reviews').update({ is_approved: true }).eq('id', id);
@@ -1415,10 +1625,8 @@ function filterProducts(query) {
   `).join('');
 }
 
-// 🔧 FIX: soft-delete si hay ventas
 async function deleteProduct(id) {
   try {
-    // Verificar si el producto está en algún pedido
     const { count, error: checkErr } = await supabaseClient
       .from('order_items')
       .select('*', { count: 'exact', head: true })
@@ -1750,7 +1958,6 @@ async function loadSiteConfig() {
   if(error) { showToast("Error al cargar configuración web.", "error"); return; }
   currentSiteConfig = data;
 
-  // 🔧 FIX: mostrar y actualizar la tasa guardada
   document.getElementById('bcvRateInput').value = data.bcv_rate || '';
   const lastUpd = data.bcv_rate_updated_at ? new Date(data.bcv_rate_updated_at).toLocaleString('es-VE') : '—';
   document.getElementById('bcvLastUpdate').textContent = `Última actualización: ${lastUpd}`;
@@ -1786,12 +1993,10 @@ async function loadSiteConfig() {
   document.getElementById('payBinanceEmail').value = p.binance_email || '';
   document.getElementById('payBinanceUid').value = p.binance_uid || '';
 
-  // 🔧 FIX: WhatsApp y email de contacto
   document.getElementById('whatsappNumber').value = data.whatsapp_number || '';
   document.getElementById('contactEmail').value = data.contact_email || '';
 }
 
-// 🔧 FIX: nueva función para guardar tasa BCV
 async function saveBCVRate(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSaveBCV');
@@ -1819,7 +2024,6 @@ async function saveBCVRate(e) {
   finally { btn.disabled = false; btn.textContent = "Actualizar Tasa"; }
 }
 
-// 🔧 FIX: nueva función para guardar WhatsApp
 async function saveWhatsappConfig(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSaveWhatsapp');
