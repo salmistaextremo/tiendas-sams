@@ -613,36 +613,40 @@
       </div>
     </div>
 
-    <!-- KPIs Principales -->
-    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #ffea61; border-radius: 8px;">
-        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Ingresos Totales</p>
-        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalRevenue">$0.00</h3>
-        <p style="margin: 4px 0 0; font-size: 12px; color: #666;" id="pdfTotalBs">≈ Bs 0.00</p>
+    <!-- KPIs Principales (Diseño Grid Compacto) -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+      <div style="background: #f8f6f0; padding: 15px; border-radius: 8px; text-align: center; border-top: 4px solid #ffea61;">
+        <p style="margin: 0 0 8px; font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700;">Ingresos Totales</p>
+        <h3 style="margin: 0; font-size: 24px; color: #111; font-weight: 800;" id="pdfTotalRevenue">$0.00</h3>
+        <p style="margin: 4px 0 0; font-size: 10px; color: #888;" id="pdfTotalBs">≈ Bs 0.00</p>
       </div>
-      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 8px;">
-        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Pedidos Totales</p>
-        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalOrders">0</h3>
+      <div style="background: #f8f6f0; padding: 15px; border-radius: 8px; text-align: center; border-top: 4px solid #3b82f6;">
+        <p style="margin: 0 0 8px; font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700;">Pedidos Totales</p>
+        <h3 style="margin: 0; font-size: 24px; color: #111; font-weight: 800;" id="pdfTotalOrders">0</h3>
       </div>
-      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #22c55e; border-radius: 8px;">
-        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Unidades Vendidas</p>
-        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfTotalUnits">0</h3>
+      <div style="background: #f8f6f0; padding: 15px; border-radius: 8px; text-align: center; border-top: 4px solid #22c55e;">
+        <p style="margin: 0 0 8px; font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700;">Unidades Vendidas</p>
+        <h3 style="margin: 0; font-size: 24px; color: #111; font-weight: 800;" id="pdfTotalUnits">0</h3>
       </div>
-      <div style="flex: 1; background: #f8f6f0; padding: 20px; border-left: 4px solid #ef4444; border-radius: 8px;">
-        <p style="margin: 0 0 8px; font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;">Ticket Promedio</p>
-        <h3 style="margin: 0; font-size: 28px; color: #111;" id="pdfAvgTicket">$0.00</h3>
+      <div style="background: #f8f6f0; padding: 15px; border-radius: 8px; text-align: center; border-top: 4px solid #ef4444;">
+        <p style="margin: 0 0 8px; font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700;">Ticket Promedio</p>
+        <h3 style="margin: 0; font-size: 24px; color: #111; font-weight: 800;" id="pdfAvgTicket">$0.00</h3>
       </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Gráficos (Ahora usan etiquetas <img> en vez de <canvas>) -->
     <div style="display: flex; gap: 20px; margin-bottom: 30px;">
       <div style="flex: 2; border: 1px solid #eee; border-radius: 8px; padding: 20px;">
         <h4 style="margin: 0 0 16px; font-size: 14px; color: #111;">Evolución de Ventas</h4>
-        <canvas id="pdfBarChart" width="400" height="200"></canvas>
+        <div style="height: 220px; display: flex; align-items: center; justify-content: center;">
+          <img id="pdfBarChartImg" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
       </div>
       <div style="flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 20px;">
         <h4 style="margin: 0 0 16px; font-size: 14px; color: #111;">Ventas por Estado</h4>
-        <canvas id="pdfPieChart" width="200" height="200"></canvas>
+        <div style="height: 220px; display: flex; align-items: center; justify-content: center;">
+          <img id="pdfPieChartImg" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
       </div>
     </div>
 
@@ -967,12 +971,15 @@ async function generateExcelReport() {
       </tr>
     `).join('');
 
-    // 4. Generar Gráficos (Chart.js)
+    // 4. Generar Gráficos (Lógica de conversión a Imagen para evitar bugs de html2pdf)
     if (window.pdfBarChartInstance) window.pdfBarChartInstance.destroy();
     if (window.pdfPieChartInstance) window.pdfPieChartInstance.destroy();
 
-    const ctxBar = document.getElementById('pdfBarChart').getContext('2d');
-    window.pdfBarChartInstance = new Chart(ctxBar, {
+    // Creamos un canvas en memoria (no en el DOM) para el gráfico de barras
+    const canvasBar = document.createElement('canvas');
+    canvasBar.width = 600; 
+    canvasBar.height = 300;
+    window.pdfBarChartInstance = new Chart(canvasBar, {
       type: 'bar',
       data: {
         labels: Object.keys(monthlySales),
@@ -983,11 +990,20 @@ async function generateExcelReport() {
           borderRadius: 4
         }]
       },
-      options: { responsive: false, plugins: { legend: { display: false } } }
+      options: { 
+        animation: false, // CRUCIAL: Desactivar animación para captura inmediata
+        responsive: false, 
+        plugins: { legend: { display: false } } 
+      }
     });
+    // Convertir el canvas a imagen Base64 y ponerlo en el HTML del PDF
+    document.getElementById('pdfBarChartImg').src = window.pdfBarChartInstance.toBase64Image('image/jpeg', 1.0);
 
-    const ctxPie = document.getElementById('pdfPieChart').getContext('2d');
-    window.pdfPieChartInstance = new Chart(ctxPie, {
+    // Creamos un canvas en memoria para el gráfico de torta
+    const canvasPie = document.createElement('canvas');
+    canvasPie.width = 300; 
+    canvasPie.height = 300;
+    window.pdfPieChartInstance = new Chart(canvasPie, {
       type: 'doughnut',
       data: {
         labels: Object.keys(statesMap),
@@ -997,8 +1013,14 @@ async function generateExcelReport() {
           borderWidth: 0
         }]
       },
-      options: { responsive: false, plugins: { legend: { position: 'bottom' } } }
+      options: { 
+        animation: false, // CRUCIAL
+        responsive: false, 
+        plugins: { legend: { position: 'bottom' } } 
+      }
     });
+    // Convertir a Base64 e inyectar
+    document.getElementById('pdfPieChartImg').src = window.pdfPieChartInstance.toBase64Image('image/jpeg', 1.0);
 
     // 5. Generar PDF
     const element = document.getElementById('pdfReportTemplate');
@@ -1010,15 +1032,18 @@ async function generateExcelReport() {
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
-      document.getElementById('exportModal').classList.remove('open');
-      btn.disabled = false; btn.textContent = "Descargar";
-      showToast("PDF generado con éxito.");
-    }).catch(err => {
-      console.error("Error al generar PDF:", err);
-      btn.disabled = false; btn.textContent = "Descargar";
-      showToast("Error al generar el PDF.", "error");
-    });
+    // Esperar un instante mínimo para asegurar que las imágenes Base64 se cargaron
+    setTimeout(() => {
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.getElementById('exportModal').classList.remove('open');
+        btn.disabled = false; btn.textContent = "Descargar";
+        showToast("PDF generado con éxito.");
+      }).catch(err => {
+        console.error("Error al generar PDF:", err);
+        btn.disabled = false; btn.textContent = "Descargar";
+        showToast("Error al generar el PDF.", "error");
+      });
+    }, 200);
 
     return;
   }
