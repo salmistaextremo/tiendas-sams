@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mis Pedidos — Tiendas Sam's</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
@@ -14,7 +14,20 @@
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
+  :root{ 
+    --bg:#f3f4f6; /* Fondo gris tenue para realzar las tarjetas */
+    --surface:#ffffff; 
+    --text:#111111; 
+    --muted:#595959; 
+    --border:#e5e7eb; 
+    --accent:#ffea61; /* Amarillo de la marca */
+    --danger:#ef4444; 
+    --success:#22c55e; 
+    --warning:#d97706; 
+    --radius-lg:24px; 
+    --radius-md:16px; 
+    --radius-sm:100px; 
+  }
   html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 80px; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } a{ color:inherit; text-decoration:none; }
   .container{ max-width:900px; margin:0 auto; padding:0 24px; width: 100%; }
@@ -24,9 +37,9 @@
   .logo img { height: 40px; width: auto; object-fit: contain; }
   .btn-back { font-size: 14px; font-weight: 600; color: var(--muted); } .btn-back:hover { color: var(--text); }
   
-  /* PANTALLA DE AUTH CON FONDO */
+  /* PANTALLA DE AUTH */
   .auth-screen { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1500&auto=format&fit=crop'); background-size: cover; background-position: center; position: relative; }
-  .auth-screen::before { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.85; z-index: 1; }
+  .auth-screen::before { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.9; z-index: 1; }
   .auth-card { position: relative; z-index: 2; background: var(--surface); padding: 48px; border-radius: var(--radius-lg); width: 100%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid var(--border); }
   .auth-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; text-align: center; } 
   .auth-card p { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 32px; }
@@ -45,19 +58,48 @@
   .dashboard { flex: 1; padding: 32px 0 40px; display: none; }
   .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
   .dash-header h1 { font-size: 28px; font-weight: 700; } .dash-header p { font-size: 15px; color: var(--muted); }
-  .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; }
+  .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; background: var(--surface); }
   
-  .order-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; margin-bottom: 16px; }
-  .order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-  .order-id { font-size: 18px; font-weight: 700; } .order-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .order-status { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  /* DISEÑO DE LA TARJETA DEL PEDIDO */
+  .order-card { 
+    background: var(--surface); 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--border); 
+    padding: 0; /* Padding 0 para que la cabecera toque los bordes */
+    margin-bottom: 24px; 
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+  }
   
-  .status-pendiente { background: #fef3c7; color: #92400e; } 
-  .status-verificado { background: #dcfce7; color: #166534; } 
-  .status-enviado { background: #dbeafe; color: #1e40af; } 
-  .status-cancelado { background: #fee2e2; color: #991b1b; }
-  .status-cuota1_confirmada, .status-cuota2_confirmada, .status-cuota3_confirmada { background: #e0e7ff; color: #3730a3; }
-  .status-registro_pago { background: #fef3c7; color: #92400e; }
+  /* Cabecera amarilla */
+  .order-top { 
+    background: var(--accent); 
+    padding: 20px 24px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: none; 
+    margin-bottom: 0;
+  }
+  .order-id { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; } 
+  .order-date { font-size: 13px; color: #4a4a4a; margin-top: 4px; font-weight: 500; }
+  
+  /* Etiqueta de estado blanca para contrastar con el amarillo */
+  .order-status { 
+    padding: 6px 12px; 
+    border-radius: var(--radius-sm); 
+    font-size: 11px; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    background: #ffffff !important; 
+    color: #111111 !important; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+  
+  /* Contenedor del cuerpo de la tarjeta */
+  .order-body {
+    padding: 24px;
+  }
 
   .order-items { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
   .item-row { display: flex; gap: 16px; align-items: flex-start; font-size: 14px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
@@ -70,13 +112,6 @@
   .item-note { font-size: 11px; color: #b45309; background: #fffbeb; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; border: 1px solid #fcd34d; }
   .item-price { font-weight: 700; font-size: 14px; white-space: nowrap; }
   
-  .order-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .detail-item { display: flex; flex-direction: column; gap: 2px; }
-  .detail-label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
-  .detail-value { font-size: 16px; font-weight: 600; } .detail-sub { font-size: 12px; color: var(--muted); }
-  .text-danger { color: var(--danger); } .text-success { color: var(--success); } .text-warning { color: var(--warning); }
-  
-  /* BOTÓN DE PAGO Y COMPROBANTE */
   .order-actions-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); flex-wrap: wrap; gap: 12px; }
   .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: all 0.2s; text-decoration: none; }
   .icon-btn:hover { background: var(--surface); border-color: var(--text); color: var(--success); transform: translateY(-2px); }
@@ -95,11 +130,10 @@
   .nav-item.active { color: var(--text); font-weight: 700; }
   .nav-item.active svg { stroke-width: 2.5; transform: translateY(-2px); }
 
-  /* BADGE DE NOTIFICACIÓN GIFT CARD */
   .gc-badge { position: absolute; top: 10px; right: 15px; background: var(--danger); color: #fff; font-size: 10px; min-width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; border: 2px solid var(--surface); animation: pop 0.3s ease-out; }
   @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-  /* DISEÑO GIFT CARDS (ESTILO AMAZON: NEGRO Y DORADO) */
+  /* DISEÑO GIFT CARDS */
   .gift-card-container { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 500px; margin: 0 auto; }
   .gift-card-visual {
     background: linear-gradient(135deg, #111111 0%, #222222 100%);
@@ -108,10 +142,7 @@
     display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;
     border: 1px solid #333;
   }
-  .gift-card-visual::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-    background: linear-gradient(90deg, transparent, #ffd700, transparent);
-  }
+  .gift-card-visual::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, #ffd700, transparent); }
   .gift-card-visual::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,215,0,0.05); border-radius: 50%; }
   .gift-card-logo { height: 35px; object-fit: contain; filter: brightness(0) invert(1); }
   .gift-card-amount { font-size: 48px; font-weight: 800; line-height: 1; margin: 16px 0 8px 0; letter-spacing: -2px; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
@@ -123,15 +154,13 @@
   .modal{ background:var(--surface); border-radius:var(--radius-lg); max-width:500px; width:100%; max-height:92vh; overflow-y:auto; position:relative; padding:32px; }
   .modal-x{ position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--bg); display:grid; place-items:center; cursor:pointer; }
   
-  /* TOASTS */
   #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-  .toast { background: #333; color: #fff; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; }
+  .toast { background: #333; color: #fff; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; max-width: 400px; }
   .toast.success { background: var(--success); }
   .toast.error { background: var(--danger); }
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-  /* ESTADOS DE INTERFAZ (CARGA, VACÍO, ERROR) */
   .empty-state { text-align: center; padding: 60px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border); grid-column: 1 / -1; }
   .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
   .empty-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
@@ -148,7 +177,6 @@
   
   @media(max-width: 600px) { 
     .dash-header { flex-direction: column; align-items: flex-start; gap: 12px; } 
-    .order-details { grid-template-columns: 1fr; gap: 12px; } 
     .btn-logout { width: 100%; text-align: center; } 
     .item-row { flex-direction: row; gap: 12px; } 
     .item-price { align-self: flex-start; }
@@ -161,6 +189,13 @@
 </style>
 </head>
 <body>
+
+<noscript>
+  <div style="padding:40px; text-align:center; font-family:sans-serif;">
+    <h1>Tiendas Sam's</h1>
+    <p>Necesitas activar JavaScript en tu navegador para usar el portal.</p>
+  </div>
+</noscript>
 
 <header class="header">
   <div class="container header-inner">
@@ -206,6 +241,7 @@
       <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
     </div>
     
+    <!-- Banner de reseña: Solo aparece si hay compras enviadas y no hay reseña -->
     <div id="reviewBanner" style="background:#fffbeb; border:1px solid #fcd34d; padding:16px; border-radius:16px; margin-bottom:24px; display:none; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <p style="color:#b45309; font-weight:500; font-size:14px; margin:0;">¿Te gustó tu compra? ¡Déjanos una reseña!</p>
       <button onclick="openReviewModal()" style="background:#f59e0b; color:#fff; padding:8px 16px; border-radius:100px; font-weight:600; font-size:13px; cursor:pointer;">Escribir Reseña</button>
@@ -282,7 +318,7 @@
   <div class="modal">
     <button class="modal-x" onclick="closeReviewModal()">✕</button>
     <h3 style="font-size:24px; margin-bottom:8px;">Deja tu Reseña</h3>
-    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar.</p>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar. Será publicada tras revisión.</p>
     
     <div class="field">
       <label>Calificación (1 a 5 estrellas) *</label>
@@ -305,26 +341,38 @@
   </div>
 </div>
 
-<div id="toast-container"></div>
+<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://zxhufobqfxmbjpneyiam.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4aHVmb2JxZnhtYmpwbmV5aWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNjk2OTEsImV4cCI6MjEwODc0NTY5MX0.EUS-QUdhuhtSk9rgLB11wz-GYF9m01JqhXfT6yT9_Vs";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const fmtUSD = n => "$ " + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtBs = n => "Bs " + Number(n).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
 
-let bcvRate = 40.00;
+// bcvRate nullable con fallback
+let bcvRate = null;
 async function fetchBCVRate() {
   try {
-    const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+    const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { signal: AbortSignal.timeout(5000) });
     if (res.ok) {
       const data = await res.json();
-      if (data && data.promedio) bcvRate = data.promedio;
+      if (data && data.promedio && data.promedio > 0) { bcvRate = Number(data.promedio); return; }
     }
-  } catch (e) { console.warn("Usando tasa de respaldo", bcvRate); }
+  } catch (e) { console.warn("API BCV no disponible:", e.message); }
+  
+  try {
+    const { data } = await supabaseClient.from('site_config').select('bcv_rate').eq('id', 1).single();
+    if (data && data.bcv_rate && data.bcv_rate > 0) { bcvRate = Number(data.bcv_rate); return; }
+  } catch (e) { console.warn("site_config no disponible:", e.message); }
+  
+  bcvRate = null;
 }
+
+const fmtUSD = n => "$ " + Number(n || 0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtBs = n => {
+  if (!bcvRate) return "Bs —";
+  return "Bs " + Number(n || 0).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
+};
 
 let isLoginMode = true;
 let currentUserId = null;
@@ -342,7 +390,7 @@ function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <span>${message}</span>`;
+  toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <span>${escapeHTML(message)}</span>`;
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.animation = 'fadeOut 0.3s forwards';
@@ -358,14 +406,13 @@ function togglePassword(inputId, btn) {
   else { input.type = 'password'; eyeIcon.style.display = 'block'; eyeOffIcon.style.display = 'none'; }
 }
 
-const statusLabels = { 'pendiente': 'Pendiente', 'verificado': 'Verificado', 'enviado': 'Enviado', 'cuota1_confirmada': 'Cuota 1 Confirmada', 'cuota2_confirmada': 'Cuota 2 Confirmada', 'cuota3_confirmada': 'Cuota 3 Confirmada', 'registro_pago': 'Registro de Pago', 'cancelado': 'Cancelado' };
+const statusLabels = { 'pendiente': 'Pendiente', 'confirmado': 'Confirmado', 'verificado': 'Verificado', 'enviado': 'Enviado', 'entregado': 'Entregado', 'cuota1_confirmada': 'Cuota 1 Confirmada', 'cuota2_confirmada': 'Cuota 2 Confirmada', 'cuota3_confirmada': 'Cuota 3 Confirmada', 'registro_pago': 'Registro de Pago', 'cancelado': 'Cancelado' };
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err)); }); }
 
 async function recoverPassword() {
   const email = document.getElementById('authEmail').value.trim();
   if (!email) return showToast("Escribe tu correo arriba para enviarte el enlace.", 'error');
-  
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/portal.html' });
   if (error) showToast("Error: " + error.message, 'error');
   else showToast("Revisa tu correo. Te enviamos un enlace para cambiar la contraseña.");
@@ -391,14 +438,11 @@ async function handleAuth(e) {
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
   errBox.textContent = ""; 
   
-  // VALIDACIÓN ESTRICTA JS (Antes del submit)
   if (!isLoginMode) {
     const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
     if (!nameRegex.test(name)) { errBox.textContent = "Nombre inválido (solo letras, 3-50 caracteres)."; return; }
-    
     const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
     if (!phoneRegex.test(phone)) { errBox.textContent = "Teléfono inválido (10-15 números)."; return; }
-    
     if (address.length < 5 || address.length > 150) { errBox.textContent = "Dirección inválida (5-150 caracteres)."; return; }
   }
 
@@ -436,6 +480,7 @@ async function checkSession() {
     const { data: config } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
     if(config) portalSiteConfig = config;
 
+    // Llamada corregida con email
     checkReviewStatus(user.id, user.email); 
     checkGiftCardBadge(user.id);
 
@@ -451,7 +496,6 @@ async function checkSession() {
   }
 }
 
-// --- LÓGICA DE NOTIFICACIÓN DE GIFT CARDS ---
 async function checkGiftCardBadge(userId) {
   const { count } = await supabaseClient
     .from('gift_cards')
@@ -473,7 +517,8 @@ async function markGiftCardsAsSeen() {
   const badge = document.getElementById('gcBadge');
   if (badge && badge.style.display !== 'none') {
     badge.style.display = 'none'; 
-    await supabaseClient.from('gift_cards').update({ is_seen: true }).eq('user_id', currentUserId).eq('is_seen', false);
+    const { error } = await supabaseClient.rpc('mark_gift_card_seen');
+    if (error) console.warn("Error al marcar GCs como vistas:", error.message);
   }
 }
 
@@ -487,7 +532,6 @@ function suscribirseCambiosCliente() {
 
 async function loadMyOrders(userId, userEmail) {
   const list = document.getElementById('ordersList');
-  
   list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando tus pedidos...</p></div>`;
 
   try {
@@ -501,7 +545,7 @@ async function loadMyOrders(userId, userEmail) {
       <div class="error-state">
         <div class="error-icon">⚠️</div>
         <h3 class="error-title">Error al cargar pedidos</h3>
-        <p class="error-sub">${err.message}</p>
+        <p class="error-sub">${escapeHTML(err.message)}</p>
         <button class="btn-retry" onclick="loadMyOrders('${userId}', '${userEmail}')">Reintentar</button>
       </div>`; 
   }
@@ -532,7 +576,7 @@ async function renderGiftCards() {
   const { data: cards, error } = await supabaseClient.from('gift_cards').select('*').eq('user_id', currentUserId).eq('is_used', false).order('created_at', { ascending: false });
   
   if (error) { 
-    list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar tarjetas</h3><p class="error-sub">${error.message}</p><button class="btn-retry" onclick="renderGiftCards()">Reintentar</button></div>`; 
+    list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar tarjetas</h3><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderGiftCards()">Reintentar</button></div>`; 
     return; 
   }
   
@@ -556,7 +600,7 @@ async function renderGiftCards() {
         <div class="gift-card-visual">
           <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" class="gift-card-logo" alt="Sam's">
           <div>
-            <div class="gift-card-amount">$${c.amount.toFixed(2)}</div>
+            <div class="gift-card-amount">$${Number(c.amount).toFixed(2)}</div>
             <div class="gift-card-text">Tarjeta de Regalo</div>
           </div>
           <div class="gift-card-code">${String(c.id).slice(0,8).toUpperCase()}</div>
@@ -579,7 +623,7 @@ function renderFilteredOrders() {
   let filtered = myOrdersData;
   
   if (currentTab === 'pendientes') {
-    filtered = myOrdersData.filter(o => !['enviado', 'cancelado', 'entregado'].includes(o.status));
+    filtered = myOrdersData.filter(o => !['enviado', 'entregado', 'cancelado'].includes(o.status));
   } else if (currentTab === 'finalizados') {
     filtered = myOrdersData.filter(o => ['enviado', 'entregado', 'cancelado'].includes(o.status));
   }
@@ -608,7 +652,7 @@ function renderFilteredOrders() {
           gcTotalUsdt += Number(i.amount_usdt || 0);
         } else if (i.status === 'pendiente') { 
           pendienteUsdt += Number(i.amount_usdt || 0); 
-        } else { 
+        } else if (i.status === 'verificado') {
           abonadoUsdt += Number(i.amount_usdt || 0); 
           if (i.method) methodsUsed.add(i.method.replace('_', ' '));
         } 
@@ -616,7 +660,7 @@ function renderFilteredOrders() {
     }
     
     const remainingUsdt = Math.max(0, Number(o.total_usdt) - abonadoUsdt - pendienteUsdt);
-    const remainingBs = remainingUsdt * bcvRate;
+    const remainingBs = remainingUsdt * (bcvRate || 0);
     const isPaid = remainingUsdt <= 0.1;
     const statusClass = `status-${o.status}`, statusText = statusLabels[o.status] || o.status;
 
@@ -644,7 +688,7 @@ function renderFilteredOrders() {
       }
     }
 
-    const canPay = remainingUsdt > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado');
+    const canPay = remainingUsdt > 0.1 && (o.payment_plan === 'credito' || o.payment_plan === 'apartado') && bcvRate;
     
     let payButtonHtml = '';
     if (canPay) {
@@ -654,6 +698,8 @@ function renderFilteredOrders() {
           ${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}
         </div>
       `;
+    } else if (remainingUsdt > 0.1 && !bcvRate) {
+      payButtonHtml = `<p style="color:var(--danger); font-size:13px;">⚠️ Tasa BCV no disponible. Recarga en unos minutos.</p>`;
     }
 
     let receiptIconHtml = '';
@@ -676,45 +722,48 @@ function renderFilteredOrders() {
           <div><div class="order-id">Pedido #${shortId}</div><div class="order-date">${date}</div></div>
           <div class="order-status ${statusClass}">${statusText}</div>
         </div>
-        <div class="order-items">${itemsHtml}</div>
-        ${planDetailsHtml}
-
-        ${o.tracking_number ? `
-          <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#166534; font-weight:600; font-size:14px;">📦 Nº de Guía:</span>
-            <strong style="color:#166534; font-size:15px; font-family:monospace;">${escapeHTML(o.tracking_number)}</strong>
-          </div>
-        ` : ''}
         
-        <div style="background:var(--bg); padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-          ${gcTotalUsdt > 0 ? `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
-              <span>🎁 Monto pagado con Gift Card:</span>
-              <span>- ${fmtUSD(gcTotalUsdt)}</span>
+        <div class="order-body">
+          <div class="order-items">${itemsHtml}</div>
+          ${planDetailsHtml}
+
+          ${o.tracking_number ? `
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#166534; font-weight:600; font-size:14px;">📦 Nº de Guía:</span>
+              <strong style="color:#166534; font-size:15px; font-family:monospace;">${escapeHTML(o.tracking_number)}</strong>
             </div>
           ` : ''}
           
-          ${abonadoUsdt > 0 ? `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
-              <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
-              <span>${fmtUSD(abonadoUsdt)}</span>
+          <div style="background:#f9fafb; padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px; border: 1px solid #f3f4f6;">
+            ${gcTotalUsdt > 0 ? `
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
+                <span>🎁 Monto pagado con Gift Card:</span>
+                <span>- ${fmtUSD(gcTotalUsdt)}</span>
+              </div>
+            ` : ''}
+            
+            ${abonadoUsdt > 0 ? `
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
+                <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
+                <span>${fmtUSD(abonadoUsdt)}</span>
+              </div>
+            ` : ''}
+
+            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
+              <span>Saldo Restante:</span>
+              <strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">
+                ${isPaid ? 'Pagado' : fmtUSD(remainingUsdt)}
+              </strong>
             </div>
-          ` : ''}
-
-          <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
-            <span>Saldo Restante:</span>
-            <strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">
-              ${isPaid ? 'Pagado' : fmtUSD(remainingUsdt)}
-            </strong>
           </div>
-        </div>
 
-        <div class="order-actions-footer">
-          <div style="flex: 1;">
-            ${payButtonHtml}
-          </div>
-          <div>
-            ${receiptIconHtml}
+          <div class="order-actions-footer" style="margin-top:0; padding-top:16px; border-top:1px dashed var(--border);">
+            <div style="flex: 1;">
+              ${payButtonHtml}
+            </div>
+            <div>
+              ${receiptIconHtml}
+            </div>
           </div>
         </div>
       </div>
@@ -727,10 +776,10 @@ async function renderProfile() {
   list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando perfil...</p></div>`;
   
   const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUserId).single();
-  if (error) { list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar perfil</h3><p class="error-sub">${error.message}</p><button class="btn-retry" onclick="renderProfile()">Reintentar</button></div>`; return; }
+  if (error) { list.innerHTML = `<div class="error-state"><div class="error-icon">⚠️</div><h3 class="error-title">Error al cargar perfil</h3><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderProfile()">Reintentar</button></div>`; return; }
 
   list.innerHTML = `
-    <div class="order-card" style="max-width: 500px; margin: 0 auto;">
+    <div class="order-card" style="max-width: 500px; margin: 0 auto; padding: 32px;">
       <h2 style="font-size: 20px; margin-bottom: 24px;">Mis Datos Personales</h2>
       <div class="field">
         <label>Nombre Completo</label>
@@ -790,10 +839,8 @@ async function updateProfile() {
   try {
     const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
     if (!nameRegex.test(name)) throw new Error("El nombre solo debe contener letras (3-50 caracteres).");
-    
     const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
     if (!phoneRegex.test(phone)) throw new Error("El teléfono debe tener entre 10 y 15 números.");
-    
     if (address.length < 5 || address.length > 150) throw new Error("La dirección debe tener entre 5 y 150 caracteres.");
     
     const { error: profileError } = await supabaseClient.from('profiles').update({ full_name: name, phone: phone, address: address }).eq('id', currentUserId);
@@ -815,17 +862,16 @@ async function updateProfile() {
 }
 
 async function deleteAccount() {
-  if(!confirm("¿Estás completamente seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás acceso a todos tus datos.")) return;
+  if(!confirm("¿Estás completamente seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.")) return;
   
   const btn = document.querySelector('button[onclick="deleteAccount()"]');
   if(btn) { btn.disabled = true; btn.textContent = "Eliminando cuenta..."; }
 
   try {
-    // Soft delete: Marcamos la cuenta como inactiva en lugar de borrarla de auth.users (para mantener integridad de pedidos)
-    const { error } = await supabaseClient.from('profiles').update({ is_active: false }).eq('id', currentUserId);
+    const { error } = await supabaseClient.rpc('request_account_deletion');
     if(error) throw error;
 
-    showToast("Tu cuenta ha sido eliminada. Cerrando sesión...");
+    showToast("Tu cuenta ha sido desactivada. Cerrando sesión...");
     setTimeout(async () => {
       await supabaseClient.auth.signOut();
       location.reload();
@@ -869,13 +915,14 @@ async function requestUpgrade() {
   const btn = document.getElementById('btnRequestUpgrade');
   btn.disabled = true; btn.textContent = 'Enviando...';
   const { error } = await supabaseClient.from('upgrade_requests').insert({ user_id: session.user.id });
-  if (!error) btn.textContent = 'Solicitud enviada con éxito'; else { showToast("Error: " + error.message, 'error'); btn.disabled = false; btn.textContent = 'Solicitar Ascenso'; }
+  if (!error) btn.textContent = 'Solicitud enviada con éxito'; 
+  else { showToast("Error: " + error.message, 'error'); btn.disabled = false; btn.textContent = 'Solicitar Ascenso'; }
 }
 
-// --- SISTEMA DE PAGOS ---
 let currentPayOrderId = null, currentPaySaldoBs = 0;
 
 function openPaymentModal(orderId, saldoBs) {
+  if (!bcvRate) return showToast("Tasa BCV no disponible. Recarga la página.", 'error');
   currentPayOrderId = orderId; currentPaySaldoBs = saldoBs;
   document.getElementById('payAmount').value = saldoBs.toFixed(2);
   document.getElementById('payMethod').value = 'bs_pago_movil';
@@ -899,9 +946,9 @@ function updatePayDetails() {
   const bEmail = p.binance_email || 'samiibelisario@gmail.com';
   const bUid = p.binance_uid || '219555454';
 
-  if (method === 'bs_pago_movil') div.innerHTML = `<strong>Banco:</strong> ${bank}<br><strong>Teléfono:</strong> ${phone}<br><strong>Cédula:</strong> ${cedula}`;
-  else if (method === 'bs_transfer') div.innerHTML = `<strong>Banco:</strong> ${bank}<br><strong>Cédula:</strong> ${cedula}<br><strong>Titular:</strong> ${titular}`;
-  else if (method === 'usdt_binance') div.innerHTML = `<strong>Correo:</strong> ${bEmail}<br><strong>UID:</strong> ${bUid}`;
+  if (method === 'bs_pago_movil') div.innerHTML = `<strong>Banco:</strong> ${escapeHTML(bank)}<br><strong>Teléfono:</strong> ${escapeHTML(phone)}<br><strong>Cédula:</strong> ${escapeHTML(cedula)}`;
+  else if (method === 'bs_transfer') div.innerHTML = `<strong>Banco:</strong> ${escapeHTML(bank)}<br><strong>Cédula:</strong> ${escapeHTML(cedula)}<br><strong>Titular:</strong> ${escapeHTML(titular)}`;
+  else if (method === 'usdt_binance') div.innerHTML = `<strong>Correo:</strong> ${escapeHTML(bEmail)}<br><strong>UID:</strong> ${escapeHTML(bUid)}`;
 }
 
 async function submitPayment() {
@@ -923,12 +970,12 @@ async function submitPayment() {
     if (!user) throw new Error("Sesión expirada.");
 
     const file = fileInput.files[0];
-    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true };
-    const compressedFile = await imageCompression(file, options);
-    const ext = compressedFile.name.split('.').pop();
+    let compressed = file;
+    try { compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true }); } catch(e) { console.warn("Compresión fallida:", e); }
     
+    const ext = compressed.name.split('.').pop();
     const fileName = `${user.id}/receipt_${currentPayOrderId}_${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressedFile);
+    const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressed);
     if (uploadError) throw new Error("Error al subir comprobante: " + uploadError.message);
     
     const { data: order } = await supabaseClient.from('orders').select('total_bs, total_usdt').eq('id', currentPayOrderId).single();
@@ -945,13 +992,15 @@ async function submitPayment() {
     if (instError) throw instError;
     closePaymentModal(); checkSession();
     showToast("Pago enviado. En breve será verificado.");
-  } catch(err) { errBox.textContent = err.message; } finally { btn.disabled = false; btn.textContent = "Enviar Pago"; }
+  } catch(err) { errBox.textContent = err.message; } 
+  finally { btn.disabled = false; btn.textContent = "Enviar Pago"; }
 }
 
-// --- SISTEMA DE RESEÑAS ---
+// LÓGICA DE RESEÑA CORREGIDA: Solo muestra si hay envíos y no hay reseñas
 async function checkReviewStatus(userId, userEmail) {
   const banner = document.getElementById('reviewBanner');
-  
+  if (!banner) return;
+
   // 1. Verificar si ya dejó una reseña
   const { data: reviews } = await supabaseClient.from('reviews').select('id').eq('user_id', userId).limit(1);
   if (reviews && reviews.length > 0) {
@@ -1003,7 +1052,7 @@ async function submitReview() {
     });
     
     if(error) throw error;
-    showToast("¡Gracias por tu reseña!");
+    showToast("¡Gracias por tu reseña! Será publicada tras revisión.");
     closeReviewModal();
     document.getElementById('reviewBanner').style.display = 'none'; 
   } catch(err) {
