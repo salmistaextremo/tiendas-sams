@@ -436,7 +436,7 @@ async function checkSession() {
     const { data: config } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
     if(config) portalSiteConfig = config;
 
-    checkReviewStatus(user.id); 
+    checkReviewStatus(user.id, user.email); 
     checkGiftCardBadge(user.id);
 
     if(currentTab === 'perfil') { renderProfile(); } 
@@ -949,14 +949,28 @@ async function submitPayment() {
 }
 
 // --- SISTEMA DE RESEÑAS ---
-async function checkReviewStatus(userId) {
+async function checkReviewStatus(userId, userEmail) {
   const banner = document.getElementById('reviewBanner');
-  const { data: reviews } = await supabaseClient.from('reviews').select('id').eq('user_id', userId).limit(1);
   
+  // 1. Verificar si ya dejó una reseña
+  const { data: reviews } = await supabaseClient.from('reviews').select('id').eq('user_id', userId).limit(1);
   if (reviews && reviews.length > 0) {
-    banner.style.display = 'none'; 
+    banner.style.display = 'none';
+    return;
+  }
+
+  // 2. Verificar si tiene algún pedido finalizado (enviado o entregado)
+  const { data: orders } = await supabaseClient
+    .from('orders')
+    .select('id')
+    .or(`user_id.eq.${userId},customer_email.eq.${userEmail}`)
+    .in('status', ['enviado', 'entregado'])
+    .limit(1);
+
+  if (orders && orders.length > 0) {
+    banner.style.display = 'flex'; // Solo muestra el banner si hay compras enviadas
   } else {
-    banner.style.display = 'flex'; 
+    banner.style.display = 'none';
   }
 }
 
