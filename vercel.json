@@ -6,7 +6,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://zxhufobqfxmbjpneyiam.supabase.co https://images.unsplash.com https://api.qrserver.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://zxhufobqfxmbjpneyiam.supabase.co wss://zxhufobqfxmbjpneyiam.supabase.co https://ve.dolarapi.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://zxhufobqfxmbjpneyiam.supabase.co https://images.unsplash.com https://api.qrserver.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://zxhufobqfxmbjpneyiam.supabase.co wss://zxhufobqfxmbjpneyiam.supabase.co https://ve.dolarapi.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests;"
         },
         {
           "key": "X-Content-Type-Options",
