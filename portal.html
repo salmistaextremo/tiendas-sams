@@ -188,7 +188,7 @@
 
       <!-- Campos comunes -->
       <div class="field">
-        <label>Email</label>
+        <label>Correo Electrónico</label>
         <input type="email" id="authEmail" maxlength="100" required placeholder="tu@correo.com">
       </div>
       
@@ -204,15 +204,15 @@
       </div>
 
       <div class="forgot-password" id="forgotPasswordDiv">
-        <button type="button" onclick="recoverPassword()">Olvidaste la contraseña?</button>
+        <button type="button" onclick="recoverPassword()">¿Olvidaste tu contraseña?</button>
       </div>
 
-      <button type="submit" class="btn-primary" id="btnAuthSubmit">Iniciar Sesión</button>
+      <button type="submit" class="btn-primary" id="btnAuthSubmit">Entrar</button>
       <div id="authError" class="err"></div>
     </form>
     
     <div class="auth-switch" id="authSwitchText">
-      ¿No tienes cuenta? <button onclick="setAuthMode('register')">Iniciar Sesión</button>
+      ¿No tienes cuenta? <button onclick="setAuthMode('register')">Regístrate aquí</button>
     </div>
   </div>
 </div>
@@ -315,7 +315,7 @@
     
     <div class="field">
       <label>Comentario (Opcional)</label>
-      <textarea id="reviewComment" rows="3" maxlength="250" placeholder="¿Qué tal la calidad de la ropa?" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border);"></textarea>
+      <textarea id="reviewComment" rows="3" maxlength="250" placeholder="¿Qué tal la calidad del producto?" style="width:100%; padding:16px; border-radius:16px; border:1px solid var(--border);"></textarea>
     </div>
     
     <button class="btn-primary" onclick="submitReview()">Enviar Reseña</button>
@@ -390,7 +390,7 @@ const statusLabels = { 'pendiente': 'Pendiente', 'confirmado': 'Confirmado', 've
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err)); }); }
 
-// 🔧 NUEVO: Función para alternar entre Login y Registro con Tabs
+// Función para alternar entre Iniciar Sesión y Registrarse
 function setAuthMode(mode) {
   const tabLogin = document.getElementById('tabLogin');
   const tabRegister = document.getElementById('tabRegister');
@@ -406,9 +406,9 @@ function setAuthMode(mode) {
     tabLogin.classList.add('active');
     tabRegister.classList.remove('active');
     registerFields.style.display = 'none';
-    btnAuthSubmit.textContent = 'Sign in';
+    btnAuthSubmit.textContent = 'Entrar';
     forgotPasswordDiv.style.display = 'block';
-    authSwitchText.innerHTML = `¿No tienes cuenta? <button onclick="setAuthMode('register')">Sign up</button>`;
+    authSwitchText.innerHTML = `¿No tienes cuenta? <button onclick="setAuthMode('register')">Regístrate aquí</button>`;
     document.getElementById('authName').required = false;
     document.getElementById('authPhone').required = false;
     document.getElementById('authAddress').required = false;
@@ -416,9 +416,9 @@ function setAuthMode(mode) {
     tabLogin.classList.remove('active');
     tabRegister.classList.add('active');
     registerFields.style.display = 'block';
-    btnAuthSubmit.textContent = 'Sign up';
+    btnAuthSubmit.textContent = 'Registrarse';
     forgotPasswordDiv.style.display = 'none';
-    authSwitchText.innerHTML = `¿Ya tienes cuenta? <button onclick="setAuthMode('login')">Sign in</button>`;
+    authSwitchText.innerHTML = `¿Ya tienes cuenta? <button onclick="setAuthMode('login')">Iniciar Sesión</button>`;
     document.getElementById('authName').required = true;
     document.getElementById('authPhone').required = true;
     document.getElementById('authAddress').required = true;
@@ -464,7 +464,7 @@ async function handleAuth(e) {
       if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); setAuthMode('login'); }
     }
   } catch (error) { errBox.textContent = error.message; } 
-  finally { btn.disabled = false; btn.textContent = isRegisterMode ? "Regístrate" : "Iniciar Sesión"; }
+  finally { btn.disabled = false; btn.textContent = isRegisterMode ? "Registrarse" : "Entrar"; }
 }
 
 async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
