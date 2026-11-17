@@ -74,27 +74,31 @@
   .hero-btn { background: #111; color: #fff; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
   
   /* CATEGORÍAS CIRCULARES */
-  .categories-scroll { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; }
+  .categories-scroll { display: flex; gap: 24px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; justify-content: center; }
   .categories-scroll::-webkit-scrollbar { display: none; }
-  .cat-item { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 70px; cursor: pointer; }
+  .cat-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 70px; cursor: pointer; }
   .cat-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-  .cat-circle img, .cat-circle svg { width: 28px; height: 28px; opacity: 0.7; }
-  .cat-item:hover .cat-circle { border-color: var(--text); }
-  .cat-item span { font-size: 12px; font-weight: 500; color: var(--text); }
+  .cat-circle svg { width: 28px; height: 28px; color: #333; transition: all 0.2s; }
+  .cat-item span { font-size: 12px; font-weight: 500; color: var(--muted); text-align: center; }
+  
+  /* EFECTO SELECCIONADO PARA CATEGORÍAS */
+  .cat-circle.active { background: #111; border-color: #111; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .cat-circle.active svg { stroke: #ffffff; }
+  .cat-item.active span { font-weight: 800; color: var(--text); }
 
   /* SECCIONES Y TÍTULOS */
   .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-top: 10px; }
   .section-head h2 { font-size: 18px; font-weight: 700; }
   .see-all { font-size: 12px; color: var(--muted); font-weight: 500; display: flex; align-items: center; gap: 4px; }
 
-  /* GRILLA DE PRODUCTOS (ESTILO BOUTIQUE) */
+  /* GRILLA DE PRODUCTOS */
   .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
   .product-card { cursor: pointer; display: flex; flex-direction: column; }
   .product-image { aspect-ratio: 4/5; border-radius: 16px; overflow: hidden; background: #f0f0f0; position: relative; margin-bottom: 10px; }
   .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
   .product-card:hover .product-image img { transform: scale(1.05); }
   
-  /* BOTONES FLOTANTES EN PRODUCTO (Corazón y Compartir) */
+  /* BOTONES FLOTANTES EN PRODUCTO */
   .action-btns { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 2; }
   .heart-btn { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #111; transition: all 0.2s; }
   .heart-btn:hover { background: #f9f9f9; color: var(--danger); }
@@ -106,15 +110,19 @@
   .product-rating { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); margin-top: 2px; }
   .product-rating span { color: #f59e0b; }
 
-  /* NAVEGACIÓN INFERIOR (ESTILO APP) */
-  .bottom-nav { position: fixed; bottom: 16px; left: 16px; right: 16px; background: var(--surface); border-radius: 30px; display: flex; justify-content: space-around; align-items: center; height: 64px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); padding: 0 10px; }
-  .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); position: relative; transition: all 0.2s; padding: 10px; }
-  .nav-item svg { width: 24px; height: 24px; stroke-width: 1.5; }
+  /* NAVEGACIÓN INFERIOR */
+  .bottom-nav { position: fixed; bottom: 16px; left: 16px; right: 16px; background: var(--surface); border-radius: 30px; display: flex; justify-content: space-around; align-items: center; height: 72px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); padding: 0 10px; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); position: relative; transition: all 0.2s; padding: 8px; flex: 1; }
+  .nav-item svg { width: 24px; height: 24px; stroke: #333; stroke-width: 1.5; transition: all 0.2s; fill: none; }
+  .nav-item span { font-size: 10px; font-weight: 500; display: none; }
+  
+  /* EFECTO SELECCIONADO PARA NAVEGACIÓN INFERIOR */
+  .nav-item.active svg { stroke: #ffffff; fill: #111; }
   .nav-item.active { color: var(--text); }
-  .nav-item.active svg { fill: var(--accent); stroke: #111; stroke-width: 1.5; }
+  .nav-item.active span { display: block; font-weight: 700; }
   .cart-badge { position: absolute; top: 4px; right: 4px; background: #111; color: #fff; font-size: 10px; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; }
 
-  /* DRAWER (CARRITO) */
+  /* DRAWER */
   .overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); opacity:0; pointer-events:none; z-index:90; transition: opacity .3s; } .overlay.open{ opacity:1; pointer-events:auto; }
   .drawer{ position:fixed; top:0; right:0; width:100%; max-width:400px; height:100vh; background:var(--surface); z-index:100; transform:translateX(100%); transition:transform .4s cubic-bezier(0.25, 1, 0.5, 1); display:flex; flex-direction:column; border-radius: 24px 0 0 24px; }
   .drawer.open{ transform:translateX(0); }
@@ -194,7 +202,7 @@
   }
   @media(min-width: 1024px) {
     .product-grid { grid-template-columns: repeat(4, 1fr); }
-    .bottom-nav { display: none; } /* En PC no se usa barra inferior */
+    .bottom-nav { display: none; }
   }
 </style>
 </head>
@@ -268,20 +276,25 @@
 
 <!-- NAVEGACIÓN INFERIOR -->
 <nav class="bottom-nav">
-  <button class="nav-item active" onclick="window.scrollTo(0,0)">
+  <button class="nav-item active" onclick="window.scrollTo(0,0); setActiveNav(this);">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Inicio</span>
   </button>
-  <button class="nav-item" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">
+  <button class="nav-item" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); setActiveNav(this);">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+    <span>Tienda</span>
   </button>
   <button class="nav-item" onclick="window.location.href='/portal.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+    <span>Favoritos</span>
   </button>
-  <button class="nav-item" onclick="openCart()">
+  <button class="nav-item" onclick="openCart(); setActiveNav(this);">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+    <span>Carrito</span>
   </button>
   <button class="nav-item" onclick="window.location.href='/portal.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <span>Perfil</span>
   </button>
 </nav>
 
@@ -350,6 +363,11 @@ function escapeHTML(str) { if (!str) return ''; return String(str).replace(/[&<>
 function showToast(message, type = 'success') { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <span>${escapeHTML(message)}</span>`; container.appendChild(toast); setTimeout(() => { toast.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => toast.remove(), 300); }, 3000); }
 function togglePassword(inputId, btn) { const input = document.getElementById(inputId); if (input.type === 'password') { input.type = 'text'; btn.style.color = '#111'; } else { input.type = 'password'; btn.style.color = '#888'; } }
 
+function setActiveNav(btn) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 async function fetchBCVRate() {
   try { const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { signal: AbortSignal.timeout(5000) }); if (res.ok) { const data = await res.json(); if (data && data.promedio > 0) { bcvRate = Number(data.promedio); return; } } } catch (e) {}
   try { const { data } = await supabaseClient.from('site_config').select('bcv_rate').eq('id', 1).single(); if (data && data.bcv_rate > 0) { bcvRate = Number(data.bcv_rate); return; } } catch (e) {}
@@ -358,23 +376,30 @@ async function fetchBCVRate() {
 
 async function loadCategories() {
   const { data, error } = await supabaseClient.from('categories').select('*').order('name');
-  if(!error && data) { DYNAMIC_CATEGORIES = [{ slug: 'todo', name: 'Todo', icon: 'grid' }, ...data]; renderFilters(); }
+  if(!error && data) { DYNAMIC_CATEGORIES = [{ slug: 'todo', name: 'Todo' }, ...data]; renderFilters(); }
 }
 
 function renderFilters(){
   const icons = {
-    'todo': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
-    'default': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path></svg>'
+    'todo': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
+    'default': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path></svg>',
+    'camisetas': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path></svg>',
+    'accesorios': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+    'maletas': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line></svg>'
   };
 
-  document.getElementById('filters').innerHTML = DYNAMIC_CATEGORIES.map(c => `
-    <div class="cat-item" onclick="setFilter('${c.slug}')">
-      <div class="cat-circle" style="${c.slug === currentFilter ? 'border-color: #111; background: #fff;' : ''}">
-        ${icons[c.slug] || icons['default']}
+  document.getElementById('filters').innerHTML = DYNAMIC_CATEGORIES.map(c => {
+    const isActive = c.slug === currentFilter;
+    const iconSvg = icons[c.slug] || icons['default'];
+    return `
+      <div class="cat-item ${isActive ? 'active' : ''}" onclick="setFilter('${c.slug}')">
+        <div class="cat-circle ${isActive ? 'active' : ''}">
+          ${iconSvg}
+        </div>
+        <span>${escapeHTML(c.name)}</span>
       </div>
-      <span style="${c.slug === currentFilter ? 'font-weight:700;' : ''}">${escapeHTML(c.name)}</span>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function setFilter(key){ currentFilter = key; currentSearchQuery = ""; document.getElementById('searchInput').value = ""; renderFilters(); fetchProducts(true); document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); }
@@ -411,7 +436,6 @@ function renderProducts(isReset = false) {
       <div class="product-image">
         <img src="${p.image_url || ''}" alt="${escapeHTML(p.name)}" loading="lazy">
         
-        <!-- BOTONES FLOTANTES -->
         <div class="action-btns">
           <button class="heart-btn" onclick="event.stopPropagation();" title="Añadir a favoritos">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -437,7 +461,6 @@ function renderProducts(isReset = false) {
   if (isReset) document.getElementById('productGrid').innerHTML = html; else document.getElementById('productGrid').insertAdjacentHTML('beforeend', html);
 }
 
-// 🔧 FUNCIÓN PARA COMPARTIR
 async function shareProduct(id, name) {
   const url = `${window.location.origin}${window.location.pathname}?product=${id}`;
   const shareData = { title: `Tiendas Sam's — ${name}`, text: `¡Mira este producto en Tiendas Sam's: ${name}!`, url: url };
