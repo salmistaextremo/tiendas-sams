@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Account — Tiendas Sam's</title>
+<title>Mi Cuenta — Tiendas Sam's</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
@@ -60,14 +60,16 @@
   .brand-logo span { display: block; font-size: 12px; letter-spacing: 4px; font-weight: 500; margin-top: 4px; opacity: 0.8; }
 
   .auth-initial-buttons { display: flex; flex-direction: column; gap: 12px; }
+  
+  /* 🔧 BOTONES BLANCOS RECTANGULARES */
   .btn-glass {
-    width: 100%; padding: 16px; border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    color: #fff; font-size: 16px; font-weight: 500; text-align: center;
+    width: 100%; padding: 16px; border-radius: 16px; /* Esquinas redondeadas pero cuadradas */
+    background: #ffffff; border: none;
+    color: #111111; font-size: 16px; font-weight: 700; text-align: center;
     transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
-  .btn-glass:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.98); }
+  .btn-glass:active { transform: scale(0.98); background: #f0f0f0; }
 
   /* Tarjeta Blanca (Formulario) */
   .auth-card {
@@ -125,22 +127,6 @@
   }
   .btn-submit:active { transform: scale(0.98); }
 
-  .divider {
-    display: flex; align-items: center; text-align: center;
-    color: #999; font-size: 13px; margin: 24px 0;
-  }
-  .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #eee; }
-  .divider::before { margin-right: 10px; } .divider::after { margin-left: 10px; }
-
-  .btn-social {
-    width: 100%; padding: 14px; border-radius: var(--radius-md);
-    border: 1px solid #ddd; background: #fff;
-    display: flex; justify-content: center; align-items: center; gap: 10px;
-    font-size: 14px; font-weight: 500; color: #333; margin-bottom: 12px;
-    transition: background 0.2s;
-  }
-  .btn-social:hover { background: #f9f9f9; }
-
   .auth-footer { text-align: center; font-size: 13px; color: var(--muted); margin-top: 24px; }
   .auth-footer a { color: var(--text); font-weight: 700; text-decoration: underline; cursor: pointer; }
   
@@ -164,7 +150,7 @@
   .dash-header h1 { font-size: 26px; font-weight: 700; } .dash-header p { font-size: 14px; color: var(--muted); }
   .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; background: var(--surface); }
   
-  /* TARJETAS DE PEDIDOS (Igual que antes) */
+  /* TARJETAS DE PEDIDOS */
   .order-card { background: var(--surface); border-radius: 24px; border: 1px solid var(--border); padding: 0; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
   .order-top { background: var(--accent); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
   .order-id { font-size: 18px; font-weight: 800; color: var(--text); } .order-date { font-size: 13px; color: #4a4a4a; margin-top: 4px; font-weight: 500; }
@@ -248,8 +234,8 @@
       <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Logo" style="height: 60px; object-fit: contain; display: inline-block;">
     </div>
     <div class="auth-initial-buttons">
-      <button class="btn-glass" onclick="openAuthCard('login')">Log In</button>
-      <button class="btn-glass" onclick="openAuthCard('register')">Sign Up</button>
+      <button class="btn-glass" onclick="openAuthCard('login')">Iniciar Sesión</button>
+      <button class="btn-glass" onclick="openAuthCard('register')">Registrarse</button>
     </div>
   </div>
 
@@ -260,80 +246,72 @@
     <!-- Formulario de LOGIN -->
     <div id="loginFormContainer" style="display: none;">
       <div class="auth-header">
-        <h2>Welcome back!</h2>
-        <p>Log in to continue to Sam's.</p>
+        <h2>¡Bienvenido de nuevo!</h2>
+        <p>Inicia sesión para continuar en Sam's.</p>
       </div>
       <form onsubmit="handleAuth(event, 'login')">
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <input type="email" id="loginEmail" placeholder="Email Address" required>
+          <input type="email" id="loginEmail" placeholder="Correo Electrónico" required>
         </div>
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <input type="password" id="loginPassword" placeholder="Password" minlength="6" required>
+          <input type="password" id="loginPassword" placeholder="Contraseña" minlength="6" required>
           <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </div>
-        <div class="forgot-pass"><button type="button" onclick="recoverPassword()">Forgot password?</button></div>
-        <button type="submit" class="btn-submit" id="btnLogin">Log In</button>
+        <div class="forgot-pass"><button type="button" onclick="recoverPassword()">¿Olvidaste tu contraseña?</button></div>
+        <button type="submit" class="btn-submit" id="btnLogin">Iniciar Sesión</button>
         <div id="loginError" class="err"></div>
       </form>
 
-      <div class="divider">or</div>
-      <button class="btn-social" onclick="showToast('Google Auth requires setup', 'error')">
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
-      </button>
       <div class="auth-footer">
-        Don't have an account? <a onclick="openAuthCard('register')">Sign Up</a>
+        ¿No tienes una cuenta? <a onclick="openAuthCard('register')">Regístrate</a>
       </div>
     </div>
 
     <!-- Formulario de REGISTRO -->
     <div id="registerFormContainer" style="display: none;">
       <div class="auth-header">
-        <h2>Create your account</h2>
-        <p>Join Sam's and discover your style.</p>
+        <h2>Crea tu cuenta</h2>
+        <p>Únete a Sam's y descubre tu estilo.</p>
       </div>
       <form onsubmit="handleAuth(event, 'register')">
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <input type="text" id="regName" placeholder="Full Name" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" required>
+          <input type="text" id="regName" placeholder="Nombre Completo" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" required>
         </div>
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <input type="email" id="regEmail" placeholder="Email Address" required>
+          <input type="email" id="regEmail" placeholder="Correo Electrónico" required>
         </div>
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          <input type="tel" id="regPhone" placeholder="Phone Number" maxlength="15" pattern="[0-9\+\-\s]{10,15}" required>
+          <input type="tel" id="regPhone" placeholder="Número de Teléfono" maxlength="15" pattern="[0-9\+\-\s]{10,15}" required>
         </div>
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <input type="text" id="regAddress" placeholder="Shipping Address" maxlength="150" required>
+          <input type="text" id="regAddress" placeholder="Dirección de Envío" maxlength="150" required>
         </div>
         <div class="input-group">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <input type="password" id="regPassword" placeholder="Password" minlength="6" required>
+          <input type="password" id="regPassword" placeholder="Contraseña" minlength="6" required>
           <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </div>
         
         <div class="terms-text">
-          I agree to the <a href="/info.html#terminos" target="_blank">Terms of Service</a> and <a href="/info.html#privacidad" target="_blank">Privacy Policy</a>.
+          Acepto los <a href="/info.html#terminos" target="_blank">Términos del Servicio</a> y la <a href="/info.html#privacidad" target="_blank">Política de Privacidad</a>.
         </div>
         
-        <button type="submit" class="btn-submit" id="btnRegister">Sign Up</button>
+        <button type="submit" class="btn-submit" id="btnRegister">Registrarse</button>
         <div id="registerError" class="err"></div>
       </form>
 
-      <div class="divider">or</div>
-      <button class="btn-social" onclick="showToast('Google Auth requires setup', 'error')">
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" alt="Google"> Continue with Google
-      </button>
       <div class="auth-footer">
-        Already have an account? <a onclick="openAuthCard('login')">Log in</a>
+        ¿Ya tienes una cuenta? <a onclick="openAuthCard('login')">Inicia Sesión</a>
       </div>
     </div>
   </div>
@@ -346,24 +324,24 @@
   <header class="header">
     <div class="header-inner">
       <a href="/"><img id="headerLogoImg" src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Logo"></a>
-      <a href="/" class="btn-back">← Back to store</a>
+      <a href="/" class="btn-back">← Volver a la tienda</a>
     </div>
   </header>
 
   <div class="container">
     <div class="dash-header">
-      <div><h1 id="dashTitle">My Orders</h1><p>Hello, <span id="userNameDisplay" style="font-weight:600;"></span>.</p></div>
-      <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+      <div><h1 id="dashTitle">Mis Pedidos</h1><p>Hola, <span id="userNameDisplay" style="font-weight:600;"></span>.</p></div>
+      <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
     </div>
     
     <div id="reviewBanner" style="background:#fffbeb; border:1px solid #fcd34d; padding:16px; border-radius:16px; margin-bottom:24px; display:none; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-      <p style="color:#b45309; font-weight:500; font-size:14px; margin:0;">Did you like your purchase? Leave us a review!</p>
-      <button onclick="openReviewModal()" style="background:#f59e0b; color:#fff; padding:8px 16px; border-radius:100px; font-weight:600; font-size:13px; cursor:pointer;">Write Review</button>
+      <p style="color:#b45309; font-weight:500; font-size:14px; margin:0;">¿Te gustó tu compra? ¡Déjanos una reseña!</p>
+      <button onclick="openReviewModal()" style="background:#f59e0b; color:#fff; padding:8px 16px; border-radius:100px; font-weight:600; font-size:13px; cursor:pointer;">Escribir Reseña</button>
     </div>
 
     <div id="loyaltyBanner" class="loyalty-banner" style="display: none;">
-      <p>🎉 Congratulations! You qualify to be a <strong>Wholesale Seller</strong>.</p>
-      <button class="btn-loyalty" id="btnRequestUpgrade" onclick="requestUpgrade()">Request Upgrade</button>
+      <p>🎉 ¡Felicidades! Por tu volumen de compras, calificas para ser <strong>Vendedor Mayorista</strong>.</p>
+      <button class="btn-loyalty" id="btnRequestUpgrade" onclick="requestUpgrade()">Solicitar Ascenso</button>
     </div>
 
     <div class="orders-list" id="ordersList"></div>
@@ -374,26 +352,26 @@
 <div class="bottom-nav" id="bottomNav" style="display: none;">
   <button class="nav-item" onclick="switchPortalTab('pendientes', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-    Pending
+    Pendientes
   </button>
   <button class="nav-item active" onclick="switchPortalTab('todos', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-    My Orders
+    Mis Pedidos
   </button>
   <button class="nav-item" onclick="switchPortalTab('finalizados', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-    Completed
+    Finalizados
   </button>
   <button class="nav-item" onclick="switchPortalTab('giftcards', this)">
     <div style="position:relative; display:inline-block;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
       <span id="gcBadge" class="gc-badge" style="display: none;">0</span>
     </div>
-    Cards
+    Tarjetas
   </button>
   <button class="nav-item" onclick="switchPortalTab('perfil', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-    Profile
+    Perfil
   </button>
 </div>
 
@@ -401,16 +379,16 @@
 <div class="modal-wrap" id="paymentModal" onclick="if(event.target.id==='paymentModal') closePaymentModal()">
   <div class="modal">
     <button class="modal-x" onclick="closePaymentModal()">✕</button>
-    <h3 style="font-size:24px; margin-bottom:8px;">Make Payment</h3>
-    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Enter the amount and upload your receipt.</p>
+    <h3 style="font-size:24px; margin-bottom:8px;">Realizar Pago</h3>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Ingresa el monto y sube tu comprobante.</p>
     
     <div class="field">
-      <label>Amount to pay (Bs) *</label>
+      <label>Monto a pagar (Bs) *</label>
       <input type="number" id="payAmount" min="1" step="0.01">
     </div>
     
     <div class="field">
-      <label>Payment Method *</label>
+      <label>Método de Pago *</label>
       <select id="payMethod" onchange="updatePayDetails()">
         <option value="bs_pago_movil">Pago Móvil</option>
         <option value="bs_transfer">Transferencia Banesco</option>
@@ -421,11 +399,11 @@
     <div id="payDetails" style="background:var(--bg); padding:16px; border-radius:12px; margin-bottom:16px; font-size:14px; line-height:1.6;"></div>
     
     <div class="field">
-      <label>Payment Receipt *</label>
+      <label>Comprobante de Pago *</label>
       <input type="file" id="payReceipt" accept="image/*" style="padding:12px; background:#fff; border:1px dashed var(--border); border-radius:8px;">
     </div>
     
-    <button class="btn-primary" onclick="submitPayment()">Submit Payment</button>
+    <button class="btn-primary" onclick="submitPayment()">Enviar Pago</button>
     <div id="payError" class="err"></div>
   </div>
 </div>
@@ -433,26 +411,26 @@
 <div class="modal-wrap" id="reviewModal" onclick="if(event.target.id==='reviewModal') closeReviewModal()">
   <div class="modal">
     <button class="modal-x" onclick="closeReviewModal()">✕</button>
-    <h3 style="font-size:24px; margin-bottom:8px;">Leave a Review</h3>
-    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Your opinion helps us improve.</p>
+    <h3 style="font-size:24px; margin-bottom:8px;">Deja tu Reseña</h3>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Tu opinión nos ayuda a mejorar. Será publicada tras revisión.</p>
     
     <div class="field">
-      <label>Rating (1 to 5 stars) *</label>
+      <label>Calificación (1 a 5 estrellas) *</label>
       <select id="reviewRating">
-        <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
-        <option value="4">⭐⭐⭐⭐ (Very Good)</option>
-        <option value="3">⭐⭐⭐ (Good)</option>
-        <option value="2">⭐⭐ (Fair)</option>
-        <option value="1">⭐ (Poor)</option>
+        <option value="5">⭐⭐⭐⭐⭐ (Excelente)</option>
+        <option value="4">⭐⭐⭐⭐ (Muy bueno)</option>
+        <option value="3">⭐⭐⭐ (Bueno)</option>
+        <option value="2">⭐⭐ (Regular)</option>
+        <option value="1">⭐ (Malo)</option>
       </select>
     </div>
     
     <div class="field">
-      <label>Comment (Optional)</label>
-      <textarea id="reviewComment" rows="3" maxlength="250" placeholder="How was the product quality?"></textarea>
+      <label>Comentario (Opcional)</label>
+      <textarea id="reviewComment" rows="3" maxlength="250" placeholder="¿Qué tal la calidad del producto?"></textarea>
     </div>
     
-    <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+    <button class="btn-primary" onclick="submitReview()">Enviar Reseña</button>
     <div id="reviewError" class="err"></div>
   </div>
 </div>
@@ -519,7 +497,7 @@ function togglePassword(inputId, btn) {
   else { input.type = 'password'; eyeIcon.style.color = '#888'; }
 }
 
-// 🔧 Lógica para abrir la tarjeta de Auth
+// Lógica para abrir la tarjeta de Auth
 function openAuthCard(mode) {
   document.getElementById('authCard').classList.add('active');
   document.getElementById('authTopContent').style.opacity = '0';
@@ -534,7 +512,7 @@ function openAuthCard(mode) {
   }
 }
 
-// 🔧 Lógica para cerrar la tarjeta de Auth
+// Lógica para cerrar la tarjeta de Auth
 function closeAuthCard() {
   document.getElementById('authCard').classList.remove('active');
   document.getElementById('authTopContent').style.opacity = '1';
@@ -543,10 +521,10 @@ function closeAuthCard() {
 
 async function recoverPassword() {
   const email = document.getElementById('loginEmail').value.trim();
-  if (!email) return showToast("Please enter your email address first.", 'error');
+  if (!email) return showToast("Por favor, ingresa tu correo primero.", 'error');
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/portal.html' });
   if (error) showToast("Error: " + error.message, 'error');
-  else showToast("Check your email. We sent you a password reset link.");
+  else showToast("Revisa tu correo. Te enviamos un enlace para cambiar la contraseña.");
 }
 
 async function handleAuth(e, mode) {
@@ -559,16 +537,16 @@ async function handleAuth(e, mode) {
     const errBox = document.getElementById('loginError');
     
     errBox.textContent = "";
-    btn.disabled = true; btn.textContent = "Logging in...";
+    btn.disabled = true; btn.textContent = "Iniciando...";
 
     try {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error; 
       checkSession();
     } catch (error) { 
-      errBox.textContent = error.message === "Invalid login credentials" ? "Invalid email or password." : error.message; 
+      errBox.textContent = error.message === "Invalid login credentials" ? "Correo o contraseña incorrectos." : error.message; 
     } finally { 
-      btn.disabled = false; btn.textContent = "Log In"; 
+      btn.disabled = false; btn.textContent = "Iniciar Sesión"; 
     }
 
   } else {
@@ -581,7 +559,7 @@ async function handleAuth(e, mode) {
     const errBox = document.getElementById('registerError');
 
     errBox.textContent = "";
-    btn.disabled = true; btn.textContent = "Creating account...";
+    btn.disabled = true; btn.textContent = "Creando cuenta...";
 
     try {
       const { data, error } = await supabaseClient.auth.signUp({ 
@@ -593,13 +571,13 @@ async function handleAuth(e, mode) {
       if (data.session) {
         checkSession(); 
       } else { 
-        showToast("Account created. Please check your email to confirm."); 
+        showToast("Cuenta creada. Revisa tu correo para confirmar."); 
         openAuthCard('login');
       }
     } catch (error) { 
       errBox.textContent = error.message; 
     } finally { 
-      btn.disabled = false; btn.textContent = "Sign Up"; 
+      btn.disabled = false; btn.textContent = "Registrarse"; 
     }
   }
 }
@@ -673,7 +651,7 @@ function suscribirseCambiosCliente() {
 
 async function loadMyOrders(userId, userEmail) {
   const list = document.getElementById('ordersList');
-  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Loading your orders...</p></div>`;
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando tus pedidos...</p></div>`;
 
   try {
     const { data: orders, error } = await supabaseClient.from('orders').select('*, order_items(*, products(image_url, description)), installments(*)').or(`user_id.eq.${userId},customer_email.eq.${userEmail}`).order('created_at', { ascending: false });
@@ -684,9 +662,9 @@ async function loadMyOrders(userId, userEmail) {
   } catch (err) { 
     list.innerHTML = `
       <div class="error-state">
-        <div class="error-title">Error loading orders</div>
+        <div class="error-title">Error al cargar pedidos</div>
         <p class="error-sub">${escapeHTML(err.message)}</p>
-        <button class="btn-retry" onclick="loadMyOrders('${userId}', '${userEmail}')">Retry</button>
+        <button class="btn-retry" onclick="loadMyOrders('${userId}', '${userEmail}')">Reintentar</button>
       </div>`; 
   }
 }
@@ -696,7 +674,7 @@ function switchPortalTab(tabName, btnElement) {
   document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
   if(btnElement) btnElement.classList.add('active');
   
-  const titles = { 'pendientes': 'Pending Orders', 'todos': 'My Orders', 'finalizados': 'Completed Orders', 'perfil': 'My Profile', 'giftcards': 'My Gift Cards' };
+  const titles = { 'pendientes': 'Pedidos Pendientes', 'todos': 'Mis Pedidos', 'finalizados': 'Pedidos Finalizados', 'perfil': 'Mi Perfil', 'giftcards': 'Mis Tarjetas de Regalo' };
   document.getElementById('dashTitle').textContent = titles[tabName];
 
   if (tabName === 'perfil') {
@@ -711,12 +689,12 @@ function switchPortalTab(tabName, btnElement) {
 
 async function renderGiftCards() {
   const list = document.getElementById('ordersList');
-  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Loading cards...</p></div>`;
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando tarjetas...</p></div>`;
   
   const { data: cards, error } = await supabaseClient.from('gift_cards').select('*').eq('user_id', currentUserId).eq('is_used', false).order('created_at', { ascending: false });
   
   if (error) { 
-    list.innerHTML = `<div class="error-state"><div class="error-title">Error loading cards</div><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderGiftCards()">Retry</button></div>`; 
+    list.innerHTML = `<div class="error-state"><div class="error-title">Error al cargar tarjetas</div><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderGiftCards()">Reintentar</button></div>`; 
     return; 
   }
   
@@ -724,16 +702,16 @@ async function renderGiftCards() {
     list.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🎁</div>
-        <h3 class="empty-title">No gift cards available</h3>
-        <p class="empty-sub">Purchase $250 or more in cash and receive a $25 gift card.</p>
-        <button class="btn-primary" onclick="switchPortalTab('todos', document.querySelectorAll('.nav-item')[1])" style="width:auto; padding:12px 24px;">Go to My Orders</button>
+        <h3 class="empty-title">No tienes tarjetas disponibles</h3>
+        <p class="empty-sub">Compra de contado por más de $250 y recibe una tarjeta de regalo de $25.</p>
+        <button class="btn-primary" onclick="switchPortalTab('todos', document.querySelectorAll('.nav-item')[1])" style="width:auto; padding:12px 24px;">Ir a Mis Pedidos</button>
       </div>`;
     return;
   }
 
   list.innerHTML = `
     <div style="text-align:center; margin-bottom:24px;">
-      <p style="color:var(--muted); font-size:14px;">You can use these cards on your next cash purchase.</p>
+      <p style="color:var(--muted); font-size:14px;">Puedes usar estas tarjetas en tu próxima compra de contado.</p>
     </div>
     <div style="display: grid; gap: 20px; max-width: 400px; margin: 0 auto;">
       ${cards.map(c => `
@@ -741,7 +719,7 @@ async function renderGiftCards() {
           <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" style="height: 30px; filter: brightness(0) invert(1); object-fit: contain;">
           <div>
             <div style="font-size: 42px; font-weight: 800; margin: 12px 0 4px 0; letter-spacing: -1px;">$${Number(c.amount).toFixed(2)}</div>
-            <div style="font-size: 13px; font-weight: 600; color: #aaa;">Gift Card</div>
+            <div style="font-size: 13px; font-weight: 600; color: #aaa;">Tarjeta de Regalo</div>
           </div>
           <div style="font-family: monospace; font-size: 12px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 6px 12px; border-radius: 100px; display: inline-block; margin-top: 16px; letter-spacing: 1px;">${String(c.id).slice(0,8).toUpperCase()}</div>
         </div>
@@ -751,10 +729,10 @@ async function renderGiftCards() {
 }
 
 async function viewReceipt(fileName) {
-  if(!fileName) return showToast("No receipt found.", 'error');
+  if(!fileName) return showToast("No hay comprobante.", 'error');
   if(fileName.startsWith('http')) { window.open(fileName, '_blank'); return; }
   const { data, error } = await supabaseClient.storage.from('receipts').createSignedUrl(fileName, 3600);
-  if(error) return showToast("Error loading receipt: " + error.message, 'error');
+  if(error) return showToast("Error al cargar comprobante: " + error.message, 'error');
   window.open(data.signedUrl, '_blank');
 }
 
@@ -772,16 +750,16 @@ function renderFilteredOrders() {
     list.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📦</div>
-        <h3 class="empty-title">No orders here</h3>
-        <p class="empty-sub">When you have orders in this category, they will appear here.</p>
-        <a href="/" class="btn-primary" style="width:auto; padding:12px 24px; text-decoration:none;">Go to Store</a>
+        <h3 class="empty-title">No hay pedidos aquí</h3>
+        <p class="empty-sub">Cuando tengas pedidos en esta categoría, aparecerán aquí.</p>
+        <a href="/" class="btn-primary" style="width:auto; padding:12px 24px; text-decoration:none;">Ir a la Tienda</a>
       </div>`;
     return;
   }
 
   list.innerHTML = filtered.map(o => {
     const shortId = String(o.id).slice(0,8).toUpperCase();
-    const date = new Date(o.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' });
+    const date = new Date(o.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' });
     
     let abonadoUsdt = 0, pendienteUsdt = 0, gcTotalUsdt = 0;
     let methodsUsed = new Set();
@@ -809,9 +787,9 @@ function renderFilteredOrders() {
         ${item.products?.image_url ? `<img src="${item.products.image_url}" class="item-img" alt="${escapeHTML(item.product_name)}">` : `<div class="item-img"></div>`}
         <div class="item-details">
           <div class="item-title">${escapeHTML(item.product_name)}</div>
-          <div class="item-variant">Size: ${escapeHTML(item.size)} | Qty: ${item.quantity}</div>
+          <div class="item-variant">Talla: ${escapeHTML(item.size)} | Cant: ${item.quantity}</div>
           ${item.products?.description ? `<div style="font-size:12px; color:#555; margin-top:4px;">${escapeHTML(item.products.description)}</div>` : ''}
-          ${item.custom_note ? `<div style="font-size:11px; color:#b45309; background:#fffbeb; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:4px; border:1px solid #fcd34d;">📝 Note: "${escapeHTML(item.custom_note)}"</div>` : ''}
+          ${item.custom_note ? `<div style="font-size:11px; color:#b45309; background:#fffbeb; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:4px; border:1px solid #fcd34d;">📝 Nota: "${escapeHTML(item.custom_note)}"</div>` : ''}
         </div>
         <div class="item-price">${fmtUSD(item.subtotal_usdt)}</div>
       </div>
@@ -822,9 +800,9 @@ function renderFilteredOrders() {
       const d = o.payment_plan_details;
       const ratio = Number(o.total_bs) / Number(o.total_usdt);
       if(o.payment_plan === 'credito') {
-        planDetailsHtml = `<div class="plan-details-box"><strong>Credit Plan (3 installments of ${fmtUSD(d.cuota_monto / ratio)}):</strong><br>Installment 1: ${d.cuota1_pagada ? '✅ Paid' : '⏳ Pending'}<br>Installment 2: ${d.cuota2_pagada ? '✅ Paid' : '⏳ Pending'}<br>Installment 3: ${d.cuota3_pagada ? '✅ Paid' : '⏳ Pending'}</div>`;
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Crédito (3 cuotas de ${fmtUSD(d.cuota_monto / ratio)}):</strong><br>Cuota 1: ${d.cuota1_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 2: ${d.cuota2_pagada ? '✅ Pagada' : '⏳ Pendiente'}<br>Cuota 3: ${d.cuota3_pagada ? '✅ Pagada' : '⏳ Pendiente'}</div>`;
       } else if (o.payment_plan === 'apartado') {
-        planDetailsHtml = `<div class="plan-details-box"><strong>Layaway Plan:</strong><br>Initial Deposit: ${fmtUSD(d.abono_inicial / ratio)}<br>Initial Pending Balance: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></div>`;
+        planDetailsHtml = `<div class="plan-details-box"><strong>Plan de Apartado:</strong><br>Abono Inicial: ${fmtUSD(d.abono_inicial / ratio)}<br>Saldo Pendiente inicial: <strong style="color:var(--danger);">${fmtUSD(d.saldo_pendiente / ratio)}</strong></div>`;
       }
     }
 
@@ -834,25 +812,25 @@ function renderFilteredOrders() {
     if (canPay) {
       payButtonHtml = `
         <div>
-          <button class="btn-primary" style="background:var(--text); color:#fff; width:auto; padding:12px 24px; border-radius:100px;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Make Payment / Deposit</button>
-          ${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px;">⏳ You have a payment of ${fmtUSD(pendienteUsdt)} pending verification.</p>` : ''}
+          <button class="btn-primary" style="background:var(--text); color:#fff; width:auto; padding:12px 24px; border-radius:100px;" onclick="openPaymentModal('${o.id}', ${remainingBs})">💸 Realizar Pago / Abono</button>
+          ${pendienteUsdt > 0 ? `<p style="color:var(--warning); font-size:13px; margin-top:8px;">⏳ Tienes un pago de ${fmtUSD(pendienteUsdt)} pendiente por verificar.</p>` : ''}
         </div>
       `;
     } else if (remainingUsdt > 0.1 && !bcvRate) {
-      payButtonHtml = `<p style="color:var(--danger); font-size:13px;">⚠️ BCV Rate not available. Reload in a few minutes.</p>`;
+      payButtonHtml = `<p style="color:var(--danger); font-size:13px;">⚠️ Tasa BCV no disponible. Recarga en unos minutos.</p>`;
     }
 
     let receiptIconHtml = '';
     if (o.receipt_url) {
       receiptIconHtml = `
-        <button onclick="viewReceipt('${o.receipt_url}')" class="btn-primary" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); width: auto; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;" title="View Initial Receipt">
+        <button onclick="viewReceipt('${o.receipt_url}')" class="btn-primary" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); width: auto; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;" title="Ver Comprobante Inicial">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path>
             <line x1="16" y1="8" x2="8" y2="8"></line>
             <line x1="16" y1="12" x2="8" y2="12"></line>
             <line x1="16" y1="16" x2="8" y2="16"></line>
           </svg>
-          View Payment Receipt
+          Ver Comprobante de Pago
         </button>
       `;
     }
@@ -860,7 +838,7 @@ function renderFilteredOrders() {
     return `
       <div class="order-card">
         <div class="order-top">
-          <div><div class="order-id">Order #${shortId}</div><div class="order-date">${date}</div></div>
+          <div><div class="order-id">Pedido #${shortId}</div><div class="order-date">${date}</div></div>
           <div class="order-status ${statusClass}">${statusText}</div>
         </div>
         
@@ -870,7 +848,7 @@ function renderFilteredOrders() {
 
           ${o.tracking_number ? `
             <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:#166534; font-weight:600; font-size:14px;">📦 Tracking Nº:</span>
+              <span style="color:#166534; font-weight:600; font-size:14px;">📦 Nº de Guía:</span>
               <strong style="color:#166534; font-size:15px; font-family:monospace;">${escapeHTML(o.tracking_number)}</strong>
             </div>
           ` : ''}
@@ -878,22 +856,22 @@ function renderFilteredOrders() {
           <div style="background:#f9fafb; padding:16px; border-radius:8px; font-size:14px; margin-bottom:16px; border: 1px solid #f3f4f6;">
             ${gcTotalUsdt > 0 ? `
               <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success); font-weight:600;">
-                <span>🎁 Amount paid with Gift Card:</span>
+                <span>🎁 Monto pagado con Gift Card:</span>
                 <span>- ${fmtUSD(gcTotalUsdt)}</span>
               </div>
             ` : ''}
             
             ${abonadoUsdt > 0 ? `
               <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
-                <span>💳 Amount paid (${Array.from(methodsUsed).join(', ')}):</span>
+                <span>💳 Monto cancelado (${Array.from(methodsUsed).join(', ')}):</span>
                 <span>${fmtUSD(abonadoUsdt)}</span>
               </div>
             ` : ''}
 
             <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:12px; margin-top:12px; font-weight:700;">
-              <span>Remaining Balance:</span>
+              <span>Saldo Restante:</span>
               <strong style="color:${isPaid ? 'var(--success)' : 'var(--danger)'};">
-                ${isPaid ? 'Paid' : fmtUSD(remainingUsdt)}
+                ${isPaid ? 'Pagado' : fmtUSD(remainingUsdt)}
               </strong>
             </div>
           </div>
@@ -914,51 +892,51 @@ function renderFilteredOrders() {
 
 async function renderProfile() {
   const list = document.getElementById('ordersList');
-  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Loading profile...</p></div>`;
+  list.innerHTML = `<div style="text-align:center; padding: 60px 20px;"><div class="spinner"></div><p style="color: var(--muted); font-weight: 500;">Cargando perfil...</p></div>`;
   
   const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUserId).single();
-  if (error) { list.innerHTML = `<div class="error-state"><div class="error-title">Error loading profile</div><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderProfile()">Retry</button></div>`; return; }
+  if (error) { list.innerHTML = `<div class="error-state"><div class="error-title">Error al cargar perfil</div><p class="error-sub">${escapeHTML(error.message)}</p><button class="btn-retry" onclick="renderProfile()">Reintentar</button></div>`; return; }
 
   list.innerHTML = `
     <div class="order-card" style="max-width: 500px; margin: 0 auto; padding: 32px;">
-      <h2 style="font-size: 20px; margin-bottom: 24px;">My Personal Data</h2>
+      <h2 style="font-size: 20px; margin-bottom: 24px;">Mis Datos Personales</h2>
       <div class="field">
-        <label>Full Name</label>
+        <label>Nombre Completo</label>
         <input type="text" id="profName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" value="${escapeHTML(profile.full_name || '')}">
       </div>
       <div class="field">
-        <label>Email (Not editable)</label>
+        <label>Correo (No editable)</label>
         <input type="email" value="${escapeHTML(profile.email || '')}" disabled style="background:#f0f0f0;">
       </div>
       <div class="field">
-        <label>Phone</label>
+        <label>Teléfono</label>
         <input type="tel" id="profPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" value="${escapeHTML(profile.phone || '')}">
       </div>
       <div class="field">
-        <label>Shipping Address</label>
+        <label>Dirección de Envío</label>
         <textarea id="profAddress" rows="3" maxlength="150">${escapeHTML(profile.address || '')}</textarea>
       </div>
       
       <hr style="border:none; border-top: 1px solid var(--border); margin: 24px 0;">
       
-      <h2 style="font-size: 20px; margin-bottom: 16px;">Change Password</h2>
-      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Leave blank if you don't want to change it.</p>
+      <h2 style="font-size: 20px; margin-bottom: 16px;">Cambiar Contraseña</h2>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Déjalo en blanco si no deseas cambiarla.</p>
       <div class="field">
-        <label>New Password</label>
+        <label>Nueva Contraseña</label>
         <div class="input-group" style="margin-bottom:0;">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <input type="password" id="profPassword" minlength="6" maxlength="50" placeholder="Min 6 characters">
+          <input type="password" id="profPassword" minlength="6" maxlength="50" placeholder="Mínimo 6 caracteres">
         </div>
       </div>
 
-      <button class="btn-primary" style="margin-top: 16px;" onclick="updateProfile()" id="btnSaveProfile">Save Changes</button>
+      <button class="btn-primary" style="margin-top: 16px;" onclick="updateProfile()" id="btnSaveProfile">Guardar Cambios</button>
       <div id="profError" class="err"></div>
 
       <hr style="border:none; border-top: 1px solid var(--border); margin: 32px 0 24px;">
       
-      <h2 style="font-size: 18px; margin-bottom: 8px; color: var(--danger);">Danger Zone</h2>
-      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">If you delete your account, you will lose access to your purchase history and gift cards.</p>
-      <button class="btn-primary" style="background: transparent; color: var(--danger); border: 1px solid var(--danger);" onclick="deleteAccount()">🗑️ Delete my account</button>
+      <h2 style="font-size: 18px; margin-bottom: 8px; color: var(--danger);">Zona de Peligro</h2>
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Si eliminas tu cuenta, perderás acceso a tu historial de compras y tarjetas de regalo.</p>
+      <button class="btn-primary" style="background: transparent; color: var(--danger); border: 1px solid var(--danger);" onclick="deleteAccount()">🗑️ Eliminar mi cuenta</button>
     </div>
   `;
 }
@@ -967,7 +945,7 @@ async function updateProfile() {
   const btn = document.getElementById('btnSaveProfile');
   const errBox = document.getElementById('profError');
   btn.disabled = true; 
-  btn.textContent = "Saving...";
+  btn.textContent = "Guardando...";
   errBox.textContent = "";
 
   const name = document.getElementById('profName').value.trim();
@@ -977,47 +955,47 @@ async function updateProfile() {
 
   try {
     const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
-    if (!nameRegex.test(name)) throw new Error("Name must contain only letters (3-50 characters).");
+    if (!nameRegex.test(name)) throw new Error("El nombre solo debe contener letras (3-50 caracteres).");
     const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
-    if (!phoneRegex.test(phone)) throw new Error("Phone must have between 10 and 15 numbers.");
-    if (address.length < 5 || address.length > 150) throw new Error("Address must be between 5 and 150 characters.");
+    if (!phoneRegex.test(phone)) throw new Error("El teléfono debe tener entre 10 y 15 números.");
+    if (address.length < 5 || address.length > 150) throw new Error("La dirección debe tener entre 5 y 150 caracteres.");
     
     const { error: profileError } = await supabaseClient.from('profiles').update({ full_name: name, phone: phone, address: address }).eq('id', currentUserId);
     if (profileError) throw profileError;
 
     if (newPassword) {
-      if (newPassword.length < 6) throw new Error("Password must be at least 6 characters.");
+      if (newPassword.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres.");
       const { error: authError } = await supabaseClient.auth.updateUser({ password: newPassword });
       if (authError) throw authError;
     }
 
-    showToast("Profile updated successfully.");
+    showToast("Perfil actualizado correctamente.");
     document.getElementById('userNameDisplay').textContent = name;
   } catch (error) {
     errBox.textContent = error.message;
   } finally {
-    btn.disabled = false; btn.textContent = "Save Changes";
+    btn.disabled = false; btn.textContent = "Guardar Cambios";
   }
 }
 
 async function deleteAccount() {
-  if(!confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
+  if(!confirm("¿Estás completamente seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.")) return;
   
   const btn = document.querySelector('button[onclick="deleteAccount()"]');
-  if(btn) { btn.disabled = true; btn.textContent = "Deleting account..."; }
+  if(btn) { btn.disabled = true; btn.textContent = "Eliminando cuenta..."; }
 
   try {
     const { error } = await supabaseClient.rpc('request_account_deletion');
     if(error) throw error;
 
-    showToast("Your account has been deactivated. Logging out...");
+    showToast("Tu cuenta ha sido desactivada. Cerrando sesión...");
     setTimeout(async () => {
       await supabaseClient.auth.signOut();
       location.reload();
     }, 2500);
   } catch(err) {
-    showToast("Error deleting account: " + err.message, 'error');
-    if(btn) { btn.disabled = false; btn.textContent = "🗑️ Delete my account"; }
+    showToast("Error al eliminar cuenta: " + err.message, 'error');
+    if(btn) { btn.disabled = false; btn.textContent = "🗑️ Eliminar mi cuenta"; }
   }
 }
 
@@ -1028,7 +1006,7 @@ async function checkLoyaltyStatus(orders, userId) {
   const { data: reqs } = await supabaseClient.from('upgrade_requests').select('status').eq('user_id', userId).eq('status', 'pendiente');
   if (reqs && reqs.length > 0) {
     document.getElementById('loyaltyBanner').style.display = 'flex';
-    document.getElementById('btnRequestUpgrade').textContent = 'Request under review...';
+    document.getElementById('btnRequestUpgrade').textContent = 'Solicitud en revisión...';
     document.getElementById('btnRequestUpgrade').disabled = true;
     return;
   }
@@ -1052,16 +1030,16 @@ async function requestUpgrade() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return;
   const btn = document.getElementById('btnRequestUpgrade');
-  btn.disabled = true; btn.textContent = 'Sending...';
+  btn.disabled = true; btn.textContent = 'Enviando...';
   const { error } = await supabaseClient.from('upgrade_requests').insert({ user_id: session.user.id });
-  if (!error) btn.textContent = 'Request sent successfully'; 
-  else { showToast("Error: " + error.message, 'error'); btn.disabled = false; btn.textContent = 'Request Upgrade'; }
+  if (!error) btn.textContent = 'Solicitud enviada con éxito'; 
+  else { showToast("Error: " + error.message, 'error'); btn.disabled = false; btn.textContent = 'Solicitar Ascenso'; }
 }
 
 let currentPayOrderId = null, currentPaySaldoBs = 0;
 
 function openPaymentModal(orderId, saldoBs) {
-  if (!bcvRate) return showToast("BCV Rate not available. Reload the page.", 'error');
+  if (!bcvRate) return showToast("Tasa BCV no disponible. Recarga la página.", 'error');
   currentPayOrderId = orderId; currentPaySaldoBs = saldoBs;
   document.getElementById('payAmount').value = saldoBs.toFixed(2);
   document.getElementById('payMethod').value = 'bs_pago_movil';
@@ -1085,9 +1063,9 @@ function updatePayDetails() {
   const bEmail = p.binance_email || 'samiibelisario@gmail.com';
   const bUid = p.binance_uid || '219555454';
 
-  if (method === 'bs_pago_movil') div.innerHTML = `<strong>Bank:</strong> ${escapeHTML(bank)}<br><strong>Phone:</strong> ${escapeHTML(phone)}<br><strong>ID Card:</strong> ${escapeHTML(cedula)}`;
-  else if (method === 'bs_transfer') div.innerHTML = `<strong>Bank:</strong> ${escapeHTML(bank)}<br><strong>ID Card:</strong> ${escapeHTML(cedula)}<br><strong>Account Holder:</strong> ${escapeHTML(titular)}`;
-  else if (method === 'usdt_binance') div.innerHTML = `<strong>Email:</strong> ${escapeHTML(bEmail)}<br><strong>UID:</strong> ${escapeHTML(bUid)}`;
+  if (method === 'bs_pago_movil') div.innerHTML = `<strong>Banco:</strong> ${escapeHTML(bank)}<br><strong>Teléfono:</strong> ${escapeHTML(phone)}<br><strong>Cédula:</strong> ${escapeHTML(cedula)}`;
+  else if (method === 'bs_transfer') div.innerHTML = `<strong>Banco:</strong> ${escapeHTML(bank)}<br><strong>Cédula:</strong> ${escapeHTML(cedula)}<br><strong>Titular:</strong> ${escapeHTML(titular)}`;
+  else if (method === 'usdt_binance') div.innerHTML = `<strong>Correo:</strong> ${escapeHTML(bEmail)}<br><strong>UID:</strong> ${escapeHTML(bUid)}`;
 }
 
 async function submitPayment() {
@@ -1096,26 +1074,26 @@ async function submitPayment() {
   const method = document.getElementById('payMethod').value;
   const fileInput = document.getElementById('payReceipt');
   
-  if (isNaN(amount) || amount <= 0) { errBox.textContent = "Enter a valid amount."; return; }
-  if (amount > currentPaySaldoBs + 0.1) { errBox.textContent = "Amount cannot exceed the actual pending balance."; return; }
-  if (fileInput.files.length === 0) { errBox.textContent = "You must upload a receipt."; return; }
+  if (isNaN(amount) || amount <= 0) { errBox.textContent = "Ingresa un monto válido."; return; }
+  if (amount > currentPaySaldoBs + 0.1) { errBox.textContent = "El monto no puede superar el saldo pendiente real."; return; }
+  if (fileInput.files.length === 0) { errBox.textContent = "Debes subir un comprobante."; return; }
   
   const btn = document.querySelector('#paymentModal .btn-primary');
   btn.disabled = true; 
-  btn.textContent = "Sending...";
+  btn.textContent = "Enviando...";
   
   try {
     const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) throw new Error("Session expired.");
+    if (!user) throw new Error("Sesión expirada.");
 
     const file = fileInput.files[0];
     let compressed = file;
-    try { compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true }); } catch(e) { console.warn("Compression failed:", e); }
+    try { compressed = await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true }); } catch(e) { console.warn("Compresión fallida:", e); }
     
     const ext = compressed.name.split('.').pop();
     const fileName = `${user.id}/receipt_${currentPayOrderId}_${Date.now()}.${ext}`;
     const { error: uploadError } = await supabaseClient.storage.from('receipts').upload(fileName, compressed);
-    if (uploadError) throw new Error("Error uploading receipt: " + uploadError.message);
+    if (uploadError) throw new Error("Error al subir comprobante: " + uploadError.message);
     
     const { data: order } = await supabaseClient.from('orders').select('total_bs, total_usdt').eq('id', currentPayOrderId).single();
     const ratio = Number(order.total_bs) / Number(order.total_usdt);
@@ -1124,15 +1102,15 @@ async function submitPayment() {
     const { error: instError } = await supabaseClient.from('installments').insert({
       order_id: currentPayOrderId,
       amount_bs: amount, amount_usdt: amountUsdt, method: method,
-      reference: "Payment from Portal", receipt_url: fileName,
-      notes: "Pending verification", status: "pendiente"
+      reference: "Pago desde Portal", receipt_url: fileName,
+      notes: "Pendiente de verificación", status: "pendiente"
     });
     
     if (instError) throw instError;
     closePaymentModal(); checkSession();
-    showToast("Payment sent. It will be verified shortly.");
+    showToast("Pago enviado. En breve será verificado.");
   } catch(err) { errBox.textContent = err.message; } 
-  finally { btn.disabled = false; btn.textContent = "Submit Payment"; }
+  finally { btn.disabled = false; btn.textContent = "Enviar Pago"; }
 }
 
 async function checkReviewStatus(userId, userEmail) {
@@ -1174,11 +1152,11 @@ async function submitReview() {
   const errBox = document.getElementById('reviewError');
   const btn = document.querySelector('#reviewModal .btn-primary');
   
-  btn.disabled = true; btn.textContent = "Sending...";
+  btn.disabled = true; btn.textContent = "Enviando...";
   
   try {
     const { data: { user } } = await supabaseClient.auth.getUser();
-    if(!user) throw new Error("You must be logged in.");
+    if(!user) throw new Error("Debes iniciar sesión.");
     
     const { error } = await supabaseClient.from('reviews').insert({
       user_id: user.id,
@@ -1188,13 +1166,13 @@ async function submitReview() {
     });
     
     if(error) throw error;
-    showToast("Thank you for your review! It will be published after review.");
+    showToast("¡Gracias por tu reseña! Será publicada tras revisión.");
     closeReviewModal();
     document.getElementById('reviewBanner').style.display = 'none'; 
   } catch(err) {
     errBox.textContent = err.message;
   } finally {
-    btn.disabled = false; btn.textContent = "Submit Review";
+    btn.disabled = false; btn.textContent = "Enviar Reseña";
   }
 }
 
