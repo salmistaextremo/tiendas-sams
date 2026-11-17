@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mis Pedidos — Tiendas Sam's</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
@@ -14,20 +14,7 @@
 <link rel="icon" type="image/png" href="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/icon-192.png">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root{ 
-    --bg:#f3f4f6; /* Fondo gris tenue para realzar las tarjetas */
-    --surface:#ffffff; 
-    --text:#111111; 
-    --muted:#595959; 
-    --border:#e5e7eb; 
-    --accent:#ffea61; /* Amarillo de la marca */
-    --danger:#ef4444; 
-    --success:#22c55e; 
-    --warning:#d97706; 
-    --radius-lg:24px; 
-    --radius-md:16px; 
-    --radius-sm:100px; 
-  }
+  :root{ --bg:#fcfbf8; --surface:#ffffff; --text:#111111; --muted:#595959; --border:#e8e5df; --accent:#ffea61; --primary:#2563eb; /* Azul para el botón */ --danger:#ef4444; --success:#22c55e; --warning:#d97706; --radius-lg:24px; --radius-md:16px; --radius-sm:100px; }
   html,body{ background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 80px; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; } a{ color:inherit; text-decoration:none; }
   .container{ max-width:900px; margin:0 auto; padding:0 24px; width: 100%; }
@@ -37,70 +24,45 @@
   .logo img { height: 40px; width: auto; object-fit: contain; }
   .btn-back { font-size: 14px; font-weight: 600; color: var(--muted); } .btn-back:hover { color: var(--text); }
   
-  /* PANTALLA DE AUTH */
-  .auth-screen { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1500&auto=format&fit=crop'); background-size: cover; background-position: center; position: relative; }
-  .auth-screen::before { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.9; z-index: 1; }
-  .auth-card { position: relative; z-index: 2; background: var(--surface); padding: 48px; border-radius: var(--radius-lg); width: 100%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid var(--border); }
-  .auth-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; text-align: center; } 
-  .auth-card p { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 32px; }
-  .field { margin-bottom: 16px; } .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-  .field input, .field textarea { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--bg); border: 1px solid var(--border); font-family: inherit; font-size: 15px; }
-  .field input:focus, .field textarea:focus { outline: none; border-color: var(--text); background: #fff; }
-  .btn-primary { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--text); color: #fff; font-weight: 600; display: flex; justify-content: center; margin-top: 8px; }
-  .auth-switch { text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted); } .auth-switch button { color: var(--text); font-weight: 600; text-decoration: underline; }
+  /* PANTALLA DE AUTH ESTILO TABS */
+  .auth-screen { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: #f0f4f8; }
+  .auth-card { background: var(--surface); padding: 32px 40px; border-radius: 32px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+  
+  /* Tabs superiores */
+  .auth-tabs { display: flex; background: #f0f0f0; padding: 6px; border-radius: 100px; margin-bottom: 32px; }
+  .auth-tab { flex: 1; padding: 12px; text-align: center; border-radius: 100px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; color: #666; }
+  .auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+  .field { margin-bottom: 16px; } 
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333; }
+  .field input, .field textarea { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid #ccc; font-family: inherit; font-size: 15px; transition: all 0.2s; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  
+  .btn-primary { width: 100%; padding: 16px; border-radius: var(--radius-md); background: var(--primary); color: #fff; font-weight: 600; font-size: 16px; display: flex; justify-content: center; margin-top: 12px; transition: background 0.2s; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .auth-switch { text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted); } .auth-switch button { color: var(--primary); font-weight: 600; text-decoration: underline; }
   .err { color: var(--danger); font-size: 13px; margin-top: 12px; text-align: center; }
 
   .password-container { position: relative; display: flex; align-items: center; }
   .password-container input { padding-right: 48px; }
-  .toggle-password { position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 5px; }
+  .toggle-password { position: absolute; right: 16px; background: none; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 5px; }
   .toggle-password:hover { color: var(--text); }
+  
+  .forgot-password { text-align: right; margin-bottom: 12px; }
+  .forgot-password button { font-size: 12px; color: var(--muted); text-decoration: underline; }
 
   .dashboard { flex: 1; padding: 32px 0 40px; display: none; }
   .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
   .dash-header h1 { font-size: 28px; font-weight: 700; } .dash-header p { font-size: 15px; color: var(--muted); }
-  .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; background: var(--surface); }
+  .btn-logout { font-size: 13px; font-weight: 600; color: var(--danger); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-sm); cursor:pointer; }
   
-  /* DISEÑO DE LA TARJETA DEL PEDIDO */
-  .order-card { 
-    background: var(--surface); 
-    border-radius: var(--radius-lg); 
-    border: 1px solid var(--border); 
-    padding: 0; /* Padding 0 para que la cabecera toque los bordes */
-    margin-bottom: 24px; 
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
-  }
+  /* TARJETAS DE PEDIDOS */
+  .order-card { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 0; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+  .order-top { background: var(--accent); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .order-id { font-size: 18px; font-weight: 800; color: var(--text); } .order-date { font-size: 13px; color: #4a4a4a; margin-top: 4px; font-weight: 500; }
+  .order-status { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 800; text-transform: uppercase; background: #ffffff !important; color: #111111 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+  .order-body { padding: 24px; }
   
-  /* Cabecera amarilla */
-  .order-top { 
-    background: var(--accent); 
-    padding: 20px 24px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: none; 
-    margin-bottom: 0;
-  }
-  .order-id { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; } 
-  .order-date { font-size: 13px; color: #4a4a4a; margin-top: 4px; font-weight: 500; }
-  
-  /* Etiqueta de estado blanca para contrastar con el amarillo */
-  .order-status { 
-    padding: 6px 12px; 
-    border-radius: var(--radius-sm); 
-    font-size: 11px; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    background: #ffffff !important; 
-    color: #111111 !important; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  }
-  
-  /* Contenedor del cuerpo de la tarjeta */
-  .order-body {
-    padding: 24px;
-  }
-
   .order-items { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border); }
   .item-row { display: flex; gap: 16px; align-items: flex-start; font-size: 14px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
   .item-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -185,6 +147,7 @@
     .gc-badge { top: 6px; right: 10px; }
     .order-actions-footer { flex-direction: column; align-items: stretch; gap: 16px; }
     .icon-btn { align-self: flex-end; }
+    .auth-card { padding: 24px 20px; border-radius: 24px; }
   }
 </style>
 </head>
@@ -204,19 +167,35 @@
   </div>
 </header>
 
+<!-- PANTALLA DE LOGIN/REGISTRO CON DISEÑO DE PESTAÑAS -->
 <div class="auth-screen" id="authScreen">
   <div class="auth-card">
-    <h2 id="authTitle">Iniciar Sesión</h2><p id="authSub">Accede para ver tus pedidos.</p>
+    
+    <!-- Tabs superiores -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin" onclick="setAuthMode('login')">Login</div>
+      <div class="auth-tab" id="tabRegister" onclick="setAuthMode('register')">Register</div>
+    </div>
+
     <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras"></div>
-      <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" title="10-15 números"></div>
-      <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress" maxlength="150"></div>
       
-      <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" maxlength="100" required></div>
+      <!-- Campos exclusivos de Registro -->
+      <div id="registerFields" style="display:none; animation: fadeIn 0.3s;">
+        <div class="field"><label>Nombre Completo</label><input type="text" id="authName" maxlength="50" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}" title="Solo letras"></div>
+        <div class="field"><label>Teléfono</label><input type="tel" id="authPhone" maxlength="15" pattern="[0-9\+\-\s]{10,15}" title="10-15 números"></div>
+        <div class="field"><label>Dirección de Envío</label><input type="text" id="authAddress" maxlength="150"></div>
+      </div>
+
+      <!-- Campos comunes -->
       <div class="field">
-        <label>Contraseña</label>
+        <label>Email</label>
+        <input type="email" id="authEmail" maxlength="100" required placeholder="tu@correo.com">
+      </div>
+      
+      <div class="field">
+        <label>Password</label>
         <div class="password-container">
-          <input type="password" id="authPassword" minlength="6" maxlength="50" required>
+          <input type="password" id="authPassword" minlength="6" maxlength="50" required placeholder="••••••••">
           <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)">
             <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             <svg class="eye-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -224,13 +203,17 @@
         </div>
       </div>
 
-      <div style="text-align:right; margin-bottom:12px;">
-        <button type="button" onclick="recoverPassword()" style="font-size:12px; color:var(--muted); text-decoration:underline;">¿Olvidaste tu contraseña?</button>
+      <div class="forgot-password" id="forgotPasswordDiv">
+        <button type="button" onclick="recoverPassword()">Forgot password?</button>
       </div>
 
-      <button type="submit" class="btn-primary" id="btnAuthSubmit">Entrar</button><div id="authError" class="err"></div>
+      <button type="submit" class="btn-primary" id="btnAuthSubmit">Sign in</button>
+      <div id="authError" class="err"></div>
     </form>
-    <div class="auth-switch"><span id="switchText">¿No tienes cuenta?</span> <button onclick="toggleAuthMode()" id="switchBtn">Regístrate aquí</button></div>
+    
+    <div class="auth-switch" id="authSwitchText">
+      ¿No tienes cuenta? <button onclick="setAuthMode('register')">Sign up</button>
+    </div>
   </div>
 </div>
 
@@ -241,7 +224,6 @@
       <button class="btn-logout" onclick="handleLogout()">Cerrar Sesión</button>
     </div>
     
-    <!-- Banner de reseña: Solo aparece si hay compras enviadas y no hay reseña -->
     <div id="reviewBanner" style="background:#fffbeb; border:1px solid #fcd34d; padding:16px; border-radius:16px; margin-bottom:24px; display:none; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <p style="color:#b45309; font-weight:500; font-size:14px; margin:0;">¿Te gustó tu compra? ¡Déjanos una reseña!</p>
       <button onclick="openReviewModal()" style="background:#f59e0b; color:#fff; padding:8px 16px; border-radius:100px; font-weight:600; font-size:13px; cursor:pointer;">Escribir Reseña</button>
@@ -349,7 +331,6 @@ const SUPABASE_URL = "https://zxhufobqfxmbjpneyiam.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4aHVmb2JxZnhtYmpwbmV5aWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNjk2OTEsImV4cCI6MjEwODc0NTY5MX0.EUS-QUdhuhtSk9rgLB11wz-GYF9m01JqhXfT6yT9_Vs";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// bcvRate nullable con fallback
 let bcvRate = null;
 async function fetchBCVRate() {
   try {
@@ -374,7 +355,6 @@ const fmtBs = n => {
   return "Bs " + Number(n || 0).toLocaleString('es-VE',{minimumFractionDigits:0,maximumFractionDigits:2});
 };
 
-let isLoginMode = true;
 let currentUserId = null;
 let currentUserEmail = null;
 let myOrdersData = []; 
@@ -410,6 +390,41 @@ const statusLabels = { 'pendiente': 'Pendiente', 'confirmado': 'Confirmado', 've
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err)); }); }
 
+// 🔧 NUEVO: Función para alternar entre Login y Registro con Tabs
+function setAuthMode(mode) {
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const registerFields = document.getElementById('registerFields');
+  const btnAuthSubmit = document.getElementById('btnAuthSubmit');
+  const forgotPasswordDiv = document.getElementById('forgotPasswordDiv');
+  const authSwitchText = document.getElementById('authSwitchText');
+  const authError = document.getElementById('authError');
+
+  authError.textContent = "";
+
+  if (mode === 'login') {
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    registerFields.style.display = 'none';
+    btnAuthSubmit.textContent = 'Sign in';
+    forgotPasswordDiv.style.display = 'block';
+    authSwitchText.innerHTML = `¿No tienes cuenta? <button onclick="setAuthMode('register')">Sign up</button>`;
+    document.getElementById('authName').required = false;
+    document.getElementById('authPhone').required = false;
+    document.getElementById('authAddress').required = false;
+  } else {
+    tabLogin.classList.remove('active');
+    tabRegister.classList.add('active');
+    registerFields.style.display = 'block';
+    btnAuthSubmit.textContent = 'Sign up';
+    forgotPasswordDiv.style.display = 'none';
+    authSwitchText.innerHTML = `¿Ya tienes cuenta? <button onclick="setAuthMode('login')">Sign in</button>`;
+    document.getElementById('authName').required = true;
+    document.getElementById('authPhone').required = true;
+    document.getElementById('authAddress').required = true;
+  }
+}
+
 async function recoverPassword() {
   const email = document.getElementById('authEmail').value.trim();
   if (!email) return showToast("Escribe tu correo arriba para enviarte el enlace.", 'error');
@@ -418,27 +433,16 @@ async function recoverPassword() {
   else showToast("Revisa tu correo. Te enviamos un enlace para cambiar la contraseña.");
 }
 
-function toggleAuthMode() {
-  isLoginMode = !isLoginMode;
-  document.getElementById('authTitle').textContent = isLoginMode ? "Iniciar Sesión" : "Crear Cuenta";
-  document.getElementById('authSub').textContent = isLoginMode ? "Accede para ver tus pedidos." : "Regístrate para gestionar tus compras.";
-  document.getElementById('btnAuthSubmit').textContent = isLoginMode ? "Entrar" : "Registrarse";
-  document.getElementById('nameField').style.display = isLoginMode ? 'none' : 'block';
-  document.getElementById('phoneField').style.display = isLoginMode ? 'none' : 'block';
-  document.getElementById('addressField').style.display = isLoginMode ? 'none' : 'block';
-  document.getElementById('switchText').textContent = isLoginMode ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?";
-  document.getElementById('switchBtn').textContent = isLoginMode ? "Regístrate aquí" : "Inicia sesión";
-  document.getElementById('authError').textContent = "";
-}
-
 async function handleAuth(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim(), password = document.getElementById('authPassword').value;
   const name = document.getElementById('authName').value.trim(), phone = document.getElementById('authPhone').value.trim(), address = document.getElementById('authAddress').value.trim();
   const errBox = document.getElementById('authError'), btn = document.getElementById('btnAuthSubmit');
+  const isRegisterMode = document.getElementById('tabRegister').classList.contains('active');
+  
   errBox.textContent = ""; 
   
-  if (!isLoginMode) {
+  if (isRegisterMode) {
     const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,50}$/;
     if (!nameRegex.test(name)) { errBox.textContent = "Nombre inválido (solo letras, 3-50 caracteres)."; return; }
     const phoneRegex = /^[0-9\+\-\s]{10,15}$/;
@@ -450,16 +454,17 @@ async function handleAuth(e) {
   btn.innerHTML = `<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0; border-top-color:#fff; display:inline-block; vertical-align:middle; margin-right:8px;"></div> Procesando...`;
 
   try {
-    if (isLoginMode) {
+    if (!isRegisterMode) {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error; checkSession();
     } else {
       if (!name || !phone || !address) throw new Error("Por favor completa todos los campos.");
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name, phone: phone, address: address } } });
       if (error) throw error;
-      if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); toggleAuthMode(); }
+      if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); setAuthMode('login'); }
     }
-  } catch (error) { errBox.textContent = error.message; } finally { btn.disabled = false; btn.textContent = isLoginMode ? "Entrar" : "Registrarse"; }
+  } catch (error) { errBox.textContent = error.message; } 
+  finally { btn.disabled = false; btn.textContent = isRegisterMode ? "Sign up" : "Sign in"; }
 }
 
 async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
@@ -480,7 +485,6 @@ async function checkSession() {
     const { data: config } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
     if(config) portalSiteConfig = config;
 
-    // Llamada corregida con email
     checkReviewStatus(user.id, user.email); 
     checkGiftCardBadge(user.id);
 
@@ -996,19 +1000,16 @@ async function submitPayment() {
   finally { btn.disabled = false; btn.textContent = "Enviar Pago"; }
 }
 
-// LÓGICA DE RESEÑA CORREGIDA: Solo muestra si hay envíos y no hay reseñas
 async function checkReviewStatus(userId, userEmail) {
   const banner = document.getElementById('reviewBanner');
   if (!banner) return;
 
-  // 1. Verificar si ya dejó una reseña
   const { data: reviews } = await supabaseClient.from('reviews').select('id').eq('user_id', userId).limit(1);
   if (reviews && reviews.length > 0) {
     banner.style.display = 'none';
     return;
   }
 
-  // 2. Verificar si tiene algún pedido finalizado (enviado o entregado)
   const { data: orders } = await supabaseClient
     .from('orders')
     .select('id')
@@ -1017,7 +1018,7 @@ async function checkReviewStatus(userId, userEmail) {
     .limit(1);
 
   if (orders && orders.length > 0) {
-    banner.style.display = 'flex'; // Solo muestra el banner si hay compras enviadas
+    banner.style.display = 'flex'; 
   } else {
     banner.style.display = 'none';
   }
