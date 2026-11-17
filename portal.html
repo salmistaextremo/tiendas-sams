@@ -706,16 +706,17 @@ function renderFilteredOrders() {
       payButtonHtml = `<p style="color:var(--danger); font-size:13px;">⚠️ Tasa BCV no disponible. Recarga en unos minutos.</p>`;
     }
 
-    let receiptIconHtml = '';
+        let receiptIconHtml = '';
     if (o.receipt_url) {
       receiptIconHtml = `
-        <button onclick="viewReceipt('${o.receipt_url}')" class="icon-btn" title="Ver Comprobante Inicial" aria-label="Ver comprobante inicial">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="viewReceipt('${o.receipt_url}')" class="btn-primary" style="background: var(--surface); color: var(--text); border: 1px solid var(--border); width: auto; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;" title="Ver Comprobante Inicial">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path>
             <line x1="16" y1="8" x2="8" y2="8"></line>
             <line x1="16" y1="12" x2="8" y2="12"></line>
             <line x1="16" y1="16" x2="8" y2="16"></line>
           </svg>
+          Ver Comprobante de Pago
         </button>
       `;
     }
