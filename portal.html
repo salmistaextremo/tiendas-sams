@@ -464,7 +464,7 @@ async function handleAuth(e) {
       if (data.session) checkSession(); else { showToast("Cuenta creada. Revisa tu correo."); setAuthMode('login'); }
     }
   } catch (error) { errBox.textContent = error.message; } 
-  finally { btn.disabled = false; btn.textContent = isRegisterMode ? "Sign up" : "Sign in"; }
+  finally { btn.disabled = false; btn.textContent = isRegisterMode ? "Regístrate" : "Iniciar Sesión"; }
 }
 
 async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
