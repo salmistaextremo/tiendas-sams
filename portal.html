@@ -173,8 +173,8 @@
     
     <!-- Tabs superiores -->
     <div class="auth-tabs">
-      <div class="auth-tab active" id="tabLogin" onclick="setAuthMode('login')">Login</div>
-      <div class="auth-tab" id="tabRegister" onclick="setAuthMode('register')">Register</div>
+      <div class="auth-tab active" id="tabLogin" onclick="setAuthMode('login')">Iniciar Sesión</div>
+      <div class="auth-tab" id="tabRegister" onclick="setAuthMode('register')">Registrarse</div>
     </div>
 
     <form id="authForm" onsubmit="handleAuth(event)">
@@ -193,7 +193,7 @@
       </div>
       
       <div class="field">
-        <label>Password</label>
+        <label>Contraseña</label>
         <div class="password-container">
           <input type="password" id="authPassword" minlength="6" maxlength="50" required placeholder="••••••••">
           <button type="button" class="toggle-password" onclick="togglePassword('authPassword', this)">
@@ -204,15 +204,15 @@
       </div>
 
       <div class="forgot-password" id="forgotPasswordDiv">
-        <button type="button" onclick="recoverPassword()">Forgot password?</button>
+        <button type="button" onclick="recoverPassword()">Olvidaste la contraseña?</button>
       </div>
 
-      <button type="submit" class="btn-primary" id="btnAuthSubmit">Sign in</button>
+      <button type="submit" class="btn-primary" id="btnAuthSubmit">Iniciar Sesión</button>
       <div id="authError" class="err"></div>
     </form>
     
     <div class="auth-switch" id="authSwitchText">
-      ¿No tienes cuenta? <button onclick="setAuthMode('register')">Sign up</button>
+      ¿No tienes cuenta? <button onclick="setAuthMode('register')">Iniciar Sesión</button>
     </div>
   </div>
 </div>
