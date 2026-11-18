@@ -88,7 +88,7 @@
     background: #e8e3d9; /* Color de fondo mientras carga */
   }
   
-  /* MEJORA: Animación de Fade-in para la imagen */
+  /* Animación de Fade-in para la imagen */
   .hero-bg { 
     position: absolute; inset: 0; width: 100%; height: 100%; 
     object-fit: cover; object-position: center; z-index: 0; 
@@ -358,8 +358,8 @@
 <!-- HERO CAROUSEL -->
 <section class="hero container">
   <div class="hero-card">
-    <!-- Se eliminó el texto "Hero 1" del atributo alt y se añadió fetchpriority="high" -->
-    <img class="hero-bg" id="heroImg1" alt="" fetchpriority="high" onload="this.classList.add('loaded')">
+    <!-- Imagen con carga prioritaria y animación, sin texto alt -->
+    <img class="hero-bg" id="heroImg1" alt="" fetchpriority="high" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <!-- Textos vacíos y ocultos. JS los llenará con los datos de la BD -->
@@ -1091,14 +1091,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if(config) {
     currentSiteConfig = config;
     
-    // MEJORA: Optimización de la URL de la imagen del Hero con Supabase CDN
+    // Restauramos la URL original, que es la que sí carga correctamente
     if (config.hero_images && config.hero_images[0]) {
-      let heroUrl = config.hero_images[0];
-      // Si es una imagen de Supabase Storage, le inyectamos parámetros para que la sirva optimizada (ancho 800px, calidad 80%)
-      if (heroUrl.includes('/storage/v1/object/public/')) {
-        heroUrl = heroUrl.replace('/object/public/', '/render/image/public/') + '?width=800&quality=80';
-      }
-      document.getElementById('heroImg1').src = heroUrl;
+      document.getElementById('heroImg1').src = config.hero_images[0];
     }
     
     // Solo mostramos los textos si la configuración los trae. Hacemos visibles los elementos.
