@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Tiendas Sam's — Oversize & más</title>
+
+<!-- Preconexión a Supabase para acelerar la descarga de imágenes -->
+<link rel="preconnect" href="https://zxhufobqfxmbjpneyiam.supabase.co">
+<link rel="dns-prefetch" href="https://zxhufobqfxmbjpneyiam.supabase.co">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
@@ -80,9 +85,17 @@
   .hero-card { 
     position: relative; border-radius: var(--radius-lg); overflow: hidden; 
     height: 380px; display: flex; align-items: center; 
-    background: #e8e3d9;
+    background: #e8e3d9; /* Color de fondo mientras carga */
   }
-  .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 0; }
+  
+  /* MEJORA: Animación de Fade-in para la imagen */
+  .hero-bg { 
+    position: absolute; inset: 0; width: 100%; height: 100%; 
+    object-fit: cover; object-position: center; z-index: 0; 
+    opacity: 0; transition: opacity 0.5s ease-in-out;
+  }
+  .hero-bg.loaded { opacity: 1; }
+
   /* Degradado más limpio hacia la izquierda para dar contraste al texto */
   .hero-gradient { position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%); z-index: 1; }
   /* Alineado a la izquierda con un poco más de espacio */
@@ -311,7 +324,7 @@
   <div class="container header-inner">
     <div class="header-left">
       <a href="/" class="logo">
-        <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's" style="height: 32px;">
+        <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's" style="height: 32px;" fetchpriority="high">
       </a>
     </div>
     
@@ -345,7 +358,8 @@
 <!-- HERO CAROUSEL -->
 <section class="hero container">
   <div class="hero-card">
-    <img class="hero-bg" id="heroImg1" alt="Hero 1">
+    <!-- Se eliminó el texto "Hero 1" del atributo alt y se añadió fetchpriority="high" -->
+    <img class="hero-bg" id="heroImg1" alt="" fetchpriority="high" onload="this.classList.add('loaded')">
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <!-- Textos vacíos y ocultos. JS los llenará con los datos de la BD -->
@@ -1076,7 +1090,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: config } = await supabaseClient.from('site_config').select('*').eq('id', 1).single();
   if(config) {
     currentSiteConfig = config;
-    if (config.hero_images && config.hero_images[0]) document.getElementById('heroImg1').src = config.hero_images[0];
+    
+    // MEJORA: Optimización de la URL de la imagen del Hero con Supabase CDN
+    if (config.hero_images && config.hero_images[0]) {
+      let heroUrl = config.hero_images[0];
+      // Si es una imagen de Supabase Storage, le inyectamos parámetros para que la sirva optimizada (ancho 800px, calidad 80%)
+      if (heroUrl.includes('/storage/v1/object/public/')) {
+        heroUrl = heroUrl.replace('/object/public/', '/render/image/public/') + '?width=800&quality=80';
+      }
+      document.getElementById('heroImg1').src = heroUrl;
+    }
     
     // Solo mostramos los textos si la configuración los trae. Hacemos visibles los elementos.
     if (config.hero_details && config.hero_details[0]) {
