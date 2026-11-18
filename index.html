@@ -288,6 +288,24 @@
   .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* PANTALLA DE MANTENIMIENTO */
+  #maintenanceScreen {
+    position: fixed; inset: 0; z-index: 99999;
+    background: var(--bg);
+    display: none; /* Oculto por defecto */
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  #maintenanceScreen img {
+    height: 60px; margin-bottom: 32px;
+  }
+  #maintenanceScreen h1 {
+    font-size: 32px; font-weight: 800; color: var(--text); margin-bottom: 16px;
+  }
+  #maintenanceScreen p {
+    font-size: 16px; color: var(--muted); max-width: 400px; line-height: 1.6;
+  }
+
   /* RESPONSIVE — 2 columnas siempre */
   @media(min-width: 480px) {
     .product-grid { gap: 14px; }
@@ -319,157 +337,165 @@
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/" class="logo">
-        <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's" style="height: 32px;" fetchpriority="high">
-      </a>
-    </div>
-    
-    <div class="header-right">
-      <div class="header-icons">
-        <button onclick="window.location.href='/portal.html'" class="header-icon" aria-label="Mi cuenta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        </button>
-        <button onclick="openCart()" class="header-icon" style="position:relative;" aria-label="Abrir carrito">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          <span class="cart-badge" id="cartCount">0</span>
-        </button>
-      </div>
-      <div class="header-center" id="userGreeting">
-        <p id="greetingText"></p>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- BARRA DE BÚSQUEDA -->
-<div class="container search-container">
-  <div class="search-bar">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    <input type="text" id="searchInput" placeholder="Buscar prendas, estilos..." oninput="searchProducts(this.value)">
-    <button style="color:#888;" aria-label="Filtros"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></button>
-  </div>
+<!-- PANTALLA DE MANTENIMIENTO -->
+<div id="maintenanceScreen">
+  <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's">
+  <h1>Estamos en Mantenimiento</h1>
+  <p id="maintenanceMessage">Estamos mejorando nuestra tienda para ofrecerte una mejor experiencia. Volvemos pronto.</p>
 </div>
 
-<!-- HERO CAROUSEL -->
-<section class="hero container">
-  <div class="hero-card">
-    <!-- Imagen con carga prioritaria y animación, sin texto alt -->
-    <img class="hero-bg" id="heroImg1" alt="" fetchpriority="high" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-    <div class="hero-gradient"></div>
-    <div class="hero-content">
-      <!-- Textos vacíos y ocultos. JS los llenará con los datos de la BD -->
-      <span class="hero-badge" id="heroBadge1"></span>
-      <h1 class="hero-title font-serif" id="heroTitle1"></h1>
-      <p class="hero-desc" id="heroDesc1"></p>
-      <button class="hero-btn" onclick="setFilter('todo')">Comprar Ahora <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
-    </div>
-  </div>
-</section>
-
-<!-- CATEGORÍAS CIRCULARES -->
-<div class="container">
-  <div class="categories-scroll" id="filters"></div>
-</div>
-
-<!-- CATÁLOGO DE PRODUCTOS -->
-<section class="container" id="catalog">
-  <div class="section-head">
-    <h2>Selección Destacada</h2>
-    <a href="#catalog" class="see-all">Ver Todo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
-  </div>
-  <div class="product-grid" id="productGrid"></div>
-  
-  <div id="loadMoreSentinel" style="text-align:center; padding: 20px;">
-    <div class="spinner" id="loadMoreSpinner" style="display:none;"></div>
-    <div class="end-of-list" id="endOfList" style="display:none; color:var(--muted); font-size:14px;">No hay más productos.</div>
-  </div>
-</section>
-
-<!-- NAVEGACIÓN INFERIOR -->
-<nav class="bottom-nav">
-  <button class="nav-item active" onclick="window.scrollTo(0,0); setActiveNav(this);">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-    <span>Inicio</span>
-  </button>
-  <button class="nav-item" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); setActiveNav(this);">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-    <span>Tienda</span>
-  </button>
-  <button class="nav-item" onclick="window.location.href='/portal.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-    <span>Favoritos</span>
-  </button>
-  <button class="nav-item" onclick="openCart(); setActiveNav(this);">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-    <span>Carrito</span>
-  </button>
-  <button class="nav-item" onclick="window.location.href='/portal.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-    <span>Perfil</span>
-  </button>
-</nav>
-
-<!-- CARRITO DRAWER -->
-<div class="overlay" id="overlay" onclick="closeCart()"></div>
-<aside class="drawer" id="drawer" aria-label="Carrito de compras">
-  <div class="drawer-head"><h3 style="font-size:20px; font-weight:800;">Tu Carrito</h3><button onclick="closeCart()" aria-label="Cerrar carrito">✕</button></div>
-  <div class="drawer-body" id="cartBody"></div>
-  <div class="drawer-foot" id="cartFoot"></div>
-</aside>
-
-<!-- MODALES DE PRODUCTO Y CHECKOUT -->
-<div class="modal-wrap" id="productModal" onclick="closeProduct(event)"><div class="modal" id="productModalInner" style="padding:0; max-width:800px;"></div></div>
-<div class="modal-wrap" id="checkoutModal" onclick="closeCheckout(event)"><div class="modal checkout" id="checkoutModalInner"></div></div>
-
-<!-- MODAL DE AUTENTICACIÓN EN TIENDA -->
-<div class="modal-wrap" id="authModal" onclick="if(event.target.id==='authModal') closeAuthModal()">
-  <div class="modal" style="max-width:420px; padding:40px;">
-    <button class="modal-x" onclick="closeAuthModal()">✕</button>
-    <h2 id="authTitle" style="font-size:24px; font-weight:800; text-align:center; margin-bottom:8px;">Iniciar Sesión</h2>
-    <p id="authSub" style="text-align:center; color:var(--muted); margin-bottom:32px;">Debes ingresar para completar tu compra.</p>
-    <form id="authFormStore" onsubmit="handleStoreAuth(event)" novalidate>
-      <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName" maxlength="50"></div>
-      <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone" maxlength="15"></div>
-      <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress" maxlength="150"></div>
+<!-- CONTENIDO PRINCIPAL (Se oculta en mantenimiento) -->
+<div id="mainContent">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="/" class="logo">
+          <img src="https://zxhufobqfxmbjpneyiam.supabase.co/storage/v1/object/public/brand-assets/logo.png" alt="Tiendas Sam's" style="height: 32px;" fetchpriority="high">
+        </a>
+      </div>
       
-      <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" maxlength="100" autocomplete="email" required></div>
-      <div class="field">
-        <label>Contraseña</label>
-        <div style="position:relative;">
-          <input type="password" id="authPassword" minlength="6" maxlength="50" autocomplete="current-password" required style="padding-right:40px;">
-          <button type="button" onclick="togglePassword('authPassword', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#888;" aria-label="Mostrar contraseña">
-            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      <div class="header-right">
+        <div class="header-icons">
+          <button onclick="window.location.href='/portal.html'" class="header-icon" aria-label="Mi cuenta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </button>
+          <button onclick="openCart()" class="header-icon" style="position:relative;" aria-label="Abrir carrito">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="cart-badge" id="cartCount">0</span>
           </button>
         </div>
+        <div class="header-center" id="userGreeting">
+          <p id="greetingText"></p>
+        </div>
       </div>
+    </div>
+  </header>
 
-      <button type="submit" class="btn-primary" id="btnAuthSubmit" style="margin-top:16px;">Entrar y Continuar</button>
-      <div id="authError" style="color:var(--danger); font-size:13px; margin-top:12px; text-align:center;"></div>
-    </form>
-    <div style="text-align:center; margin-top:24px; font-size:14px; color:var(--muted);">
-      <span id="switchText">¿No tienes cuenta?</span> <button onclick="toggleStoreAuthMode()" id="switchBtn" style="font-weight:700; text-decoration:underline;">Regístrate aquí</button>
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="container search-container">
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="searchInput" placeholder="Buscar prendas, estilos..." oninput="searchProducts(this.value)">
+      <button style="color:#888;" aria-label="Filtros"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></button>
     </div>
   </div>
-</div>
 
-<!-- MODAL PROMOCIÓN (POPUP) -->
-<div class="modal-wrap" id="promoModal" onclick="if(event.target.id==='promoModal') closePromoModal()" style="z-index: 3000;">
-  <div class="modal" style="max-width: 400px; padding: 0; overflow: hidden; text-align: center;">
-    <button class="modal-x" onclick="closePromoModal()" style="background: rgba(255,255,255,0.8);">✕</button>
-    <img id="promoImageDisplay" style="width: 100%; height: 250px; object-fit: cover; display: none;">
-    <div style="padding: 32px 24px;">
-      <h2 id="promoTitleDisplay" style="font-size: 24px; font-weight: 800; margin-bottom: 12px; line-height: 1.2;"></h2>
-      <p id="promoTextDisplay" style="font-size: 15px; color: var(--muted); margin-bottom: 24px;"></p>
-      <a id="promoLinkDisplay" href="#" class="btn-primary" style="text-decoration: none;">Ver Promoción</a>
+  <!-- HERO CAROUSEL -->
+  <section class="hero container">
+    <div class="hero-card">
+      <img class="hero-bg" id="heroImg1" alt="" fetchpriority="high" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <span class="hero-badge" id="heroBadge1"></span>
+        <h1 class="hero-title font-serif" id="heroTitle1"></h1>
+        <p class="hero-desc" id="heroDesc1"></p>
+        <button class="hero-btn" onclick="setFilter('todo')">Comprar Ahora <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS CIRCULARES -->
+  <div class="container">
+    <div class="categories-scroll" id="filters"></div>
+  </div>
+
+  <!-- CATÁLOGO DE PRODUCTOS -->
+  <section class="container" id="catalog">
+    <div class="section-head">
+      <h2>Selección Destacada</h2>
+      <a href="#catalog" class="see-all">Ver Todo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+    
+    <div id="loadMoreSentinel" style="text-align:center; padding: 20px;">
+      <div class="spinner" id="loadMoreSpinner" style="display:none;"></div>
+      <div class="end-of-list" id="endOfList" style="display:none; color:var(--muted); font-size:14px;">No hay más productos.</div>
+    </div>
+  </section>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="window.scrollTo(0,0); setActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-item" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'}); setActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Tienda</span>
+    </button>
+    <button class="nav-item" onclick="window.location.href='/portal.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      <span>Favoritos</span>
+    </button>
+    <button class="nav-item" onclick="openCart(); setActiveNav(this);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span>Carrito</span>
+    </button>
+    <button class="nav-item" onclick="window.location.href='/portal.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <span>Perfil</span>
+    </button>
+  </nav>
+
+  <!-- CARRITO DRAWER -->
+  <div class="overlay" id="overlay" onclick="closeCart()"></div>
+  <aside class="drawer" id="drawer" aria-label="Carrito de compras">
+    <div class="drawer-head"><h3 style="font-size:20px; font-weight:800;">Tu Carrito</h3><button onclick="closeCart()" aria-label="Cerrar carrito">✕</button></div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-foot" id="cartFoot"></div>
+  </aside>
+
+  <!-- MODALES DE PRODUCTO Y CHECKOUT -->
+  <div class="modal-wrap" id="productModal" onclick="closeProduct(event)"><div class="modal" id="productModalInner" style="padding:0; max-width:800px;"></div></div>
+  <div class="modal-wrap" id="checkoutModal" onclick="closeCheckout(event)"><div class="modal checkout" id="checkoutModalInner"></div></div>
+
+  <!-- MODAL DE AUTENTICACIÓN EN TIENDA -->
+  <div class="modal-wrap" id="authModal" onclick="if(event.target.id==='authModal') closeAuthModal()">
+    <div class="modal" style="max-width:420px; padding:40px;">
+      <button class="modal-x" onclick="closeAuthModal()">✕</button>
+      <h2 id="authTitle" style="font-size:24px; font-weight:800; text-align:center; margin-bottom:8px;">Iniciar Sesión</h2>
+      <p id="authSub" style="text-align:center; color:var(--muted); margin-bottom:32px;">Debes ingresar para completar tu compra.</p>
+      <form id="authFormStore" onsubmit="handleStoreAuth(event)" novalidate>
+        <div class="field" id="nameField" style="display:none;"><label>Nombre Completo</label><input type="text" id="authName" maxlength="50"></div>
+        <div class="field" id="phoneField" style="display:none;"><label>Teléfono</label><input type="tel" id="authPhone" maxlength="15"></div>
+        <div class="field" id="addressField" style="display:none;"><label>Dirección de Envío</label><input type="text" id="authAddress" maxlength="150"></div>
+        
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="authEmail" maxlength="100" autocomplete="email" required></div>
+        <div class="field">
+          <label>Contraseña</label>
+          <div style="position:relative;">
+            <input type="password" id="authPassword" minlength="6" maxlength="50" autocomplete="current-password" required style="padding-right:40px;">
+            <button type="button" onclick="togglePassword('authPassword', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#888;" aria-label="Mostrar contraseña">
+              <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnAuthSubmit" style="margin-top:16px;">Entrar y Continuar</button>
+        <div id="authError" style="color:var(--danger); font-size:13px; margin-top:12px; text-align:center;"></div>
+      </form>
+      <div style="text-align:center; margin-top:24px; font-size:14px; color:var(--muted);">
+        <span id="switchText">¿No tienes cuenta?</span> <button onclick="toggleStoreAuthMode()" id="switchBtn" style="font-weight:700; text-decoration:underline;">Regístrate aquí</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="toast-container"></div>
+  <!-- MODAL PROMOCIÓN (POPUP) -->
+  <div class="modal-wrap" id="promoModal" onclick="if(event.target.id==='promoModal') closePromoModal()" style="z-index: 3000;">
+    <div class="modal" style="max-width: 400px; padding: 0; overflow: hidden; text-align: center;">
+      <button class="modal-x" onclick="closePromoModal()" style="background: rgba(255,255,255,0.8);">✕</button>
+      <img id="promoImageDisplay" style="width: 100%; height: 250px; object-fit: cover; display: none;">
+      <div style="padding: 32px 24px;">
+        <h2 id="promoTitleDisplay" style="font-size: 24px; font-weight: 800; margin-bottom: 12px; line-height: 1.2;"></h2>
+        <p id="promoTextDisplay" style="font-size: 15px; color: var(--muted); margin-bottom: 24px;"></p>
+        <a id="promoLinkDisplay" href="#" class="btn-primary" style="text-decoration: none;">Ver Promoción</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+</div> <!-- FIN mainContent -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1068,12 +1094,24 @@ async function submitOrder(){
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
   await fetchBCVRate(); 
+  
+  // Chequear modo mantenimiento ANTES de cargar la tienda
+  try {
+    const { data: config } = await supabaseClient.from('site_config').select('is_maintenance, maintenance_message').eq('id', 1).single();
+    if (config && config.is_maintenance) {
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('maintenanceScreen').style.display = 'flex';
+      document.getElementById('maintenanceMessage').textContent = config.maintenance_message || 'Estamos mejorando nuestra tienda para ofrecerte una mejor experiencia. Volvemos pronto.';
+      return; // Detenemos la carga de la tienda
+    }
+  } catch (e) { console.warn("Error chequeando mantenimiento", e); }
+
+  // Si no hay mantenimiento, cargamos todo normal
   await loadCategories(); 
   fetchProducts(true); 
   observer.observe(document.getElementById('loadMoreSentinel')); 
   renderCart(); 
   
-  // --- LÓGICA DE SALUDO DINÁMICO ---
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session && session.user) {
     let displayName = session.user.user_metadata?.full_name;
@@ -1095,7 +1133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('userGreeting').style.display = 'none';
     }
   });
-  // ----------------------------------
 
   const { data: sData } = await supabaseClient.from('shipping_rates').select('*').order('state_name'); 
   if(sData) shippingStates = sData;
