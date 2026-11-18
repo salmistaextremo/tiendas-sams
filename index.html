@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Tiendas Sam's — Oversize & más</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<!-- Cargamos Roboto y Playfair Display (para mantener elegancia en el Hero si se desea) -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <!-- PWA -->
@@ -88,7 +87,7 @@
   .hero-gradient { position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 50%, transparent 100%); z-index: 1; }
   /* Alineado a la izquierda con un poco más de espacio */
   .hero-content { position: relative; z-index: 2; padding: 0 24px; width: 100%; max-width: 320px; text-align: left; }
-  .hero-badge { background: #f3e5c9; color: #8c6d3f; font-size: 10px; font-weight: 700; padding: 6px 12px; border-radius: 4px; display: inline-block; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; }
+  .hero-badge { background: #f3e5c9; color: #8c6d3f; font-size: 10px; font-weight: 700; padding: 6px 12px; border-radius: 4px; display: inline-block; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; visibility: hidden; }
   
   /* Título más ancho y prominente */
   .hero-title { 
@@ -98,10 +97,11 @@
     margin-bottom: 16px; 
     font-weight: 800; 
     letter-spacing: -1px; 
+    visibility: hidden;
   }
   
-  .hero-desc { font-size: 14px; color: #444; margin-bottom: 24px; line-height: 1.4; font-weight: 400; }
-  .hero-btn { background: #111; color: #fff; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+  .hero-desc { font-size: 14px; color: #444; margin-bottom: 24px; line-height: 1.4; font-weight: 400; visibility: hidden; }
+  .hero-btn { background: #111; color: #fff; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; visibility: hidden; }
   
   /* CATEGORÍAS CIRCULARES */
   .categories-scroll { display: flex; gap: 24px; overflow-x: auto; padding: 10px 0 30px; scrollbar-width: none; justify-content: center; }
@@ -348,9 +348,10 @@
     <img class="hero-bg" id="heroImg1" alt="Hero 1">
     <div class="hero-gradient"></div>
     <div class="hero-content">
-      <span class="hero-badge" id="heroBadge1">NUEVA TEMPORADA</span>
-      <h1 class="hero-title font-serif" id="heroTitle1">Elegancia<br>Atemporal</h1>
-      <p class="hero-desc" id="heroDesc1">Explora la última colección de prendas oversize y esenciales modernos.</p>
+      <!-- Textos vacíos y ocultos. JS los llenará con los datos de la BD -->
+      <span class="hero-badge" id="heroBadge1"></span>
+      <h1 class="hero-title font-serif" id="heroTitle1"></h1>
+      <p class="hero-desc" id="heroDesc1"></p>
       <button class="hero-btn" onclick="setFilter('todo')">Comprar Ahora <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
     </div>
   </div>
@@ -1048,20 +1049,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // --- LÓGICA DE SALUDO DINÁMICO ---
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session && session.user) {
-    // Obtenemos el nombre de los metadatos o del correo
     let displayName = session.user.user_metadata?.full_name;
     if (!displayName) {
-      displayName = session.user.email.split('@')[0]; // Usa la parte antes del @ si no hay nombre
+      displayName = session.user.email.split('@')[0];
     }
-    // Mostramos el contenedor y actualizamos el texto
     document.getElementById('userGreeting').style.display = 'block';
     document.getElementById('greetingText').textContent = `Hola, ${displayName.split(' ')[0]}`;
   } else {
-    // Si no está logueado, se mantiene oculto (display:none por defecto)
     document.getElementById('userGreeting').style.display = 'none';
   }
 
-  // Escuchar cambios de sesión (ej. si inicia sesión o cierra sesión en otra pestaña)
   supabaseClient.auth.onAuthStateChange((event, session) => {
     if (session && session.user) {
       let displayName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
@@ -1080,10 +1077,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   if(config) {
     currentSiteConfig = config;
     if (config.hero_images && config.hero_images[0]) document.getElementById('heroImg1').src = config.hero_images[0];
+    
+    // Solo mostramos los textos si la configuración los trae. Hacemos visibles los elementos.
     if (config.hero_details && config.hero_details[0]) {
-      document.getElementById('heroBadge1').textContent = config.hero_details[0].badge || 'NUEVA TEMPORADA';
-      document.getElementById('heroTitle1').innerHTML = (config.hero_details[0].title || 'Elegancia<br>Atemporal').replace(/\n/g, '<br>');
-      document.getElementById('heroDesc1').textContent = config.hero_details[0].desc || 'Explora la última colección de prendas oversize y esenciales modernos.';
+      const badge = document.getElementById('heroBadge1');
+      const title = document.getElementById('heroTitle1');
+      const desc = document.getElementById('heroDesc1');
+      const btn = document.querySelector('.hero-btn');
+
+      badge.textContent = config.hero_details[0].badge || '';
+      title.innerHTML = (config.hero_details[0].title || '').replace(/\n/g, '<br>');
+      desc.textContent = config.hero_details[0].desc || '';
+      
+      badge.style.visibility = 'visible';
+      title.style.visibility = 'visible';
+      desc.style.visibility = 'visible';
+      btn.style.visibility = 'visible';
     }
   }
 
