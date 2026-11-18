@@ -2057,55 +2057,143 @@ async function saveBCVRate(e) {
     bcvRate = rate;
     document.getElementById('bcvRateDisplay').textContent = rate.toFixed(2);
     document.getElementById('bcvLastUpdate').textContent = `Última actualización: ${new Date().toLocaleString('es-VE')}`;
-    loadSiteConfig();
-    showToast("Tasa BCV actualizada. Se aplicará a nuevos pedidos.");
-  } catch(err) { showToast("Error: " + err.message, 'error'); } 
+    showToast("Tasa BCV actualizada en el sistema.");
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); }
   finally { btn.disabled = false; btn.textContent = "Actualizar Tasa"; }
-}
-
-async function saveWhatsappConfig(e) {
-  e.preventDefault();
-  const btn = document.getElementById('btnSaveWhatsapp');
-  btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
-  
-  const whatsapp_number = document.getElementById('whatsappNumber').value.trim().replace(/\D/g, '');
-  const contact_email = document.getElementById('contactEmail').value.trim();
-  
-  if (!whatsapp_number || whatsapp_number.length < 10) {
-    btn.disabled = false; btn.textContent = "Guardar Contacto";
-    return showToast("Número de WhatsApp inválido (mínimo 10 dígitos).", 'error');
-  }
-  
-  try {
-    const { error } = await supabaseClient.from('site_config').update({ whatsapp_number, contact_email }).eq('id', 1);
-    if(error) throw error;
-    showToast("Contacto guardado. Los pedidos notificarán a este número.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error: " + err.message, 'error'); } 
-  finally { btn.disabled = false; btn.textContent = "Guardar Contacto"; }
 }
 
 async function saveMaintenanceConfig(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSaveMaintenance');
   btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
-  
-  const is_maintenance = document.getElementById('maintenanceActive').checked;
-  const maintenance_message = document.getElementById('maintenanceMsg').value.trim();
+
+  const active = document.getElementById('maintenanceActive').checked;
+  const msg = document.getElementById('maintenanceMsg').value.trim();
 
   try {
-    const { error } = await supabaseClient.from('site_config').update({ is_maintenance, maintenance_message }).eq('id', 1);
+    const { error } = await supabaseClient.from('site_config').update({
+      is_maintenance: active,
+      maintenance_message: msg
+    }).eq('id', 1);
     if(error) throw error;
-    showToast(is_maintenance ? "Tienda cerrada por mantenimiento." : "Tienda abierta al público.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error: " + err.message, 'error'); } 
+    showToast("Configuración de mantenimiento guardada.");
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); }
   finally { btn.disabled = false; btn.textContent = "Guardar Configuración"; }
+}
+
+async function saveHeroImages(e) {
+  if(e) e.preventDefault();
+  const btn = document.getElementById('btnSaveHero');
+  btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div> Guardando...`;
+
+  try {
+    let heroImages = currentSiteConfig.hero_images || [];
+    let heroDetails = currentSiteConfig.hero_details || [{}, {}, {}];
+
+    for (let i = 0; i < 3; i++) {
+      const fileInput = document.getElementById(`heroImg${i+1}`);
+      const file = fileInput.files[0];
+
+      if (file) {
+        // COMPRESIÓN APLICADA AQUÍ
+        let fileToUpload = file;
+        try { 
+            fileToUpload = await imageCompression(file, { maxSizeMB: 0.3, maxWidthOrHeight: 1200, useWebWorker: true }); 
+        } catch(err) { console.warn("Fallo compresión", err); }
+
+        const fileName = `hero_${Date.now()}_${i}.${fileToUpload.name.split('.').pop()}`;
+        await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
+        heroImages[i] = supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
+      }
+
+      // Guardar los textos de cada slide
+      heroDetails[i] = {
+        badge: document.getElementById(`heroBadge${i+1}`).value.trim(),
+        title: document.getElementById(`heroTitle${i+1}`).value.trim(),
+        desc: document.getElementById(`heroDesc${i+1}`).value.trim(),
+        btn_text: document.getElementById(`heroBtnText${i+1}`).value.trim()
+      };
+    }
+
+    const { error } = await supabaseClient.from('site_config').update({ 
+      hero_images: heroImages,
+      hero_details: heroDetails
+    }).eq('id', 1);
+
+    if(error) throw error;
+    
+    currentSiteConfig.hero_images = heroImages;
+    currentSiteConfig.hero_details = heroDetails;
+    showToast("Carrusel guardado y optimizado.");
+  } catch(err) {
+    showToast("Error al guardar: " + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = "Guardar Cambios del Carrusel";
+  }
+}
+
+async function savePromoConfig(e) {
+  if(e) e.preventDefault();
+  const btn = document.getElementById('btnSavePromo');
+  btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div> Guardando...`;
+
+  try {
+    const isActive = document.getElementById('promoActive').checked;
+    const title = document.getElementById('promoTitle').value.trim();
+    const text = document.getElementById('promoText').value.trim();
+    const link = document.getElementById('promoLink').value.trim();
+    const fileInput = document.getElementById('promoImage');
+    const file = fileInput.files[0];
+
+    let promoImageUrl = currentSiteConfig.promo_image || null;
+
+    if (file) {
+      let fileToUpload = file;
+      try { 
+          fileToUpload = await imageCompression(file, { maxSizeMB: 0.3, maxWidthOrHeight: 800, useWebWorker: true }); 
+      } catch(err) {}
+
+      const fileName = `promo_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
+      await supabaseClient.storage.from('product-images').upload(fileName, fileToUpload);
+      promoImageUrl = supabaseClient.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
+    }
+
+    const { error } = await supabaseClient.from('site_config').update({ 
+      promo_active: isActive,
+      promo_title: title,
+      promo_text: text,
+      promo_link: link,
+      promo_image: promoImageUrl
+    }).eq('id', 1);
+
+    if(error) throw error;
+    
+    currentSiteConfig.promo_active = isActive;
+    currentSiteConfig.promo_image = promoImageUrl;
+    currentSiteConfig.promo_title = title;
+    currentSiteConfig.promo_text = text;
+    currentSiteConfig.promo_link = link;
+
+    // Actualizar vista previa localmente
+    if(promoImageUrl) {
+      const img = document.getElementById('promoPreview');
+      img.src = promoImageUrl;
+      img.style.display = 'block';
+    }
+
+    showToast("Promoción guardada.");
+  } catch(err) {
+    showToast("Error al guardar: " + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = "Guardar Promoción";
+  }
 }
 
 async function savePaymentConfig(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSavePayment');
   btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
+
   const details = {
     bank: document.getElementById('payBank').value.trim(),
     cedula: document.getElementById('payCedula').value.trim(),
@@ -2114,103 +2202,36 @@ async function savePaymentConfig(e) {
     binance_email: document.getElementById('payBinanceEmail').value.trim(),
     binance_uid: document.getElementById('payBinanceUid').value.trim()
   };
+
   try {
     const { error } = await supabaseClient.from('site_config').update({ payment_details: details }).eq('id', 1);
     if(error) throw error;
     showToast("Datos de pago guardados.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error: " + err.message, 'error'); } 
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); }
   finally { btn.disabled = false; btn.textContent = "Guardar Datos de Pago"; }
 }
 
-async function saveHeroImages(e) {
+async function saveWhatsappConfig(e) {
   e.preventDefault();
-  const btn = document.getElementById('btnSaveHero');
+  const btn = document.getElementById('btnSaveWhatsapp');
   btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
 
-  const files = [document.getElementById('heroImg1').files[0], document.getElementById('heroImg2').files[0], document.getElementById('heroImg3').files[0]];
-  
-  const newDetails = [];
-  for(let i=1; i<=3; i++) {
-    newDetails.push({
-      badge: document.getElementById(`heroBadge${i}`).value.trim(),
-      title: document.getElementById(`heroTitle${i}`).value.trim(),
-      desc: document.getElementById(`heroDesc${i}`).value.trim(),
-      btn_text: document.getElementById(`heroBtnText${i}`).value.trim()
-    });
-  }
+  const num = document.getElementById('whatsappNumber').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
 
   try {
-    let currentHero = currentSiteConfig.hero_images || [];
-    let newUrls = [currentHero[0] || '', currentHero[1] || '', currentHero[2] || ''];
-
-    for(let i = 0; i < files.length; i++) {
-      if(files[i]) {
-        btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div> Subiendo foto ${i+1}...`;
-        let fileToUpload = files[i];
-        try { fileToUpload = await imageCompression(files[i], { maxSizeMB: 0.8, maxWidthOrHeight: 1920, useWebWorker: true }); }
-        catch(e) { console.warn("Compresión hero fallida:", e); }
-        
-        const fileName = `hero_${i}_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
-        const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
-        if (uploadError) throw uploadError;
-        newUrls[i] = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
-      }
-    }
-
     const { error } = await supabaseClient.from('site_config').update({ 
-      hero_images: newUrls, 
-      hero_details: newDetails
+      whatsapp_number: num,
+      contact_email: email
     }).eq('id', 1);
-    
     if(error) throw error;
-    showToast("Carrusel actualizado con éxito.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } 
-  finally { btn.disabled = false; btn.textContent = "Guardar Cambios del Carrusel"; }
+    showToast("Contacto guardado.");
+  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = "Guardar Contacto"; }
 }
 
-async function savePromoConfig(e) {
-  e.preventDefault();
-  const btn = document.getElementById('btnSavePromo');
-  btn.disabled = true; btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div>`;
-
-  const active = document.getElementById('promoActive').checked;
-  const title = document.getElementById('promoTitle').value.trim();
-  const text = document.getElementById('promoText').value.trim();
-  const link = document.getElementById('promoLink').value.trim();
-  const imgFile = document.getElementById('promoImage').files[0];
-
-  try {
-    let image_url = currentSiteConfig.promo_image;
-
-    if (imgFile) {
-      btn.innerHTML = `<div class="spinner" style="border-top-color:#fff; width:18px; height:18px;"></div> Subiendo imagen...`;
-      let fileToUpload = imgFile;
-      try { fileToUpload = await imageCompression(imgFile, { maxSizeMB: 0.5, maxWidthOrHeight: 800, useWebWorker: true }); }
-      catch(e) { console.warn("Compresión promo fallida:", e); }
-      
-      const fileName = `promo_${Date.now()}.${fileToUpload.name.split('.').pop()}`;
-      const { error: uploadError } = await supabaseClient.storage.from('brand-assets').upload(fileName, fileToUpload);
-      if (uploadError) throw uploadError;
-      image_url = supabaseClient.storage.from('brand-assets').getPublicUrl(fileName).data.publicUrl;
-    }
-
-    const { error } = await supabaseClient.from('site_config').update({
-      promo_active: active, promo_image: image_url, promo_title: title, promo_text: text, promo_link: link
-    }).eq('id', 1);
-
-    if(error) throw error;
-    showToast("Ventana emergente guardada con éxito.");
-    loadSiteConfig();
-  } catch(err) { showToast("Error al guardar: " + err.message, 'error'); } 
-  finally { btn.disabled = false; btn.textContent = "Guardar Promoción"; }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await fetchBCVRate(); 
-  checkAdminSession();
-});
+// Inicializar
+checkAdminSession();
 </script>
 </body>
 </html>
