@@ -338,7 +338,6 @@
           <span class="cart-badge" id="cartCount">0</span>
         </button>
       </div>
-      <!-- Saludo debajo de los iconos, oculto por defecto hasta verificar sesión -->
       <div class="header-center" id="userGreeting">
         <p id="greetingText"></p>
       </div>
@@ -457,6 +456,19 @@
   </div>
 </div>
 
+<!-- MODAL PROMOCIÓN (POPUP) -->
+<div class="modal-wrap" id="promoModal" onclick="if(event.target.id==='promoModal') closePromoModal()" style="z-index: 3000;">
+  <div class="modal" style="max-width: 400px; padding: 0; overflow: hidden; text-align: center;">
+    <button class="modal-x" onclick="closePromoModal()" style="background: rgba(255,255,255,0.8);">✕</button>
+    <img id="promoImageDisplay" style="width: 100%; height: 250px; object-fit: cover; display: none;">
+    <div style="padding: 32px 24px;">
+      <h2 id="promoTitleDisplay" style="font-size: 24px; font-weight: 800; margin-bottom: 12px; line-height: 1.2;"></h2>
+      <p id="promoTextDisplay" style="font-size: 15px; color: var(--muted); margin-bottom: 24px;"></p>
+      <a id="promoLinkDisplay" href="#" class="btn-primary" style="text-decoration: none;">Ver Promoción</a>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -478,6 +490,7 @@ const fmtBs = n => { if (!bcvRate) return "Bs —"; return "Bs " + Number(n || 0
 function escapeHTML(str) { if (!str) return ''; return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])); }
 function showToast(message, type = 'success') { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <span>${escapeHTML(message)}</span>`; container.appendChild(toast); setTimeout(() => { toast.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => toast.remove(), 300); }, 3000); }
 function togglePassword(inputId, btn) { const input = document.getElementById(inputId); if (input.type === 'password') { input.type = 'text'; btn.style.color = '#111'; } else { input.type = 'password'; btn.style.color = '#888'; } }
+function closePromoModal() { document.getElementById('promoModal').classList.remove('open'); }
 
 function setActiveNav(btn) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1091,12 +1104,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if(config) {
     currentSiteConfig = config;
     
-    // Restauramos la URL original, que es la que sí carga correctamente
     if (config.hero_images && config.hero_images[0]) {
       document.getElementById('heroImg1').src = config.hero_images[0];
     }
     
-    // Solo mostramos los textos si la configuración los trae. Hacemos visibles los elementos.
     if (config.hero_details && config.hero_details[0]) {
       const badge = document.getElementById('heroBadge1');
       const title = document.getElementById('heroTitle1');
@@ -1111,6 +1122,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       title.style.visibility = 'visible';
       desc.style.visibility = 'visible';
       btn.style.visibility = 'visible';
+    }
+
+    // Lógica para mostrar la ventana emergente (Popup)
+    if (config.promo_active) {
+      const hasSeenPromo = sessionStorage.getItem('sams_promo_seen');
+      if (!hasSeenPromo) {
+        setTimeout(() => {
+          document.getElementById('promoTitleDisplay').textContent = config.promo_title || '¡Oferta Especial!';
+          document.getElementById('promoTextDisplay').textContent = config.promo_text || '';
+          
+          if (config.promo_image) {
+            document.getElementById('promoImageDisplay').src = config.promo_image;
+            document.getElementById('promoImageDisplay').style.display = 'block';
+          }
+
+          const btnLink = document.getElementById('promoLinkDisplay');
+          if (config.promo_link) {
+            btnLink.href = config.promo_link;
+            btnLink.style.display = 'flex';
+          } else {
+            btnLink.style.display = 'none';
+          }
+
+          document.getElementById('promoModal').classList.add('open');
+          sessionStorage.setItem('sams_promo_seen', 'true'); // Para que no salga de nuevo al recargar
+        }, 2000); // Sale 2 segundos después de cargar la página
+      }
     }
   }
 
